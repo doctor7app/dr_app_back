@@ -1,6 +1,5 @@
-﻿namespace DocumentManagement.Infrastructure.Repositories
+﻿namespace DocumentManagement.Infrastructure.Repositories;
+
+public class MetadataRepository
 {
-    public class MetadataRepository
-    {
-    }
 }

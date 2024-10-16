@@ -1,6 +1,5 @@
-﻿namespace DocumentManagement.Infrastructure.Logging
+﻿namespace DocumentManagement.Infrastructure.Logging;
+
+public class SerilogConfig
 {
-    public class SerilogConfig
-    {
-    }
 }

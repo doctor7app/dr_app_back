@@ -1,62 +1,52 @@
 ﻿using DocumentManagement.Core.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
-namespace DocumentManagement.Controllers
+namespace DocumentManagement.Controllers;
+
+[Route("api/[controller]")]
+[ApiController]
+public class DocumentController(IDocumentService documentService, ILogger<DocumentController> logger) : ControllerBase
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class DocumentController : ControllerBase
+    [HttpPost("upload")]
+    public async Task<IActionResult> UploadDocument(
+        IFormFile file
+        , [FromForm] bool encrypt
+        , [FromForm] string author
+        , [FromForm] string tags
+        , [FromForm] string description)
     {
-        private readonly IDocumentService _documentService;
-        private readonly ILogger<DocumentController> _logger;
+        logger.LogInformation("Uploading document: {FileName} with encryption: {Encrypt}", file.FileName, encrypt);
 
-        public DocumentController(IDocumentService documentService, ILogger<DocumentController> logger)
+        try
         {
-            _documentService = documentService;
-            _logger = logger;
+            var result = await documentService.UploadDocumentAsync(file, encrypt, author, tags, description);
+            logger.LogInformation("Document uploaded successfully: {FileName}", file.FileName);
+            return Ok(result);
         }
-
-        [HttpPost("upload")]
-        public async Task<IActionResult> UploadDocument(
-            IFormFile file
-            , [FromForm] bool encrypt
-            , [FromForm] string author
-            , [FromForm] string tags
-            , [FromForm] string description)
+        catch (Exception ex)
         {
-            _logger.LogInformation("Uploading document: {FileName} with encryption: {Encrypt}", file.FileName, encrypt);
-
-            try
-            {
-                var result = await _documentService.UploadDocumentAsync(file, encrypt, author, tags, description);
-                _logger.LogInformation("Document uploaded successfully: {FileName}", file.FileName);
-                return Ok(result);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error occurred while uploading document: {FileName}", file.FileName);
-                return StatusCode(500, "Internal Server Error");
-            }
+            logger.LogError(ex, "Error occurred while uploading document: {FileName}", file.FileName);
+            return StatusCode(500, "Internal Server Error");
         }
+    }
 
-        [HttpGet("{id}")]
-        public async Task<IActionResult> DownloadDocument(Guid id)
+    [HttpGet("{id}")]
+    public async Task<IActionResult> DownloadDocument(Guid id)
+    {
+        logger.LogInformation("Downloading document with ID: {DocumentId}", id);
+
+        try
         {
-            _logger.LogInformation("Downloading document with ID: {DocumentId}", id);
+            var (fileName, contentType, fileStream, metadata) = await documentService.GetDocumentAsync(id);
+            logger.LogInformation("Document downloaded successfully: {DocumentId}", id);
 
-            try
-            {
-                var (fileName, contentType, fileStream, metadata) = await _documentService.GetDocumentAsync(id);
-                _logger.LogInformation("Document downloaded successfully: {DocumentId}", id);
-
-                // Return the document with metadata
-                return File(fileStream, contentType, fileName);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error occurred while downloading document: {DocumentId}", id);
-                return StatusCode(500, "Internal Server Error");
-            }
+            // Return the document with metadata
+            return File(fileStream, contentType, fileName);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error occurred while downloading document: {DocumentId}", id);
+            return StatusCode(500, "Internal Server Error");
         }
     }
 }

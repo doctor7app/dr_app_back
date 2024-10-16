@@ -9,13 +9,13 @@ COPY ../*.sln .
 COPY ./DocumentManagement/DocumentManagement.csproj ./DocumentManagement/
 
 # Restore all NuGet packages
-RUN dotnet restore
+#RUN dotnet restore
 
 # Copy the rest of the source code
 COPY . .
 
 # Build the project
-RUN dotnet build -c Debug
+#RUN dotnet build -c Debug
 
 # Set the working directory to the API project folder for running
 WORKDIR /src/DocumentManagement

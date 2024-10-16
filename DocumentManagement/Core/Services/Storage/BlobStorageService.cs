@@ -1,6 +1,5 @@
-﻿namespace DocumentManagement.Core.Services.Storage
+﻿namespace DocumentManagement.Core.Services.Storage;
+
+public class BlobStorageService
 {
-    public class BlobStorageService
-    {
-    }
 }
