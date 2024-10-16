@@ -1,4 +1,4 @@
-﻿using DocumentManagement.Core.Interfaces;
+﻿using DocumentManagement.Core.Interfaces.Services;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -51,7 +51,6 @@ public class LocalStorageService(IConfiguration configuration) : IStorageService
             {
                 await cryptoStream.CopyToAsync(resultStream);
             }
-            //resultStream.Seek(0, SeekOrigin.Begin);
             resultStream.Position = 0;
             return resultStream;
 

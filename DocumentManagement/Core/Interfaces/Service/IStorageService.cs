@@ -1,4 +1,4 @@
-﻿namespace DocumentManagement.Core.Interfaces;
+﻿namespace DocumentManagement.Core.Interfaces.Services;
 
 public interface IStorageService
 {
