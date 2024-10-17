@@ -1,5 +1,4 @@
 ﻿using DocumentManagement.Core.Interfaces.Services;
-using DocumentManagement.Core.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DocumentManagement.Controllers;
@@ -14,11 +13,12 @@ public class DocumentController(IDocumentService documentService, ILogger<Docume
         , [FromForm] bool encrypt
         , [FromForm] string author
         , [FromForm] string service
-        , [FromForm] string tags
+        , [FromForm] List<string> tags
         , [FromForm] string description
         )
     {
         logger.LogInformation("Uploading document: {FileName} with encryption: {Encrypt}", file.FileName, encrypt);
+
 
         try
         {
@@ -30,6 +30,20 @@ public class DocumentController(IDocumentService documentService, ILogger<Docume
         {
             logger.LogError(ex, "Error occurred while uploading document: {FileName}", file.FileName);
             return StatusCode(500, "Internal Server Error");
+        }
+    }
+
+    [HttpPut("{id}/tags")]
+    public async Task<IActionResult> UpdateDocumentTags(Guid id, [FromBody] List<string> tagNames)
+    {
+        try
+        {
+            await documentService.UpdateDocumentTagsAsync(id, tagNames);
+            return Ok("Document tags updated successfully.");
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
         }
     }
 
@@ -121,4 +135,61 @@ public class DocumentController(IDocumentService documentService, ILogger<Docume
             return StatusCode(500, "Internal Server Error");
         }
     }
+
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteDocument(Guid id)
+    {
+        try
+        {
+            await documentService.DeleteDocumentAsync(id);
+            return Ok("Document deleted successfully.");
+        }
+        catch (Exception ex)
+        {
+            return NotFound(ex.Message);
+        }
+    }
+
+    [HttpDelete("DeleteDocumentsByServices")]
+    public async Task<IActionResult> DeleteDocumentsByServices([FromBody] List<string> services)
+    {
+        try
+        {
+            await documentService.DeleteDocumentsByServicesAsync(services);
+            return Ok("Documents deleted successfully.");
+        }
+        catch (Exception ex)
+        {
+            return NotFound(ex.Message);
+        }
+    }
+
+    [HttpDelete("DeleteDocumentsByTags")]
+    public async Task<IActionResult> DeleteDocumentsByTags([FromBody] List<string> tags)
+    {
+        try
+        {
+            await documentService.DeleteDocumentsByTagsAsync(tags);
+            return Ok("Documents deleted successfully.");
+        }
+        catch (Exception ex)
+        {
+            return NotFound(ex.Message);
+        }
+    }
+
+    [HttpDelete("DeleteDocumentsByAuthor")]
+    public async Task<IActionResult> DeleteDocumentsByAuthor([FromBody] string author)
+    {
+        try
+        {
+            await documentService.DeleteDocumentsByAuthorAsync(author);
+            return Ok("Documents deleted successfully.");
+        }
+        catch (Exception ex)
+        {
+            return NotFound(ex.Message);
+        }
+    }
+
 }

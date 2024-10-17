@@ -1,20 +1,21 @@
 ﻿using DocumentManagement.Core.Interfaces.Data;
 using DocumentManagement.Core.Interfaces.Services;
 using DocumentManagement.Core.Models;
-using DocumentManagement.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Prometheus;
 using System.IO.Compression;
 
 namespace DocumentManagement.Core.Services;
 
-public class DocumentService(IStorageService storageService, IDocumentRepository documentRepository) : IDocumentService
+public class DocumentService(IStorageService storageService, IDocumentRepository documentRepository, ITagRepository tagRepository) : IDocumentService
 {
     private static readonly Counter UploadedDocuments = Metrics.CreateCounter("uploaded_documents_total", "Total number of uploaded documents");
     private static readonly Counter DownloadedDocuments = Metrics.CreateCounter("downloaded_documents_total", "Total number of downloaded documents");
+    private static readonly Counter DownloadedZipDocuments = Metrics.CreateCounter("downloaded_zip_documents_total", "Total number of downloaded zip documents");
+    private static readonly Counter EditDocumentsTags = Metrics.CreateCounter("edit_documents_tags_total", "Total number of documents tags edit");
     private static readonly Counter DeletedDocuments = Metrics.CreateCounter("deleted_documents_total", "Total number of deleted documents");
 
-    public async Task<string> UploadDocumentAsync(IFormFile file, bool encrypt, string author, string service, string tags, string description)
+    public async Task<string> UploadDocumentAsync(IFormFile file, bool encrypt, string author, string service, List<string> tags, string description)
     {
         // Save file to local storage
         var filePath = await storageService.SaveFileAsync(file.OpenReadStream(), file.FileName, encrypt);
@@ -36,12 +37,21 @@ public class DocumentService(IStorageService storageService, IDocumentRepository
             FileSize = file.Length,
             Author = author,
             Service = service,
-            Tags = tags,
             UploadedAt = DateTime.UtcNow,
             Description = description,
             Encrypted = encrypt
         };
         document.Metadata = metadata;
+
+        // handle tags
+        var existingTags = await tagRepository.GetTagsByNamesAsync(tags);
+        var newTags = tags.Except(existingTags.Select(t => t.Name))
+            .Select(t => new Tag { Name = t })
+            .ToList();
+        foreach (var tag in (List<Tag>)[.. existingTags, .. newTags])
+        {
+            document.DocumentTags.Add(new DocumentTag { Document = document, Tag = tag });
+        }
 
         // Save to the database
         await documentRepository.AddAsync(document);
@@ -50,6 +60,12 @@ public class DocumentService(IStorageService storageService, IDocumentRepository
         UploadedDocuments.Inc();
 
         return document.Id.ToString();
+    }
+
+    public async Task UpdateDocumentTagsAsync(Guid documentId, List<string> tagNames)
+    {
+        await documentRepository.UpdateDocumentTagsAsync(documentId, tagNames);
+        EditDocumentsTags.Inc();
     }
 
     public async Task<(string FileName, string ContentType, Stream FileStream, Metadata Metadata)> GetDocumentAsync(Guid id)
@@ -68,9 +84,31 @@ public class DocumentService(IStorageService storageService, IDocumentRepository
         var document = await documentRepository.GetByIdAsync(id) ?? throw new FileNotFoundException("Document not found");
         await storageService.DeleteFileAsync(document.FilePath);
         await documentRepository.DeleteAsync(document.Id);
-
-        // Increment Prometheus counter
         DeletedDocuments.Inc();
+    }
+
+    public async Task DeleteDocumentsByTagsAsync(List<string> tags)
+    {
+        await DeleteMultipleAsync(await documentRepository.GetByTagsAsync(tags));
+    }
+
+    public async Task DeleteDocumentsByServicesAsync(List<string> services)
+    {
+        await DeleteMultipleAsync(await documentRepository.GetByServicesAsync(services));
+    }
+
+    public async Task DeleteDocumentsByAuthorAsync(string author)
+    {
+        await DeleteMultipleAsync(await documentRepository.GetByAuthorAsync(author));
+    }
+
+    public async Task DeleteMultipleAsync(IEnumerable<Document> documents)
+    {
+        foreach (var document in documents)
+        {
+            await storageService.DeleteFileAsync(document.FilePath);
+        }
+        await documentRepository.DeleteMultipleAsync(documents);
     }
 
     public async Task<(Stream FileStream, string FileName)> GetDocumentsByServicesAsZipAsync(List<string> services)
@@ -96,14 +134,14 @@ public class DocumentService(IStorageService storageService, IDocumentRepository
     {
         var documents = await documentRepository.GetByAuthorAndServicesAsync(author, services);
 
-        return (await GetZipStreamAsync(documents), GetFileName([author,.. services])); 
+        return (await GetZipStreamAsync(documents), GetFileName([author, .. services]));
     }
 
     public async Task<(Stream FileStream, string FileName)> GetByAuthorAndTagsAsZipAsync(string author, List<string> tags)
     {
         var documents = await documentRepository.GetByAuthorAndTagsAsync(author, tags);
 
-        return (await GetZipStreamAsync(documents), GetFileName([author,.. tags]));
+        return (await GetZipStreamAsync(documents), GetFileName([author, .. tags]));
     }
 
     public async Task<(Stream FileStream, string FileName)> GetByAuthorAndServicesAndTagsAsZipAsync(string author, List<string> services, List<string> tags)
@@ -129,11 +167,11 @@ public class DocumentService(IStorageService storageService, IDocumentRepository
             {
                 var fileName = document.FileName;
                 // Check if the file name already exists
-                if (fileNameTracker.ContainsKey(fileName))
+                if (fileNameTracker.TryGetValue(fileName, out int value))
                 {
                     // Increment the index for this file name and create a new one
-                    fileNameTracker[fileName]++;
-                    var index = fileNameTracker[fileName];
+                    fileNameTracker[fileName] = ++value;
+                    var index = value;
                     // Create a new file name with the index (e.g., FileName(1).pdf)
                     fileName = $"{Path.GetFileNameWithoutExtension(fileName)}({index}){Path.GetExtension(fileName)}";
                 }
@@ -149,6 +187,8 @@ public class DocumentService(IStorageService storageService, IDocumentRepository
             }
         }
         archive.Dispose();
+        // Increment Prometheus counter
+        DownloadedZipDocuments.Inc();
         memoryStream.Position = 0;
         return memoryStream;
     }

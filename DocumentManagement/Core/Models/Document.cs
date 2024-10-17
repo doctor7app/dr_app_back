@@ -7,5 +7,6 @@ public class Document
     public string FilePath { get; set; }
     public string ContentType { get; set; }
     public DateTime CreatedAt { get; set; }
-    public Metadata Metadata { get; set; } // Navigation property for Metadata
+    public Metadata Metadata { get; set; }
+    public ICollection<DocumentTag> DocumentTags { get; set; } = [];
 }

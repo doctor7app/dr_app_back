@@ -9,10 +9,12 @@ public interface IDocumentRepository
     Task AddAsync(Document document);
     Task UpdateAsync(Document document);
     Task DeleteAsync(Guid id);
+    Task DeleteMultipleAsync(IEnumerable<Document> documents);
     Task<IEnumerable<Document>> GetByAuthorAsync(string author);
     Task<IEnumerable<Document>> GetByServicesAsync(List<string> services);
     Task<IEnumerable<Document>> GetByTagsAsync(List<string> tags);
     Task<IEnumerable<Document>> GetByAuthorAndServicesAsync(string author, List<string> services);
     Task<IEnumerable<Document>> GetByAuthorAndTagsAsync(string author, List<string> tags);
     Task<IEnumerable<Document>> GetByAuthorAndServicesAndTagsAsync(string author, List<string> services, List<string> tags);
+    Task UpdateDocumentTagsAsync(Guid id, List<string> tagNames);
 }

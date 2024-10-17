@@ -1,12 +1,12 @@
-using Serilog;
-using Prometheus;
-using DocumentManagement.Core.Services.Storage;
-using DocumentManagement.Core.Services;
-using DocumentManagement.Infrastructure.Data;
-using Microsoft.EntityFrameworkCore;
-using DocumentManagement.Core.Interfaces.Services;
 using DocumentManagement.Core.Interfaces.Data;
+using DocumentManagement.Core.Interfaces.Services;
+using DocumentManagement.Core.Services;
+using DocumentManagement.Core.Services.Storage;
+using DocumentManagement.Infrastructure.Data;
 using DocumentManagement.Infrastructure.Repositories;
+using Microsoft.EntityFrameworkCore;
+using Prometheus;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -33,6 +33,7 @@ builder.Services.AddScoped<IDocumentService, DocumentService>();
 builder.Services.AddScoped<IStorageService, LocalStorageService>();
 builder.Services.AddScoped<IDocumentRepository, DocumentRepository>();
 builder.Services.AddScoped<IMetadataRepository, MetadataRepository>();
+builder.Services.AddScoped<ITagRepository, TagRepository>();
 
 var app = builder.Build();
 
