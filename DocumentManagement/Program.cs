@@ -4,6 +4,7 @@ using DocumentManagement.Core.Services;
 using DocumentManagement.Core.Services.Storage;
 using DocumentManagement.Infrastructure.Data;
 using DocumentManagement.Infrastructure.Repositories;
+using DocumentManagement.Infrastructure.Logging;
 using Microsoft.EntityFrameworkCore;
 using Prometheus;
 using Serilog;
@@ -11,10 +12,9 @@ using Serilog;
 var builder = WebApplication.CreateBuilder(args);
 
 // Set up Serilog for logging
-Log.Logger = new LoggerConfiguration()
-    .ReadFrom.Configuration(builder.Configuration)   // Reads settings from `appsettings.json`
-    .WriteTo.Console()                               // Logs to console
-    .WriteTo.File("logs/log-.txt", rollingInterval: RollingInterval.Day)  // Logs to file with daily rotation
+var loggerConfiguration = SerilogConfig.CreateLoggerConfiguration();
+Log.Logger = loggerConfiguration
+    .ReadFrom.Configuration(builder.Configuration) // This allows overrides from appsettings.json
     .CreateLogger();
 
 builder.Host.UseSerilog();

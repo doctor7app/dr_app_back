@@ -5,7 +5,7 @@ EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
-COPY ["DocumentManagement.csproj", "DocumentManagement/"]
+COPY ["./DocumentManagement/DocumentManagement.csproj", "DocumentManagement/"]
 RUN dotnet restore "DocumentManagement/DocumentManagement.csproj"
 COPY . .
 WORKDIR "/src/DocumentManagement"
