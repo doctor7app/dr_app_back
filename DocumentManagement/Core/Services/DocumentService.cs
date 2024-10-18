@@ -115,6 +115,7 @@ public class DocumentService(IStorageService storageService, IDocumentRepository
     public async Task UpdateDocumentTagsAsync(Guid documentId, List<string> tagNames)
     {
         await documentRepository.UpdateDocumentTagsAsync(documentId, tagNames);
+        await tagService.DeleteUnusedTagsAsync();
         EditDocumentsTags.Inc();
     }
 
