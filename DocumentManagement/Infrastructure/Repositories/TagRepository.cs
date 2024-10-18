@@ -2,6 +2,7 @@
 using DocumentManagement.Core.Models;
 using DocumentManagement.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
+using System.Threading.Tasks;
 
 namespace DocumentManagement.Infrastructure.Repositories;
 
@@ -42,5 +43,19 @@ public class TagRepository(DocumentDbContext context) : ITagRepository
     {
         return await context.Tags
             .AnyAsync(t => t.Name.Equals(tagName, StringComparison.CurrentCultureIgnoreCase));
+    }
+
+    public async Task DeleteUnusedTagsAsync()
+    {
+        var unusedTags = await context.Tags
+            .Where(t => !context.DocumentTags.Any(dt => dt.TagId == t.Id))
+            .ToListAsync();
+
+        if (unusedTags.Count != 0)
+        {
+            // Remove the unused tags from the database
+            context.Tags.RemoveRange(unusedTags);
+            await context.SaveChangesAsync();
+        }
     }
 }

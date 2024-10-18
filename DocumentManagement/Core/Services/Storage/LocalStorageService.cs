@@ -16,11 +16,7 @@ public class LocalStorageService(IConfiguration configuration) : IStorageService
         string filePath = GenerateFilePath() + Path.GetExtension(fileName);
 
         // Ensure that the directory structure exists
-        string directory = Path.GetDirectoryName(filePath);
-        if (!Directory.Exists(directory))
-        {
-            Directory.CreateDirectory(directory);
-        }
+        CreateDirectoryIfNotExists(filePath);
 
         // Optionally encrypt the file
         using (var file = new FileStream(filePath, FileMode.Create))
@@ -37,6 +33,21 @@ public class LocalStorageService(IConfiguration configuration) : IStorageService
         }
 
         return filePath;
+    }
+
+    public async Task<string> CopyFileAsync(string sourceFilePath, string fileName)
+    {
+        // Generate the file path
+        string destinationFilePath = GenerateFilePath() + Path.GetExtension(fileName);
+
+        // Ensure that the directory structure exists
+        CreateDirectoryIfNotExists(destinationFilePath);
+
+        using Stream source = new FileStream(sourceFilePath, FileMode.Open, FileAccess.Read, FileShare.Read);
+        using Stream destination = File.Create(destinationFilePath);
+        await source.CopyToAsync(destination);
+
+        return destinationFilePath;
     }
 
     public async Task<Stream> GetFileAsync(string filePath, bool dycrypt)
@@ -88,5 +99,14 @@ public class LocalStorageService(IConfiguration configuration) : IStorageService
 
         // Combine to form the file path structure: /12d84ce5/ab05/4c41//4c41//9b6c/12d84ce5-ab05-4c41-9b6c-5af331e9ecc4.ext
         return Path.Combine(_basePath, string.Join(Path.DirectorySeparatorChar, [.. dirs]), $"{fileId}");
+    }
+
+    private static void CreateDirectoryIfNotExists(string filePath)
+    {
+        string directory = Path.GetDirectoryName(filePath);
+        if (!Directory.Exists(directory))
+        {
+            Directory.CreateDirectory(directory);
+        }
     }
 }

@@ -31,6 +31,7 @@ builder.Services.AddDbContext<DocumentDbContext>(options =>
 // Add Document Service and Storage Service
 builder.Services.AddScoped<IDocumentService, DocumentService>();
 builder.Services.AddScoped<IStorageService, LocalStorageService>();
+builder.Services.AddScoped<ITagService, TagService>();
 builder.Services.AddScoped<IDocumentRepository, DocumentRepository>();
 builder.Services.AddScoped<IMetadataRepository, MetadataRepository>();
 builder.Services.AddScoped<ITagRepository, TagRepository>();

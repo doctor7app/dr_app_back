@@ -9,4 +9,5 @@ public interface ITagRepository
     Task<IEnumerable<Tag>> GetTagsByNamesAsync(IEnumerable<string> tagNames);
     Task AddTagsAsync(IEnumerable<Tag> tags);
     Task<bool> TagExistsAsync(string tagName);
+    Task DeleteUnusedTagsAsync();
 }

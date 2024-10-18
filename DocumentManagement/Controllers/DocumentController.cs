@@ -33,6 +33,30 @@ public class DocumentController(IDocumentService documentService, ILogger<Docume
         }
     }
 
+    [HttpPost("copy")]
+    public async Task<IActionResult> CopyDocument(
+        [FromForm] Guid id
+        , [FromForm] string author
+        , [FromForm] string service
+        , [FromForm] List<string> tags
+        , [FromForm] string description
+        )
+    {
+        logger.LogInformation("Copying document: {id}", id);
+
+        try
+        {
+            var result = await documentService.CopyDocumentAsync(id, author, service, tags, description);
+            logger.LogInformation("Document copied successfully: {id}", id);
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error occurred while copying document: : {id}", id);
+            return StatusCode(500, "Internal Server Error");
+        }
+    }
+
     [HttpPut("{id}/tags")]
     public async Task<IActionResult> UpdateDocumentTags(Guid id, [FromBody] List<string> tagNames)
     {

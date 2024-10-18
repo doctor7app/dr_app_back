@@ -5,6 +5,7 @@ namespace DocumentManagement.Core.Interfaces.Services;
 public interface IDocumentService
 {
     Task<string> UploadDocumentAsync(IFormFile file, bool encrypt, string author, string service, List<string> tags, string description);
+    Task<string> CopyDocumentAsync(Guid id, string author, string service, List<string> tags, string description);
     Task UpdateDocumentTagsAsync(Guid id, List<string> tagNames);
     Task<(string FileName, string ContentType, Stream FileStream, Metadata Metadata)> GetDocumentAsync(Guid id);
     Task<(Stream FileStream, string FileName)> GetDocumentsByAuthorAsZipAsync(string author);

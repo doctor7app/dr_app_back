@@ -8,6 +8,7 @@ public class DocumentDbContext(DbContextOptions<DocumentDbContext> options) : Db
     public DbSet<Document> Documents { get; set; }
     public DbSet<Tag> Tags { get; set; }
     public DbSet<Metadata> Metadatas { get; set; }
+    public DbSet<DocumentTag> DocumentTags { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -16,6 +17,7 @@ public class DocumentDbContext(DbContextOptions<DocumentDbContext> options) : Db
         modelBuilder.Entity<Document>().ToTable("Documents");
         modelBuilder.Entity<Metadata>().ToTable("Metadatas");
         modelBuilder.Entity<Tag>().ToTable("Tags");
+        modelBuilder.Entity<DocumentTag>().ToTable("DocumentTags");
 
         // Configure the many-to-many relationship
         modelBuilder.Entity<DocumentTag>()

@@ -7,9 +7,10 @@ using System.IO.Compression;
 
 namespace DocumentManagement.Core.Services;
 
-public class DocumentService(IStorageService storageService, IDocumentRepository documentRepository, ITagRepository tagRepository) : IDocumentService
+public class DocumentService(IStorageService storageService, IDocumentRepository documentRepository, ITagService tagService) : IDocumentService
 {
     private static readonly Counter UploadedDocuments = Metrics.CreateCounter("uploaded_documents_total", "Total number of uploaded documents");
+    private static readonly Counter CopiedDocuments = Metrics.CreateCounter("copied_documents_total", "Total number of copied documents");
     private static readonly Counter DownloadedDocuments = Metrics.CreateCounter("downloaded_documents_total", "Total number of downloaded documents");
     private static readonly Counter DownloadedZipDocuments = Metrics.CreateCounter("downloaded_zip_documents_total", "Total number of downloaded zip documents");
     private static readonly Counter EditDocumentsTags = Metrics.CreateCounter("edit_documents_tags_total", "Total number of documents tags edit");
@@ -44,7 +45,7 @@ public class DocumentService(IStorageService storageService, IDocumentRepository
         document.Metadata = metadata;
 
         // handle tags
-        var existingTags = await tagRepository.GetTagsByNamesAsync(tags);
+        var existingTags = await tagService.GetTagsByNamesAsync(tags);
         var newTags = tags.Except(existingTags.Select(t => t.Name))
             .Select(t => new Tag { Name = t })
             .ToList();
@@ -58,6 +59,55 @@ public class DocumentService(IStorageService storageService, IDocumentRepository
 
         // Increment Prometheus counter
         UploadedDocuments.Inc();
+
+        return document.Id.ToString();
+    }
+
+    public async Task<string> CopyDocumentAsync(Guid id, string author, string service, List<string> tags, string description)
+    {
+        var originalDocument = await documentRepository.GetByIdAsync(id) ?? throw new FileNotFoundException("Document not found");
+        
+        // Copy file in local storage
+        var filePath = await storageService.CopyFileAsync(originalDocument.FilePath, originalDocument.FileName);
+
+        // Create the Document and Metadata objects
+        var document = new Document
+        {
+            Id = Guid.NewGuid(),
+            FileName = originalDocument.FileName,
+            FilePath = filePath,
+            ContentType = originalDocument.ContentType,
+            CreatedAt = DateTime.UtcNow
+        };
+
+        var metadata = new Metadata
+        {
+            Id = Guid.NewGuid(),
+            DocumentId = document.Id,
+            FileSize = originalDocument.Metadata.FileSize,
+            Author = author,
+            Service = service,
+            UploadedAt = DateTime.UtcNow,
+            Description = description,
+            Encrypted = originalDocument.Metadata.Encrypted
+        };
+        document.Metadata = metadata;
+
+        // handle tags
+        var existingTags = await tagService.GetTagsByNamesAsync(tags);
+        var newTags = tags.Except(existingTags.Select(t => t.Name))
+            .Select(t => new Tag { Name = t })
+            .ToList();
+        foreach (var tag in (List<Tag>)[.. existingTags, .. newTags])
+        {
+            document.DocumentTags.Add(new DocumentTag { Document = document, Tag = tag });
+        }
+
+        // Save to the database
+        await documentRepository.AddAsync(document);
+
+        // Increment Prometheus counter
+        CopiedDocuments.Inc();
 
         return document.Id.ToString();
     }
@@ -84,6 +134,7 @@ public class DocumentService(IStorageService storageService, IDocumentRepository
         var document = await documentRepository.GetByIdAsync(id) ?? throw new FileNotFoundException("Document not found");
         await storageService.DeleteFileAsync(document.FilePath);
         await documentRepository.DeleteAsync(document.Id);
+        await tagService.DeleteUnusedTagsAsync();
         DeletedDocuments.Inc();
     }
 
@@ -109,6 +160,7 @@ public class DocumentService(IStorageService storageService, IDocumentRepository
             await storageService.DeleteFileAsync(document.FilePath);
         }
         await documentRepository.DeleteMultipleAsync(documents);
+        await tagService.DeleteUnusedTagsAsync();
     }
 
     public async Task<(Stream FileStream, string FileName)> GetDocumentsByServicesAsZipAsync(List<string> services)
