@@ -1,0 +1,35 @@
+# Use the .NET 8 SDK image for building the project and running it in development mode
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+
+# Set the working directory inside the container
+WORKDIR /src
+
+# Copy the solution and project files
+COPY ../*.sln .
+COPY ./DocumentManagement/DocumentManagement.csproj ./DocumentManagement/
+
+# Restore all NuGet packages
+#RUN dotnet restore
+
+# Copy the rest of the source code
+COPY . .
+
+# Build the project
+#RUN dotnet build -c Debug
+
+# Set the working directory to the API project folder for running
+WORKDIR /src/DocumentManagement
+
+# Set environment variables for development
+ENV ASPNETCORE_ENVIRONMENT=Development
+ENV DOTNET_USE_POLLING_FILE_WATCHER=true  
+# Enable hot-reloading
+
+# Expose necessary ports
+EXPOSE 5000  
+# Application port
+EXPOSE 9090  
+# Prometheus port for metrics
+
+# Command to run the application in development mode with hot-reloading enabled
+CMD ["dotnet", "watch", "run", "--urls", "http://0.0.0.0:5111"]
