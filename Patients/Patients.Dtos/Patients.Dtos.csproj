@@ -1,0 +1,25 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="13.0.1" />
+    <PackageReference Include="AutoMapper.AspNetCore.OData.EFCore" Version="5.0.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Classes\Adresse\" />
+    <Folder Include="Classes\Contact\" />
+    <Folder Include="Classes\MedicalInfo\" />
+    <Folder Include="Installation\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Patients.Domain\Patients.Domain.csproj" />
+  </ItemGroup>
+
+</Project>
