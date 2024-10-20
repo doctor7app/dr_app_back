@@ -1,12 +1,11 @@
 ﻿using System.Linq.Expressions;
-using Doctor.Common.Services.Interfaces;
+using Common.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
 
-namespace Doctor.Common.Services.Implementation
+namespace Common.Services.Implementation
 {
-    public class Repository<TEntity> : IRepository<TEntity>
-        where TEntity : class
+    public class Repository<TEntity> : IRepository<TEntity> where TEntity : class
     {
         protected DbContext Context { get; set; }
         public Repository(DbContext context)
@@ -473,5 +472,45 @@ namespace Doctor.Common.Services.Implementation
                 throw;
             }
         }
+
+
+        #region Detach
+
+        public void DetachEntity(TEntity entity, EntityState state)
+        {
+            try
+            {
+                Context.Entry(entity).State = state;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+        }
+
+        #endregion
+
+        #region Dispose Save
+
+        public async Task<int> Complete()
+        {
+            try
+            {
+                return await Context.SaveChangesAsync();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return -1;
+            }
+
+        }
+        public void Dispose()
+        {
+            Context.Dispose();
+        }
+
+        #endregion
     }
 }

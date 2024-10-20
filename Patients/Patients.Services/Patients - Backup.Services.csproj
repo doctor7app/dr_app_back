@@ -7,7 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Common\Common\Common.csproj" />
+    <Folder Include="Implementation\" />
+    <Folder Include="NewFolder\" />
   </ItemGroup>
 
 </Project>

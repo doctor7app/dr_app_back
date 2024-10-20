@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using AutoMapper;
-using Doctor.Common.Enums;
+using Common.Enums;
 using Patients.Dtos.Classes.Adresse;
 using Patients.Dtos.Classes.Contact;
 using Patients.Dtos.Classes.MedicalInfo;

@@ -12,9 +12,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Classes\Adresse\" />
-    <Folder Include="Classes\Contact\" />
-    <Folder Include="Classes\MedicalInfo\" />
     <Folder Include="Installation\" />
   </ItemGroup>
 

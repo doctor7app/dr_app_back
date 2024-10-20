@@ -1,4 +1,4 @@
-﻿namespace Doctor.Common.Enums;
+﻿namespace Common.Enums;
 
 public enum MedicalInformationType
 {

@@ -1,4 +1,4 @@
-﻿namespace Doctor.Common.Classes;
+﻿namespace Common.Classes;
 
 public abstract class AuditableEntity
 {

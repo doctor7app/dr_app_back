@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
 
-namespace Doctor.Common.Services.Interfaces
+namespace Common.Services.Interfaces
 {
     public interface IRepository<TEntity> where TEntity : class
     {
@@ -48,7 +48,7 @@ namespace Doctor.Common.Services.Interfaces
             Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>> includes = null);
 
         void Remove(TEntity entity);
-        void RemoveRange(IEnumerable<TEntity> entities);
+        void RemoveRange(IEnumerable<TEntity> entites);
         void Remove(Expression<Func<TEntity, bool>> condition = null);
 
         void RemoveRange(Expression<Func<TEntity, bool>> condition = null);
@@ -74,6 +74,11 @@ namespace Doctor.Common.Services.Interfaces
             Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>> includes = null);
 
         Task<TEntity> GetById(Guid id);
+
+
+        void DetachEntity(TEntity entity, EntityState state);
+        Task<int> Complete();
+        void Dispose();
 
     }
 

@@ -5,22 +5,28 @@ using Patients.Dtos.Interfaces;
 
 namespace Patients.Dtos.Classes.Adresse;
 
-public class AdresseDto :IMapFrom<Domain.Models.Adresse>
+public class AdresseCreateDto : IMapFrom<Domain.Models.Adresse>
 {
-    [Key]
-    public Guid Id { get; set; }
+    [Required]
     public string Country { get; set; }
+    [Required]
     public string Provence { get; set; }
+    [Required]
     public string City { get; set; }
+    [Required]
     public string PostalCode { get; set; }
+    [Required]
     public string Street { get; set; }
     public string AdditionalInformation { get; set; }
     public AdresseType Type { get; set; }
     
+    [Required(ErrorMessage = "Patient Id is required to create the adresse")]
+    public Guid IdPatient { get; set; }
+    
     public void Mapping(Profile profile)
     {
-        profile.CreateMap<Domain.Models.Adresse, AdresseDto>()
-            .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.AdresseId))
+        profile.CreateMap<AdresseCreateDto,Domain.Models.Adresse >()
+            
             .ForMember(dest => dest.Country, opt => opt.MapFrom(src => src.Country))
             .ForMember(dest => dest.Provence, opt => opt.MapFrom(src => src.Provence))
             .ForMember(dest => dest.City, opt => opt.MapFrom(src => src.City))
@@ -28,7 +34,7 @@ public class AdresseDto :IMapFrom<Domain.Models.Adresse>
             .ForMember(dest => dest.Street, opt => opt.MapFrom(src => src.Street))
             .ForMember(dest => dest.AdditionalInformation, opt => opt.MapFrom(src => src.AdditionalInformation))
             .ForMember(dest => dest.Type, opt => opt.MapFrom(src => src.Type))
-            .ReverseMap()
+            .ForMember(dest => dest.FkIdPatient, opt => opt.MapFrom(src => src.IdPatient))
             ;
     }
 }
