@@ -1,9 +1,8 @@
-﻿using Common.Classes;
-using Common.Enums;
+﻿using Common.Enums;
 
 namespace Patients.Domain.Models;
 
-public class Contact : AuditableEntity
+public class Contact
 {
     public Guid ContactId { get; set; }
     public string FirstName { get; set; }

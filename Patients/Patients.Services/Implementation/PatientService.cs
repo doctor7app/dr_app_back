@@ -2,7 +2,7 @@
 using Common.Services.Implementation;
 using Common.Services.Interfaces;
 using Patients.Domain.Models;
-using Patients.Dtos.Classes.Patient;
+using Patients.Dtos.Patient;
 using Patients.Services.Interfaces;
 
 namespace Patients.Services.Implementation;

@@ -3,10 +3,10 @@ using Microsoft.AspNetCore.OData.Deltas;
 using Microsoft.AspNetCore.OData.Formatter;
 using Microsoft.AspNetCore.OData.Query;
 using Microsoft.AspNetCore.OData.Routing.Controllers;
-using Patients.Dtos.Classes.Adresse;
-using Patients.Dtos.Classes.Contact;
-using Patients.Dtos.Classes.MedicalInfo;
-using Patients.Dtos.Classes.Patient;
+using Patients.Dtos.Adresse;
+using Patients.Dtos.Contact;
+using Patients.Dtos.MedicalInfo;
+using Patients.Dtos.Patient;
 using Patients.Services.Interfaces;
 
 namespace Patients.Api.Controllers
@@ -34,9 +34,8 @@ namespace Patients.Api.Controllers
         ///  <summary>
         ///  Get item with parameter passed in the query.
         ///  </summary>
-        ///  <response code="500">Internal server error</response>
-        [HttpGet("Patients({key:guid})")]
-        [HttpGet("Patients/{key:guid}")]
+        [HttpGet("Patients({key})")]
+        [HttpGet("Patients/{key}")]
         [EnableQuery]
         public async Task<IActionResult> Get([FromODataUri] Guid key)
         {
@@ -46,7 +45,6 @@ namespace Patients.Api.Controllers
         ///  <summary>
         ///  Get list  with parameter passed in the query.(Odata filtered)
         ///  </summary>
-        ///  <response code="500">Internal server error</response>
         [HttpGet("Patients")]
         [HttpGet("Patients/$count")]
         [EnableQuery(PageSize = 20, AllowedQueryOptions = AllowedQueryOptions.All, MaxOrderByNodeCount = 10)]
@@ -58,16 +56,15 @@ namespace Patients.Api.Controllers
         ///  <summary>
         ///  Add a list of entities to the database from the body of the api call.(Passed by as an array)
         ///  </summary>
-        /// <param name="li"></param>
-        ///  <response code="500">Internal server error</response> 
+        /// <param name="entity"></param>
         [HttpPost("Patients")]
-        public async Task<IActionResult> Post([FromBody] PatientCreateDto li)
+        public async Task<IActionResult> Post([FromBody] PatientCreateDto entity)
         {
-            return Ok(await _patientService.Create(li));
+            return Ok(await _patientService.Create(entity));
         }
 
-        [HttpPatch("Patients({key:guid})")]
-        [HttpPatch("Patients/{key:guid}")]
+        [HttpPatch("Patients({key})")]
+        [HttpPatch("Patients/{key}")]
         public async Task<IActionResult> Patch([FromODataUri] Guid key, [FromBody] Delta<PatientUpdateDto> entity)
         {
             return Ok(await _patientService.Update(key, entity));
@@ -77,9 +74,8 @@ namespace Patients.Api.Controllers
         ///  Delete client from the database.
         ///  </summary>
         /// <param name="key"></param>
-        ///  <response code="500">Internal server error</response>
-        [HttpDelete("Patients({key:guid})")]
-        [HttpDelete("Patients/{key:guid}")]
+        [HttpDelete("Patients({key})")]
+        [HttpDelete("Patients/{key}")]
         public async Task<IActionResult> Delete([FromODataUri] Guid key)
         {
             return Ok(await _patientService.Delete(key));
@@ -93,32 +89,32 @@ namespace Patients.Api.Controllers
 
         
         [EnableQuery]
-        [HttpGet("Patients({patientId:guid})/Adresses({id:guid})")]
+        [HttpGet("Patients({patientId})/Adresses({id})")]
         public async Task<IActionResult> GetAdresse(Guid patientId, Guid id)
         {
             return Ok(await _adresseService.GetAdresse(patientId,id));
         }
 
         [EnableQuery]
-        [HttpGet("Patients({patientId:guid})/Adresses")]
+        [HttpGet("Patients({patientId})/Adresses")]
         public async Task<IActionResult> GetAdresse(Guid patientId)
         {
             return Ok(await _adresseService.GetRelative(patientId));
         }
 
-        [HttpPost("Patients({patientId:guid})/Adresses")]
+        [HttpPost("Patients({patientId})/Adresses")]
         public async Task<IActionResult> CreateAdresse([FromODataUri] Guid patientId, [FromBody] AdresseCreateDto entity)
         {
             return Ok(await _adresseService.Create(patientId, entity));
         }
         
-        [HttpPatch("Patients({patientId:guid})/Adresses({id:guid})")]
+        [HttpPatch("Patients({patientId})/Adresses({id})")]
         public async Task<IActionResult> PatchAdresse([FromODataUri] Guid patientId, [FromODataUri] Guid id, [FromBody] Delta<AdresseDto> entity)
         {
             return Ok(await _adresseService.Update(patientId, id, entity));
         }
         
-        [HttpDelete("Patients({patientId:guid})/Adresses({id:guid})")]
+        [HttpDelete("Patients({patientId})/Adresses({id})")]
         public async Task<IActionResult> DeleteAdresse([FromODataUri] Guid patientId, [FromODataUri] Guid id)
         {
             return Ok(await _adresseService.Delete(patientId, id));
@@ -131,32 +127,32 @@ namespace Patients.Api.Controllers
 
 
         [EnableQuery]
-        [HttpGet("Patients({patientId:guid})/Contact({id:guid})")]
+        [HttpGet("Patients({patientId})/Contact({id})")]
         public async Task<IActionResult> GetContact(Guid patientId, Guid id)
         {
             return Ok(await _contactService.GetContact(patientId, id));
         }
 
         [EnableQuery]
-        [HttpGet("Patients({patientId:guid})/Contact")]
+        [HttpGet("Patients({patientId})/Contact")]
         public async Task<IActionResult> GetContact(Guid patientId)
         {
             return Ok(await _contactService.GetRelative(patientId));
         }
 
-        [HttpPost("Patients({patientId:guid})/Contact")]
+        [HttpPost("Patients({patientId})/Contact")]
         public async Task<IActionResult> CreateContact([FromODataUri] Guid patientId, [FromBody] ContactCreateDto entity)
         {
             return Ok(await _contactService.Create(patientId, entity));
         }
 
-        [HttpPatch("Patients({patientId:guid})/Contact({id:guid})")]
+        [HttpPatch("Patients({patientId})/Contact({id})")]
         public async Task<IActionResult> PatchContact([FromODataUri] Guid patientId, [FromODataUri] Guid id, [FromBody] Delta<ContactDto> entity)
         {
             return Ok(await _contactService.Update(patientId, id, entity));
         }
 
-        [HttpDelete("Patients({patientId:guid})/Contact({id:guid})")]
+        [HttpDelete("Patients({patientId})/Contact({id})")]
         public async Task<IActionResult> DeleteContact([FromODataUri] Guid patientId, [FromODataUri] Guid id)
         {
             return Ok(await _contactService.Delete(patientId, id));
@@ -169,32 +165,32 @@ namespace Patients.Api.Controllers
 
 
         [EnableQuery]
-        [HttpGet("Patients({patientId:guid})/MedicalInfo({id:guid})")]
+        [HttpGet("Patients({patientId})/MedicalInfo({id})")]
         public async Task<IActionResult> GetMedical(Guid patientId, Guid id)
         {
             return Ok(await _medicalInfoService.GetMedicalInfo(patientId, id));
         }
 
         [EnableQuery]
-        [HttpGet("Patients({patientId:guid})/MedicalInfo")]
+        [HttpGet("Patients({patientId})/MedicalInfo")]
         public async Task<IActionResult> GetMedical(Guid patientId)
         {
             return Ok(await _medicalInfoService.GetRelative(patientId));
         }
 
-        [HttpPost("Patients({patientId:guid})/MedicalInfo")]
+        [HttpPost("Patients({patientId})/MedicalInfo")]
         public async Task<IActionResult> CreateMedical([FromODataUri] Guid patientId, [FromBody] MedicalInfoCreateDto entity)
         {
             return Ok(await _medicalInfoService.Create(patientId, entity));
         }
 
-        [HttpPatch("Patients({patientId:guid})/MedicalInfo({id:guid})")]
+        [HttpPatch("Patients({patientId})/MedicalInfo({id})")]
         public async Task<IActionResult> PatchMedical([FromODataUri] Guid patientId, [FromODataUri] Guid id, [FromBody] Delta<MedicalInfoDto> entity)
         {
             return Ok(await _medicalInfoService.Update(patientId, id, entity));
         }
 
-        [HttpDelete("Patients({patientId:guid})/MedicalInfo({id:guid})")]
+        [HttpDelete("Patients({patientId})/MedicalInfo({id})")]
         public async Task<IActionResult> DeleteMedical([FromODataUri] Guid patientId, [FromODataUri] Guid id)
         {
             return Ok(await _medicalInfoService.Delete(patientId, id));

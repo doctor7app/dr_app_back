@@ -1,6 +1,6 @@
 ﻿using Common.Services.Interfaces;
 using Microsoft.AspNetCore.OData.Deltas;
-using Patients.Dtos.Classes.MedicalInfo;
+using Patients.Dtos.MedicalInfo;
 
 namespace Patients.Services.Interfaces;
 

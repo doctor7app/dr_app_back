@@ -1,13 +1,15 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using AutoMapper;
 using Common.Enums;
-using Patients.Dtos.Interfaces;
+using Common.Interfaces;
 
-namespace Patients.Dtos.Classes.Patient;
+namespace Patients.Dtos.Patient;
 
-public class PatientCreateDto : IMapFrom<Domain.Models.Patient>
+public class PatientUpdateDto : IMapFrom<Domain.Models.Patient>
 {
-    [MaxLength(80,ErrorMessage = "SocialNumber must not exceed 80 characters")]
+    [Key]
+    [Required]
+    public Guid Id { get; set; }
     public string SocialNumber { get; set; }
     [Required]
     public string FirstName { get; set; }
@@ -24,7 +26,8 @@ public class PatientCreateDto : IMapFrom<Domain.Models.Patient>
 
     public void Mapping(Profile profile)
     {
-        profile.CreateMap<PatientCreateDto, Domain.Models.Patient>()
+        profile.CreateMap<PatientUpdateDto, Domain.Models.Patient>()
+            .ForMember(dest => dest.PatientId, opt => opt.MapFrom(src => src.Id))
             .ForMember(dest => dest.SocialSecurityNumber, opt => opt.MapFrom(src => src.SocialNumber))
             .ForMember(dest => dest.FirstName, opt => opt.MapFrom(src => src.FirstName))
             .ForMember(dest => dest.LastName, opt => opt.MapFrom(src => src.LastName))

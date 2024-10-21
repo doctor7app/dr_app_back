@@ -1,9 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using AutoMapper;
 using Common.Enums;
-using Patients.Dtos.Interfaces;
+using Common.Interfaces;
 
-namespace Patients.Dtos.Classes.Adresse;
+namespace Patients.Dtos.Adresse;
 
 public class AdresseCreateDto : IMapFrom<Domain.Models.Adresse>
 {
@@ -19,14 +19,14 @@ public class AdresseCreateDto : IMapFrom<Domain.Models.Adresse>
     public string Street { get; set; }
     public string AdditionalInformation { get; set; }
     public AdresseType Type { get; set; }
-    
+
     [Required(ErrorMessage = "Patient Id is required to create the adresse")]
     public Guid IdPatient { get; set; }
-    
+
     public void Mapping(Profile profile)
     {
-        profile.CreateMap<AdresseCreateDto,Domain.Models.Adresse >()
-            
+        profile.CreateMap<AdresseCreateDto, Domain.Models.Adresse>()
+
             .ForMember(dest => dest.Country, opt => opt.MapFrom(src => src.Country))
             .ForMember(dest => dest.Provence, opt => opt.MapFrom(src => src.Provence))
             .ForMember(dest => dest.City, opt => opt.MapFrom(src => src.City))

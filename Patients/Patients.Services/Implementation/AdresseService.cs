@@ -3,7 +3,7 @@ using Common.Services.Implementation;
 using Common.Services.Interfaces;
 using Microsoft.AspNetCore.OData.Deltas;
 using Patients.Domain.Models;
-using Patients.Dtos.Classes.Adresse;
+using Patients.Dtos.Adresse;
 using Patients.Services.Interfaces;
 
 namespace Patients.Services.Implementation;

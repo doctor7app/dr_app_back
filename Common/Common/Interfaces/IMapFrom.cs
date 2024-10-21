@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 
-namespace Patients.Dtos.Interfaces;
+namespace Common.Interfaces;
 
 /// <summary>
 /// Used to configure multiple mapping to many classes.

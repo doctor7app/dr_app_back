@@ -1,11 +1,11 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using AutoMapper;
 using Common.Enums;
-using Patients.Dtos.Interfaces;
+using Common.Interfaces;
 
-namespace Patients.Dtos.Classes.Adresse;
+namespace Patients.Dtos.Adresse;
 
-public class AdresseDto :IMapFrom<Domain.Models.Adresse>
+public class AdresseDto : IMapFrom<Domain.Models.Adresse>
 {
     [Key]
     public Guid Id { get; set; }
@@ -16,7 +16,7 @@ public class AdresseDto :IMapFrom<Domain.Models.Adresse>
     public string Street { get; set; }
     public string AdditionalInformation { get; set; }
     public AdresseType Type { get; set; }
-    
+
     public void Mapping(Profile profile)
     {
         profile.CreateMap<Domain.Models.Adresse, AdresseDto>()

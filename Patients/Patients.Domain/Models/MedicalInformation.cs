@@ -1,9 +1,8 @@
-﻿using Common.Classes;
-using Common.Enums;
+﻿using Common.Enums;
 
 namespace Patients.Domain.Models;
 
-public class MedicalInformation : AuditableEntity
+public class MedicalInformation
 {
     public Guid MedicalInformationId { get; set; }
     public MedicalInformationType Type { get; set; }

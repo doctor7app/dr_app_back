@@ -1,5 +1,5 @@
 ﻿using Common.Services.Interfaces;
-using Patients.Dtos.Classes.Patient;
+using Patients.Dtos.Patient;
 
 namespace Patients.Services.Interfaces;
 

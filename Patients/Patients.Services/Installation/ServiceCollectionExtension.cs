@@ -1,11 +1,6 @@
 ﻿using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Patients.Dtos.Classes.Patient;
-using Patients.Dtos.Installation;
-using Patients.Services.Implementation;
-using Patients.Services.Interfaces;
-using AutoMapper.Internal;
 using Common.Extension;
 
 namespace Patients.Services.Installation

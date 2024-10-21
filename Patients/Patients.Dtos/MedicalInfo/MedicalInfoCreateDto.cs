@@ -1,10 +1,10 @@
 ﻿using AutoMapper;
 using Common.Enums;
 using Patients.Domain.Models;
-using Patients.Dtos.Interfaces;
 using System.ComponentModel.DataAnnotations;
+using Common.Interfaces;
 
-namespace Patients.Dtos.Classes.MedicalInfo;
+namespace Patients.Dtos.MedicalInfo;
 
 public class MedicalInfoCreateDto : IMapFrom<MedicalInformation>
 {

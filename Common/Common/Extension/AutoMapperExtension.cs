@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
 
-namespace Patients.Dtos.Installation;
+namespace Common.Extension;
 
 public static class AutoMapperExtension
 {

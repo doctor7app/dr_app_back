@@ -12,10 +12,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Installation\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\Patients.Domain\Patients.Domain.csproj" />
   </ItemGroup>
 
