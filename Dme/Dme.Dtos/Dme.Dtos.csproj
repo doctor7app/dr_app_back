@@ -7,7 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Patients.Domain\Patients.Domain.csproj" />
+    <Folder Include="Dmes\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Common\Common\Common.csproj" />
+    <ProjectReference Include="..\Dme.Domain\Dme.Domain.csproj" />
   </ItemGroup>
 
 </Project>

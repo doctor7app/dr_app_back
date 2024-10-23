@@ -24,8 +24,8 @@
 	  <ProjectReference Include="..\Dme.Domain\Dme.Domain.csproj" />
 	</ItemGroup>
 
-	<ItemGroup>
+	<!--<ItemGroup>
 	  <Folder Include="Persistence\" />
-	</ItemGroup>
+	</ItemGroup>-->
 
 </Project>
