@@ -83,8 +83,7 @@ namespace Patients.Api.Controllers
 
         #endregion
 
-
-
+        
         #region Adresses
 
         

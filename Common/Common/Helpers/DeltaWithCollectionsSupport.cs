@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.OData.Deltas;
 using Newtonsoft.Json.Linq;
 
-namespace Patients.Api.Helpers
+namespace Common.Helpers
 {
     /// <summary>
     /// This class is used to be able to update collection of navigation properties.

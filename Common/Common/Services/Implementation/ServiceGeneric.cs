@@ -40,8 +40,8 @@ namespace Common.Services.Implementation
         {
             var model = _mapper.Map<TEntity>(entity);
             await _work.AddAsync(model);
-            await _work.Complete();
-            return true;
+            return await _work.Complete();
+            
         }
 
         public async Task<object> Update(Guid key, Delta<TEntityUpdate> entity)
@@ -58,8 +58,7 @@ namespace Common.Services.Implementation
             var entityDto = _mapper.Map<TEntityUpdate>(entityToUpdate);
             entity.Patch(entityDto);
             _mapper.Map(entityDto, entityToUpdate);
-            await _work.Complete();
-            return true;
+            return await _work.Complete();
         }
 
         public async Task<object> Delete(Guid id)
@@ -74,8 +73,7 @@ namespace Common.Services.Implementation
                 throw new Exception("Entité avec l'ID {id} n'existe pas dans la base de donneés!");
             }
             _work.Remove(entity);
-            await _work.Complete();
-            return true;
+            return await _work.Complete();
         }
     }
 }

@@ -22,16 +22,12 @@ public class ConsultationsUpdateDto : IMapFrom<Domain.Models.Consultations>
     public DateTime? NextConsultationDate { get; set; }
     public ConsultationType Type { get; set; }
     public ConsultationState State { get; set; }
-
-    [Required(ErrorMessage = "Dme is required")]
-    public Guid IdDme { get; set; }
     
 
     public void Mapping(Profile profile)
     {
         profile.CreateMap < ConsultationsUpdateDto,Domain.Models.Consultations>()
             .ForMember(dest => dest.ConsultationId, opt => opt.MapFrom(src => src.Id))
-            .ForMember(dest => dest.FkIdDme, opt => opt.MapFrom(src => src.IdDme))
             .ForMember(dest => dest.ReasonOfVisit, opt => opt.MapFrom(src => src.ReasonOfVisit))
             .ForMember(dest => dest.Symptoms, opt => opt.MapFrom(src => src.Symptoms))
             .ForMember(dest => dest.Weight, opt => opt.MapFrom(src => src.Weight))

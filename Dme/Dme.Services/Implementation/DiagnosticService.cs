@@ -10,56 +10,60 @@ namespace Dme.Services.Implementation;
 
 public class DiagnosticService : IDiagnosticService
 {
-    private readonly IRepository<Diagnostics> _repository;
+    public IRepository<Consultations> _consultationRepository { get; }
+    private readonly IRepository<Diagnostics> _repositoryDiagnostic;
     private readonly IMapper _mapper;
 
-    public DiagnosticService(IRepository<Diagnostics> repository,IMapper mapper)
+    public DiagnosticService(IRepository<Diagnostics> repositoryDiagnostic,IRepository<Consultations> consultationRepository,IMapper mapper)
     {
-        _repository = repository;
+        _consultationRepository = consultationRepository;
+        _repositoryDiagnostic = repositoryDiagnostic;
         _mapper = mapper;
     }
-    public async Task<object> Get(Guid id,Guid idConsultation)
+    public async Task<object> GetDiagnosticForConsultation(Guid idConsultation, Guid idDiagnostic)
     {
-        if (id.IsNullOrEmpty() || idConsultation.IsNullOrEmpty())
+        if (idConsultation.IsNullOrEmpty() || idDiagnostic.IsNullOrEmpty())
         {
             throw new Exception("L'id ne peut pas être un Guid Vide");
         }
-
-        var obj = await _repository.GetAsync(x => x.DiagnosticId == id && x.FkIdConsultation == idConsultation  );
+        var obj = await _repositoryDiagnostic.GetAsync(x => x.DiagnosticId == idDiagnostic && x.FkIdConsultation == idConsultation  );
         return _mapper.Map<DiagnosticsReadDto>(obj);
     }
 
-    public async Task<IEnumerable<DiagnosticsReadDto>> Get(Guid idConsultation)
+    public async Task<IEnumerable<DiagnosticsReadDto>> GetAllDiagnosticForConsultation(Guid idConsultation)
     {
         if (idConsultation.IsNullOrEmpty())
         {
             throw new Exception("L'id ne peut pas être un Guid Vide");
         }
-
-        var obj = await _repository.GetListAsync(a => a.FkIdConsultation == idConsultation);
+        var obj = await _repositoryDiagnostic.GetListAsync(a => a.FkIdConsultation == idConsultation);
         return _mapper.Map<IEnumerable<DiagnosticsReadDto>>(obj);
     }
 
-    public async Task<object> Create(DiagnosticsCreateDto entity)
+    public async Task<object> CreateDiagnosticForConsultation(Guid idConsultation, DiagnosticsCreateDto entity)
     {
-        if (entity == null || entity.ConsultationId.IsNullOrEmpty())
+        if (entity == null || idConsultation.IsNullOrEmpty())
         {
             throw new Exception("L'id ne peut pas être un Guid Vide");
         }
-        var itemToCreate = _mapper.Map<Diagnostics>(entity);
-
-        await _repository.AddAsync(itemToCreate);
-        await _repository.Complete();
-        return true;
-    }
-
-    public async Task<object> Update(Guid key, Delta<DiagnosticsUpdateDto> entity)
-    {
-        if (key.IsNullOrEmpty() || entity == null)
+        var tmpConsultation = await _consultationRepository.GetAsync(a => a.ConsultationId == idConsultation);
+        if (tmpConsultation == null)
         {
             throw new Exception("Merci de vérifier les données saisie !");
         }
-        var entityToUpdate = await _repository.GetAsync(x => x.DiagnosticId == key);
+        var itemToCreate = _mapper.Map<Diagnostics>(entity);
+        itemToCreate.FkIdConsultation = idConsultation;
+        await _repositoryDiagnostic.AddAsync(itemToCreate);
+        return await _repositoryDiagnostic.Complete();
+    }
+
+    public async Task<object> UpdateDiagnosticForConsultation(Guid idConsultation, Guid idDiagnostic, Delta<DiagnosticsUpdateDto> entity)
+    {
+        if (idConsultation.IsNullOrEmpty() || idConsultation.IsNullOrEmpty() || entity == null)
+        {
+            throw new Exception("Merci de vérifier les données saisie !");
+        }
+        var entityToUpdate = await _repositoryDiagnostic.GetAsync(x => x.DiagnosticId == idDiagnostic && x.FkIdConsultation == idConsultation);
         if (entityToUpdate == null)
         {
             throw new Exception($"Impossible de trouver l'entité à mettre à jour!");
@@ -67,22 +71,21 @@ public class DiagnosticService : IDiagnosticService
         var entityDto = _mapper.Map<DiagnosticsUpdateDto>(entityToUpdate);
         entity.Patch(entityDto);
         _mapper.Map(entityDto, entityToUpdate);
-        return await _repository.Complete();
+        return await _repositoryDiagnostic.Complete();
     }
 
-    public async Task<object> Delete(Guid id)
+    public async Task<object> DeleteDiagnosticForConsultation(Guid idConsultation, Guid idDiagnostic)
     {
-        if (id.IsNullOrEmpty())
+        if (idConsultation.IsNullOrEmpty() || idDiagnostic.IsNullOrEmpty())
         {
             throw new Exception("Merci de vérifier les données saisie !");
         }
-
-        var entity = await _repository.GetAsync(x => x.DiagnosticId == id);
+        var entity = await _repositoryDiagnostic.GetAsync(x => x.DiagnosticId == idDiagnostic || x.FkIdConsultation == idConsultation);
         if (entity == null)
         {
             throw new Exception($"Impossible de trouver l'entité à mettre à jour!");
         }
-        _repository.Remove(entity);
-        return await _repository.Complete();
+        _repositoryDiagnostic.Remove(entity);
+        return await _repositoryDiagnostic.Complete();
     }
 }

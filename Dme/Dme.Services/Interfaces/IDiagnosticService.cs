@@ -5,9 +5,43 @@ namespace Dme.Services.Interfaces;
 
 public interface IDiagnosticService
 {
-    Task<object> Get(Guid id, Guid idConsultation);
-    Task<IEnumerable<DiagnosticsReadDto>> Get(Guid idConsultation);
-    Task<object> Create(DiagnosticsCreateDto entity);
-    Task<object> Update(Guid key, Delta<DiagnosticsUpdateDto> entity);
-    Task<object> Delete(Guid id);
+    /// <summary>
+    /// Get Diagnostic for a specific consultation
+    /// </summary>
+    /// <param name="idDiagnostic"></param>
+    /// <param name="idConsultation"></param>
+    /// <returns></returns>
+    Task<object> GetDiagnosticForConsultation(Guid idConsultation, Guid idDiagnostic);
+
+    /// <summary>
+    /// Get All Diagnostic for a consultation
+    /// </summary>
+    /// <param name="idConsultation"></param>
+    /// <returns></returns>
+    Task<IEnumerable<DiagnosticsReadDto>> GetAllDiagnosticForConsultation(Guid idConsultation);
+
+    /// <summary>
+    /// Create a Diagnostic for a specific Consultation
+    /// </summary>
+    /// <param name="idConsultation"></param>
+    /// <param name="entity"></param>
+    /// <returns></returns>
+    Task<object> CreateDiagnosticForConsultation(Guid idConsultation,DiagnosticsCreateDto entity);
+
+    /// <summary>
+    /// Update a specific Diagnostic for a specific consultation
+    /// </summary>
+    /// <param name="idDiagnostic"></param>
+    /// <param name="entity"></param>
+    /// <param name="idConsultation"></param>
+    /// <returns></returns>
+    Task<object> UpdateDiagnosticForConsultation(Guid idConsultation, Guid idDiagnostic, Delta<DiagnosticsUpdateDto> entity);
+
+    /// <summary>
+    /// Delete a specific diagnostic for a specific consultation
+    /// </summary>
+    /// <param name="idConsultation"></param>
+    /// <param name="idDiagnostic"></param>
+    /// <returns></returns>
+    Task<object> DeleteDiagnosticForConsultation(Guid idConsultation, Guid idDiagnostic);
 }

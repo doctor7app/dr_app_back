@@ -14,7 +14,9 @@ public class DmeReadDto :IMapFrom<Domain.Models.Dme>
     public string AdditionalInformations { get; set; }
 
     public string PatientName { get; set; }
+    //Must be unique in the application, one patient can have one dme only.
     public Guid PatientId { get; set; }
+    //Can be removed.
     public string DoctorName { get; set; }
     public Guid DoctorId { get; set; }
 

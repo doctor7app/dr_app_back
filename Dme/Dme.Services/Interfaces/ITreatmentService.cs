@@ -5,9 +5,43 @@ namespace Dme.Services.Interfaces;
 
 public interface ITreatmentService
 {
-    Task<object> Get(Guid id, Guid idConsultation);
-    Task<IEnumerable<TreatmentsReadDto>> Get(Guid idConsultation);
-    Task<object> Create(TreatmentsCreateDto entity);
-    Task<object> Update(Guid key, Delta<TreatmentsUpdateDto> entity);
-    Task<object> Delete(Guid id);
+    /// <summary>
+    /// Get Treatment for a specific consultation
+    /// </summary>
+    /// <param name="idTreatment"></param>
+    /// <param name="idConsultation"></param>
+    /// <returns></returns>
+    Task<object> GetTreatmentForConsultationById(Guid idConsultation,Guid idTreatment);
+
+    /// <summary>
+    /// Get All Treatment For a specific Consultation
+    /// </summary>
+    /// <param name="idConsultation"></param>
+    /// <returns></returns>
+    Task<IEnumerable<TreatmentsReadDto>> GetAllTreatmentForConsultationById(Guid idConsultation);
+
+    /// <summary>
+    /// Create a treatment for a specific Consultation
+    /// </summary>
+    /// <param name="idConsultation"></param>
+    /// <param name="entity"></param>
+    /// <returns></returns>
+    Task<object> CreateTreatmentForConsultation(Guid idConsultation,TreatmentsCreateDto entity);
+
+    /// <summary>
+    /// Update a treatment for a specific consultation
+    /// </summary>
+    /// <param name="idTreatment"></param>
+    /// <param name="entity"></param>
+    /// <param name="idConsultation"></param>
+    /// <returns></returns>
+    Task<object> UpdateTreatmentForConsultation(Guid idConsultation,Guid idTreatment, Delta<TreatmentsUpdateDto> entity);
+
+    /// <summary>
+    /// Delete a treatment related to a specific consultation
+    /// </summary>
+    /// <param name="idConsultation"></param>
+    /// <param name="idTreatment"></param>
+    /// <returns></returns>
+    Task<object> DeleteTreatmentForConsultation(Guid idConsultation, Guid idTreatment);
 }

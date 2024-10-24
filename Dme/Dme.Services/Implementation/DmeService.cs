@@ -19,25 +19,20 @@ public class DmeService : IDmeService
         _mapper = mapper;
     }
 
-    public async Task<object> Get(Guid id,Guid doctorId)
+    public async Task<object> Get(Guid id)
     {
-        if (id.IsNullOrEmpty() || doctorId.IsNullOrEmpty())
+        if (id.IsNullOrEmpty())
         {
             throw new Exception("L'id ne peut pas être un Guid Vide");
         }
 
-        var obj = await _repository.GetAsync(x => x.DmeId == id && x.FkIdDoctor == doctorId,includes:z=>z.Include(a => a.Consultations));
+        var obj = await _repository.GetAsync(x => x.DmeId == id,includes:z=>z.Include(a => a.Consultations));
         return _mapper.Map<DmeReadDto>(obj);
     }
 
-    public async Task<IEnumerable<DmeReadDto>> Get(Guid doctorId)
+    public async Task<IEnumerable<DmeReadDto>> Get()
     {
-        if (doctorId.IsNullOrEmpty())
-        {
-            throw new Exception("L'id ne peut pas être un Guid Vide");
-        }
-
-        var items = await _repository.GetListAsync(x => x.FkIdDoctor == doctorId, includes: z => z.Include(a => a.Consultations));
+        var items = await _repository.GetListAsync(includes: z => z.Include(a => a.Consultations));
         return _mapper.Map<IEnumerable<DmeReadDto>>(items);
     }
 
@@ -50,8 +45,7 @@ public class DmeService : IDmeService
         var itemToCreate = _mapper.Map<Domain.Models.Dme>(entity);
 
         await _repository.AddAsync(itemToCreate);
-        await _repository.Complete();
-        return true;
+        return await _repository.Complete();
     }
 
     public async Task<object> Update(Guid idDme, Delta<DmeUpdateDto> entity)
