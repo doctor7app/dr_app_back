@@ -1,32 +1,65 @@
 services:
+
+  seq:
+    image: datalust/seq:latest
+    container_name: seq
+    environment:
+      - ACCEPT_EULA=Y
+    ports:
+      - 5301:5341
+      - 5302:80
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "5303:9090"
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "5304:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning
+    depends_on:
+      - prometheus 
+
   postgres:
     image: postgres
     environment:
       - POSTGRES_PASSWORD=postgrespw
     ports:
-      - 5222:5432
-#    volumes:
-#      - E:/DockerVolume/postgresql:/var/lib/postgresql/data
-#  rabbitmq:
-#    image: rabbitmq:3-management-alpine
-#    container_name: rabbitmq
-#    ports:
-#      - "5672:5672"
-#      - "15672:15672"
+      - 5201:5432
+    volumes:
+      - ./.containers/postgres:/var/lib/postgresql/data
+
   docmanagement-svc:
-    image: doctorapp/docmanagement-svc:latest
-    build: 
+    image: ${DOCKER_REGISTRY-}docmanagement-svc
+    build:
       context: .
       dockerfile: DocumentManagement/Dockerfile
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=http://+:5111
+      - ASPNETCORE_HTTP_PORTS=8080;9090
+      - SeqLogging__URL=http://seq:5341
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://seq:5341/ingest/otlp/v1/traces
+      - OTEL_EXPORTER_OTLP_PROTOCOL=http/protobuf
       - ConnectionStrings__DefaultConnection=Server=postgres;User Id=postgres;Password=postgrespw;Database=docmanagement
       - StorageSettings__BasePath=/DocumentStorage
     ports:
-      - 5333:5111
+      - 5101:8080
+      - 5901:9090
+    volumes:
+      - ./.containers/docmanagement-svc/DocumentStorage:/DocumentStorage
     depends_on:
       - postgres
-#      - rabbitmq
-    volumes:
-      - E:/DockerVolume/DocumentStorage:/DocumentStorage
+      - seq
+      - prometheus 
