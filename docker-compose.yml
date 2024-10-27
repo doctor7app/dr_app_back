@@ -30,7 +30,7 @@ services:
     volumes:
       - ./grafana/provisioning:/etc/grafana/provisioning
     depends_on:
-      - prometheus 
+      - prometheus
 
   postgres:
     image: postgres
@@ -40,6 +40,18 @@ services:
       - 5201:5432
     volumes:
       - ./.containers/postgres:/var/lib/postgresql/data
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5202:5672"  # RabbitMQ message broker
+      - "5203:15672" # Management UI
+    environment:
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_PASS: admin
+    volumes:
+      - ./.containers/rabbitmq:/var/lib/rabbitmq 
 
   docmanagement-svc:
     image: ${DOCKER_REGISTRY-}docmanagement-svc
