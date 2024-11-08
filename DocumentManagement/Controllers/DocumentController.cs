@@ -1,5 +1,8 @@
-﻿using DocumentManagement.Core.Interfaces.Services;
+﻿using CSharpFunctionalExtensions;
+using DocumentManagement.Core.Interfaces.Services;
+using DocumentManagement.Core.Models;
 using Microsoft.AspNetCore.Mvc;
+using System.Net;
 
 namespace DocumentManagement.Controllers;
 
@@ -20,8 +23,12 @@ public class DocumentController(IDocumentService documentService, ILogger<Docume
         logger.LogInformation("Uploading document: {FileName} with encryption: {Encrypt}", file.FileName, encrypt);
 
         var result = await documentService.UploadDocumentAsync(file, encrypt, author, service, tags, description);
+        if (result.IsFailure)
+        {
+            return StatusCode(500, result.Error);
+        }
         logger.LogInformation("Document uploaded successfully: {FileName}", file.FileName);
-        return Ok(result);
+        return Ok(result.Value);
     }
 
     [HttpPost("copy")]
@@ -36,14 +43,22 @@ public class DocumentController(IDocumentService documentService, ILogger<Docume
         logger.LogInformation("Copying document: {id}", id);
 
         var result = await documentService.CopyDocumentAsync(id, author, service, tags, description);
+        if (result.IsFailure)
+        {
+            return StatusCode(404, result.Error);
+        }
         logger.LogInformation("Document copied successfully: {id}", id);
-        return Ok(result);
+        return Ok(result.Value);
     }
 
     [HttpPut("{id}/tags")]
     public async Task<IActionResult> UpdateDocumentTags(Guid id, [FromBody] List<string> tagNames)
     {
-        await documentService.UpdateDocumentTagsAsync(id, tagNames);
+        var result = await documentService.UpdateDocumentTagsAsync(id, tagNames);
+        if (result.IsFailure)
+        {
+            return BadRequest(result.Error);
+        }
         return Ok("Document tags updated successfully.");
     }
 
@@ -51,7 +66,12 @@ public class DocumentController(IDocumentService documentService, ILogger<Docume
     public async Task<IActionResult> DownloadDocument(Guid id)
     {
         logger.LogInformation("Downloading document with ID: {DocumentId}", id);
-        var (fileName, contentType, fileStream, _) = await documentService.GetDocumentAsync(id);
+        var result = await documentService.GetDocumentAsync(id);
+        if (result.IsFailure)
+        {
+            return BadRequest(result.Error);
+        }
+        var (fileName, contentType, fileStream, _) = result.Value;
         logger.LogInformation("Document downloaded successfully: {DocumentId}", id);
 
         // Return the document with metadata
@@ -61,8 +81,12 @@ public class DocumentController(IDocumentService documentService, ILogger<Docume
     [HttpGet("GetDocumentsByServicesAsZip")]
     public async Task<IActionResult> GetDocumentsByServicesAsZip([FromQuery] List<string> services)
     {
-        var (zipStream, fileName) = await documentService.GetDocumentsByServicesAsZipAsync(services);
-
+        var result = await documentService.GetDocumentsByServicesAsZipAsync(services);
+        if (result.IsFailure)
+        {
+            return BadRequest(result.Error);
+        }
+        var (zipStream, fileName) = result.Value;
         if (zipStream == null)
         {
             logger.LogInformation("No documents found for the given services: {names}", services.Aggregate((a, b) => a + ", " + b));
@@ -76,7 +100,12 @@ public class DocumentController(IDocumentService documentService, ILogger<Docume
     [HttpGet("GetDocumentsByTagsAsZip")]
     public async Task<IActionResult> GetDocumentsByTagsAsZip([FromQuery] List<string> tags)
     {
-        var (zipStream, fileName) = await documentService.GetDocumentsByTagsAsZipAsync(tags);
+        var result = await documentService.GetDocumentsByTagsAsZipAsync(tags);
+        if (result.IsFailure)
+        {
+            return BadRequest(result.Error);
+        }
+        var (zipStream, fileName) = result.Value;
 
         if (zipStream == null)
         {
@@ -91,7 +120,12 @@ public class DocumentController(IDocumentService documentService, ILogger<Docume
     [HttpGet("GetDocumentsByAuthorAsZip")]
     public async Task<IActionResult> GetDocumentsByAuthorAsZip([FromQuery] string author)
     {
-        var (zipStream, fileName) = await documentService.GetDocumentsByAuthorAsZipAsync(author);
+        var result = await documentService.GetDocumentsByAuthorAsZipAsync(author);
+        if (result.IsFailure)
+        {
+            return BadRequest(result.Error);
+        }
+        var (zipStream, fileName) = result.Value;
 
         if (zipStream == null)
         {
@@ -106,28 +140,44 @@ public class DocumentController(IDocumentService documentService, ILogger<Docume
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteDocument(Guid id)
     {
-        await documentService.DeleteDocumentAsync(id);
+        var result = await documentService.DeleteDocumentAsync(id);
+        if (result.IsFailure)
+        {
+            return BadRequest(result.Error);
+        }
         return Ok("Document deleted successfully.");
     }
 
     [HttpDelete("DeleteDocumentsByServices")]
     public async Task<IActionResult> DeleteDocumentsByServices([FromBody] List<string> services)
     {
-        await documentService.DeleteDocumentsByServicesAsync(services);
+        var result = await documentService.DeleteDocumentsByServicesAsync(services);
+        if (result.IsFailure)
+        {
+            return BadRequest(result.Error);
+        }
         return Ok("Documents deleted successfully.");
     }
 
     [HttpDelete("DeleteDocumentsByTags")]
     public async Task<IActionResult> DeleteDocumentsByTags([FromBody] List<string> tags)
     {
-        await documentService.DeleteDocumentsByTagsAsync(tags);
+        var result = await documentService.DeleteDocumentsByTagsAsync(tags);
+        if (result.IsFailure)
+        {
+            return BadRequest(result.Error);
+        }
         return Ok("Documents deleted successfully.");
     }
 
     [HttpDelete("DeleteDocumentsByAuthor")]
     public async Task<IActionResult> DeleteDocumentsByAuthor([FromBody] string author)
     {
-        await documentService.DeleteDocumentsByAuthorAsync(author);
+        var result = await documentService.DeleteDocumentsByAuthorAsync(author);
+        if (result.IsFailure)
+        {
+            return BadRequest(result.Error);
+        }
         return Ok("Documents deleted successfully.");
     }
 
