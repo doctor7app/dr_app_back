@@ -1,78 +1,128 @@
-﻿using DocumentManagement.Core.Interfaces.Services;
+﻿using CSharpFunctionalExtensions;
+using DocumentManagement.Core.Interfaces.Services;
+using Serilog.Context;
+using System;
+using System.IO;
 using System.Security.Cryptography;
 using System.Text;
 
 namespace DocumentManagement.Core.Services.Storage;
 
-public class LocalStorageService(IConfiguration configuration) : IStorageService
+public class LocalStorageService(IConfiguration configuration, ILogger<LocalStorageService> logger) : IStorageService
 {
     private readonly string _basePath = configuration["StorageSettings:BasePath"];
 
     private readonly string _key = "YourSecretEncryp--112233";
 
-    public async Task<string> SaveFileAsync(Stream fileStream, string fileName, bool encrypt)
+    public async Task<Result<string>> SaveFileAsync(Stream fileStream, string fileName, bool encrypt)
     {
-        // Generate the file path
-        string filePath = GenerateFilePath() + Path.GetExtension(fileName);
-
-        // Ensure that the directory structure exists
-        CreateDirectoryIfNotExists(filePath);
-
-        // Optionally encrypt the file
-        using (var file = new FileStream(filePath, FileMode.Create))
+        try
         {
-            if (encrypt)
+            // Generate the file path
+            string filePath = GenerateFilePath() + Path.GetExtension(fileName);
+
+            // Ensure that the directory structure exists
+            CreateDirectoryIfNotExists(filePath);
+
+            // Optionally encrypt the file
+            using (var file = new FileStream(filePath, FileMode.Create))
             {
-                using var cryptoStream = new CryptoStream(file, CreateEncryptor(), CryptoStreamMode.Write);
-                await fileStream.CopyToAsync(cryptoStream);
+                if (encrypt)
+                {
+                    using var cryptoStream = new CryptoStream(file, CreateEncryptor(), CryptoStreamMode.Write);
+                    await fileStream.CopyToAsync(cryptoStream);
+                }
+                else
+                {
+                    await fileStream.CopyToAsync(file);
+                }
             }
-            else
+
+            return Result.Success(filePath);
+        }
+        catch (Exception e)
+        {
+            using (LogContext.PushProperty("Error", e.StackTrace, true))
             {
-                await fileStream.CopyToAsync(file);
+                logger.LogError(e, "Exception occurred: {Message}", e.Message);
             }
+            return Result.Failure<string>("Error accured while Saving file");
+        }
+    }
+
+    public async Task<Result<string>> CopyFileAsync(string sourceFilePath, string fileName)
+    {
+        try
+        {
+            // Generate the file path
+            string destinationFilePath = GenerateFilePath() + Path.GetExtension(fileName);
+
+            // Ensure that the directory structure exists
+            CreateDirectoryIfNotExists(destinationFilePath);
+
+            using Stream source = new FileStream(sourceFilePath, FileMode.Open, FileAccess.Read, FileShare.Read);
+            using Stream destination = File.Create(destinationFilePath);
+            await source.CopyToAsync(destination);
+
+            return Result.Success(destinationFilePath);
+        }
+        catch (Exception e)
+        {
+            using (LogContext.PushProperty("Error", e.StackTrace, true))
+            {
+                logger.LogError(e, "Exception occurred: {Message}", e.Message);
+            }
+            return Result.Failure<string>("Error accured while Copying file");
         }
 
-        return filePath;
     }
 
-    public async Task<string> CopyFileAsync(string sourceFilePath, string fileName)
+    public async Task<Result<Stream>> GetFileAsync(string filePath, bool dycrypt)
     {
-        // Generate the file path
-        string destinationFilePath = GenerateFilePath() + Path.GetExtension(fileName);
-
-        // Ensure that the directory structure exists
-        CreateDirectoryIfNotExists(destinationFilePath);
-
-        using Stream source = new FileStream(sourceFilePath, FileMode.Open, FileAccess.Read, FileShare.Read);
-        using Stream destination = File.Create(destinationFilePath);
-        await source.CopyToAsync(destination);
-
-        return destinationFilePath;
-    }
-
-    public async Task<Stream> GetFileAsync(string filePath, bool dycrypt)
-    {
-        var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
-
-        Console.WriteLine(dycrypt);
-        if (dycrypt)
+        try
         {
-            var resultStream = new MemoryStream();
-            using (var cryptoStream = new CryptoStream(fileStream, CreateDecryptor(), CryptoStreamMode.Read))
-            {
-                await cryptoStream.CopyToAsync(resultStream);
-            }
-            resultStream.Position = 0;
-            return resultStream;
+            var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
 
+            Console.WriteLine(dycrypt);
+            if (dycrypt)
+            {
+                var resultStream = new MemoryStream();
+                using (var cryptoStream = new CryptoStream(fileStream, CreateDecryptor(), CryptoStreamMode.Read))
+                {
+                    await cryptoStream.CopyToAsync(resultStream);
+                }
+                resultStream.Position = 0;
+                return resultStream;
+
+            }
+            return Result.Success((Stream)fileStream);
         }
-        return fileStream;
+        catch (Exception e)
+        {
+            using (LogContext.PushProperty("Error", e.StackTrace, true))
+            {
+                logger.LogError(e, "Exception occurred: {Message}", e.Message);
+            }
+            return Result.Failure<Stream>("Error accured while Getting file");
+        }
     }
 
-    public Task DeleteFileAsync(string filePath)
+    public Result<bool> DeleteFileAsync(string filePath)
     {
-        File.Delete(filePath);
-        return Task.CompletedTask;
+        try
+        {
+            File.Delete(filePath);
+            return Result.Success(true);
+        }
+        catch (Exception e)
+        {
+            using (LogContext.PushProperty("Error", e.StackTrace, true))
+            {
+                logger.LogError(e, "Exception occurred: {Message}", e.Message);
+            }
+            return Result.Failure<bool>("Error accured while Deleting file");
+        }
+
     }
 
     private ICryptoTransform CreateEncryptor()

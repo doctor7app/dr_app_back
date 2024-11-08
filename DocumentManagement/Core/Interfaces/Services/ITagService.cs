@@ -1,9 +1,10 @@
-﻿using DocumentManagement.Core.Models;
+﻿using CSharpFunctionalExtensions;
+using DocumentManagement.Core.Models;
 
 namespace DocumentManagement.Core.Interfaces.Services;
 
 public interface ITagService
 {
-    Task<IEnumerable<Tag>> GetTagsByNamesAsync(IEnumerable<string> tagNames);
-    Task DeleteUnusedTagsAsync();
+    Task<Result<IEnumerable<Tag>>> GetTagsByNamesAsync(IEnumerable<string> tagNames);
+    Task<Result<bool>> DeleteUnusedTagsAsync();
 }

@@ -1,17 +1,45 @@
-﻿using DocumentManagement.Core.Interfaces.Data;
+﻿using CSharpFunctionalExtensions;
+using DocumentManagement.Core.Interfaces.Data;
 using DocumentManagement.Core.Interfaces.Services;
 using DocumentManagement.Core.Models;
+using Serilog.Context;
 
 namespace DocumentManagement.Core.Services;
 
-public class TagService(ITagRepository tagRepository) : ITagService
+public class TagService(ITagRepository tagRepository, ILogger<TagService> logger) : ITagService
 {
-    public async Task<IEnumerable<Tag>> GetTagsByNamesAsync(IEnumerable<string> tagNames)
+    public async Task<Result<IEnumerable<Tag>>> GetTagsByNamesAsync(IEnumerable<string> tagNames)
     {
-        return await tagRepository.GetTagsByNamesAsync(tagNames);
+        try
+        {
+            var tags = await tagRepository.GetTagsByNamesAsync(tagNames);
+            return Result.Success(tags);
+        }
+        catch (Exception e)
+        {
+            using (LogContext.PushProperty("Error", e.StackTrace, true))
+            {
+                logger.LogError(e, "Exception occurred: {Message}", e.Message);
+            }
+            return Result.Failure<IEnumerable<Tag>>("Error accured while getting tags");
+        }
+
     }
-    public async Task DeleteUnusedTagsAsync()
+    public async Task<Result<bool>> DeleteUnusedTagsAsync()
     {
-        await tagRepository.DeleteUnusedTagsAsync();
+        try
+        {
+            await tagRepository.DeleteUnusedTagsAsync();
+            return Result.Success(true);
+        }
+        catch (Exception e)
+        {
+            using (LogContext.PushProperty("Error", e.StackTrace, true))
+            {
+                logger.LogError(e, "Exception occurred: {Message}", e.Message);
+            }
+            return Result.Failure<bool>("Error accured while deleting unused tags");
+        }
+        
     }
 }
