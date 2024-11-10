@@ -1,6 +1,6 @@
 ﻿using Microsoft.OData.Edm;
 using Microsoft.OData.ModelBuilder;
-using Patients.Dtos.Patient;
+using Patients.Application.DTOs.Patient;
 
 namespace Patients.Api.Helpers
 {

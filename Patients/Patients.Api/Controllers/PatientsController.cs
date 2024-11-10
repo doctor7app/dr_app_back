@@ -3,12 +3,11 @@ using Microsoft.AspNetCore.OData.Deltas;
 using Microsoft.AspNetCore.OData.Formatter;
 using Microsoft.AspNetCore.OData.Query;
 using Microsoft.AspNetCore.OData.Routing.Controllers;
-using Patients.Dtos.Adresse;
-using Patients.Dtos.Contact;
-using Patients.Dtos.MedicalInfo;
-using Patients.Dtos.Patient;
-using Patients.Services.Interfaces;
-
+using Patients.Application.DTOs.Adresse;
+using Patients.Application.DTOs.Contact;
+using Patients.Application.DTOs.MedicalInfo;
+using Patients.Application.DTOs.Patient;
+using Patients.Application.Interfaces;
 namespace Patients.Api.Controllers
 {
     //[Route("api/[controller]")]

@@ -1,9 +1,9 @@
-using Dme.Services.Installation;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.OData;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System.Reflection;
+using Dme.Infrastructure.Installation;
 using Dmes.Api.Helpers;
 
 var builder = WebApplication.CreateBuilder(args);

@@ -1,5 +1,5 @@
-﻿using Dme.Dtos.Consultations;
-using Dme.Dtos.Dmes;
+﻿using Dme.Application.DTOs.Consultations;
+using Dme.Application.DTOs.Dmes;
 using Microsoft.OData.Edm;
 using Microsoft.OData.ModelBuilder;
 

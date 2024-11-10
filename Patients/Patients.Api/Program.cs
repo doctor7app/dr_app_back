@@ -1,7 +1,7 @@
 using System.Reflection;
 using Microsoft.AspNetCore.OData;
 using Patients.Api.Helpers;
-using Patients.Services.Installation;
+using Patients.Infrastructure.Installation;
 
 var builder = WebApplication.CreateBuilder(args);
 
