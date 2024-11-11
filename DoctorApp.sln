@@ -5,6 +5,13 @@ VisualStudioVersion = 17.10.35201.131
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DocumentManagement", "DocumentManagement\DocumentManagement.csproj", "{0BA6F647-9D35-4EED-9490-F9273A498FD5}"
 EndProject
+Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{0AAAFB02-20ED-4EB9-A49D-A44A5CD2D83A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{379BD20F-12ED-4494-8D94-E3B45D6A7C84}"
+	ProjectSection(SolutionItems) = preProject
+		prometheus.yml = prometheus.yml
+	EndProjectSection
+EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Dme.Domain", "Dme\Dme.Domain\Dme.Domain.csproj", "{29D777D5-1EDF-4406-870A-9BC074CF54E3}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Dme", "Dme", "{A654E085-4AA7-4F4B-849A-B271F0488E48}"
