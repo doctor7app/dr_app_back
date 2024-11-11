@@ -1,9 +1,20 @@
 using System.Reflection;
 using Microsoft.AspNetCore.OData;
+using Patients.Api.Extensions;
+using Patients.Api.Handler;
 using Patients.Api.Helpers;
+using Patients.Api.Middleware;
 using Patients.Infrastructure.Installation;
+using Prometheus;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
+
+Log.Logger = new LoggerConfiguration()
+    .ConfigureSerilog(builder.Configuration["Tracing:Application"], builder.Configuration["Tracing:SeqLoggingURL"])
+    .CreateLogger();
+
+builder.Host.UseSerilog();
 
 // Add services to the container.
 
@@ -23,7 +34,18 @@ builder.Services.AddControllers().AddNewtonsoftJson().AddOData(opt =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+builder.Services.AddProblemDetails();
+
+builder.Services.UseHttpClientMetrics();
+
+builder.Services.AddOpenTelemetry(builder.Configuration["Tracing:Application"]);
+
 var app = builder.Build();
+
+// Enable Prometheus metrics
+app.UseMetricServer();  // Exposes metrics at `/metrics`
+app.UseHttpMetrics();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -43,5 +65,13 @@ app.UseHttpsRedirection();
 app.UseRouting();
 
 app.MapControllers();
+
+app.UseMiddleware<RequestContextLoggingMiddleware>();
+app.UseMiddleware<RequestLoggingMiddleware>();
+app.UseSerilogRequestLogging();
+
+app.UseExceptionHandler();
+
+app.UseInitializeDbDomain();
 
 app.Run();

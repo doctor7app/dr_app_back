@@ -26,7 +26,7 @@ builder.Services.AddSwaggerGen();
 
 // Add PostgreSQL DbContext
 builder.Services.AddDbContext<DocumentDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseNpgsql(builder.Configuration.GetConnectionString("MyDbPost")));
 
 // Add Document Service and Storage Service
 builder.Services.AddScoped<IDocumentService, DocumentService>();

@@ -28,7 +28,7 @@ namespace Patients.Infrastructure.Installation
             }, ServiceLifetime.Transient);
             
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
-            services.AddScoped(typeof(IServiceGeneric<,,>), typeof(ServiceGeneric<,,,>));
+            services.AddScoped(typeof(IServiceGeneric<,,,>), typeof(ServiceGeneric<,,,>));
             return services;
         }
 

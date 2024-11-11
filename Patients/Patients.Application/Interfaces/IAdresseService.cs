@@ -1,10 +1,11 @@
 ﻿using Common.Services.Interfaces;
 using Microsoft.AspNetCore.OData.Deltas;
 using Patients.Application.DTOs.Adresse;
+using Patients.Domain.Models;
 
 namespace Patients.Application.Interfaces;
 
-public interface IAdresseService : IServiceGeneric<AdresseDto, AdresseCreateDto, AdresseDto>
+public interface IAdresseService : IServiceGeneric<Adresse,AdresseDto, AdresseCreateDto, AdresseDto>
 {
     Task<object> GetAdresse(Guid patientId,Guid adresseId);
     Task<IEnumerable<AdresseDto>> GetRelative(Guid patientId);

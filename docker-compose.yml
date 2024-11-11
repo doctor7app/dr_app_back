@@ -64,7 +64,7 @@ services:
       - SeqLogging__URL=http://seq:5341
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://seq:5341/ingest/otlp/v1/traces
       - OTEL_EXPORTER_OTLP_PROTOCOL=http/protobuf
-      - ConnectionStrings__DefaultConnection=Server=postgres;User Id=postgres;Password=postgrespw;Database=docmanagement
+      - ConnectionStrings__MyDbPost=Server=postgres;User Id=postgres;Password=postgrespw;Database=docmanagement
       - StorageSettings__BasePath=/DocumentStorage
     ports:
       - 5101:8080
@@ -75,3 +75,26 @@ services:
       - postgres
       - seq
       - prometheus 
+
+  patients-svc:
+    image: ${DOCKER_REGISTRY-}patients-svc
+    build:
+      context: .
+      dockerfile: Patients/Patients.Api/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_HTTP_PORTS=8080;9090
+      - SeqLogging__URL=http://seq:5341
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://seq:5341/ingest/otlp/v1/traces
+      - OTEL_EXPORTER_OTLP_PROTOCOL=http/protobuf
+      - ConnectionStrings__MyDbPost=Server=postgres;User Id=postgres;Password=postgrespw;Database=patientDB
+    ports:
+      - 5102:8080
+      - 5902:9090
+    depends_on:
+      - postgres
+      - seq
+      - prometheus
+      - rabbitmq
+    
+

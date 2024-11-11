@@ -1,10 +1,11 @@
 ﻿using Common.Services.Interfaces;
 using Microsoft.AspNetCore.OData.Deltas;
 using Patients.Application.DTOs.MedicalInfo;
+using Patients.Domain.Models;
 
 namespace Patients.Application.Interfaces;
 
-public interface IMedicalInfoService : IServiceGeneric<MedicalInfoDto, MedicalInfoCreateDto, MedicalInfoDto>
+public interface IMedicalInfoService : IServiceGeneric<MedicalInformation, MedicalInfoDto, MedicalInfoCreateDto, MedicalInfoDto>
 {
     Task<object> GetMedicalInfo(Guid patientId, Guid medicalInfoId);
     Task<IEnumerable<MedicalInfoDto>> GetRelative(Guid patientId);

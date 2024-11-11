@@ -2,7 +2,8 @@
 
 namespace Common.Services.Interfaces
 {
-    public interface IServiceGeneric<TEntityRead,TEntityCreate,TEntityUpdate>
+    public interface IServiceGeneric<TEntity, TEntityRead, TEntityCreate,TEntityUpdate>
+        where TEntity : class
         where TEntityRead : class
         where TEntityCreate : class
         where TEntityUpdate : class

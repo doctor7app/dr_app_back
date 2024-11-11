@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.OData.Deltas;
 namespace Common.Services.Implementation
 {
     public class ServiceGeneric<TEntity, TEntityRead, TEntityCreate,TEntityUpdate> :
-        IServiceGeneric<TEntityRead, TEntityCreate, TEntityUpdate>
+        IServiceGeneric<TEntity, TEntityRead, TEntityCreate, TEntityUpdate>
         where TEntity : class
         where TEntityCreate : class
         where TEntityRead : class
