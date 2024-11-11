@@ -18,8 +18,7 @@ builder.Host.UseSerilog();
 
 // Add services to the container.
 
-var migrationName = typeof(Program).GetTypeInfo().Assembly.GetName().Name;
-builder.Services.AddPatientDatabaseServiceCollection(migrationName);
+builder.Services.AddPatientDatabaseServiceCollection();
 builder.Services.AddPatientServiceCollection();
 
 builder.Services.AddControllers();

@@ -28,14 +28,7 @@ namespace Patients.Infrastructure.Installation
         /// <param name="context"></param>
         private static void MigrateDb(PatientDbContext context)
         {
-            if (!((RelationalDatabaseCreator)context.Database.GetService<IDatabaseCreator>()).Exists())
-            {
-                context.Database.EnsureCreated();
-            }
-            if (context.Database.GetPendingMigrations().Any())
-            {
-                context.Database.Migrate();
-            }
+            context.Database.Migrate();
         }
 
         /// <summary>

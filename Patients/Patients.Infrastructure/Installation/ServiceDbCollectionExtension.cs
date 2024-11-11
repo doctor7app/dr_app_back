@@ -14,23 +14,26 @@ namespace Patients.Infrastructure.Installation
         /// Add reference to database Context and Asp.net Identity
         /// Without asp.net identity provider.
         /// </summary>
-        /// <param name="services"></param>
-        /// <param name="migrationName"></param>
+        /// <param name="services"></param>=
         /// <returns></returns>
-        public static IServiceCollection AddPatientDatabaseServiceCollection(this IServiceCollection services, string migrationName)
+        public static IServiceCollection AddPatientDatabaseServiceCollection(this IServiceCollection services)
         {
-            var builder = new ConfigurationBuilder().SetBasePath(Directory.GetCurrentDirectory())
+            var builder = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
+
             string strConnection = builder.Build().GetConnectionString("MyDbPost");
+
             services.AddDbContext<PatientDbContext>(options =>
             {
-                options.UseNpgsql(strConnection, sql => sql.MigrationsAssembly(migrationName));
+                options.UseNpgsql(strConnection, sql => sql.MigrationsAssembly("Patients.Infrastructure"));
             }, ServiceLifetime.Transient);
-            
+
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
             services.AddScoped(typeof(IServiceGeneric<,,,>), typeof(ServiceGeneric<,,,>));
             return services;
         }
+
 
         /// <summary>
         /// Seed Data For Domain Models
