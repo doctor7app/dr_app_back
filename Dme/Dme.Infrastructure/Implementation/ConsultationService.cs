@@ -92,8 +92,7 @@ public class ConsultationService : IConsultationService
 
 
     #endregion
-
-
+    
     #region Consultation
 
     public async Task<object> GetConsultationById(Guid idConsultation)
@@ -158,5 +157,4 @@ public class ConsultationService : IConsultationService
         return await _repository.Complete();
     }
     #endregion
-
 }

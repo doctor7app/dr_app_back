@@ -1,8 +1,6 @@
 ﻿using Dme.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Dme.Infrastructure.Installation
@@ -28,13 +26,13 @@ namespace Dme.Infrastructure.Installation
         /// <param name="context"></param>
         private static void MigrateDb(DmeDbContext context)
         {
-            if (!((RelationalDatabaseCreator)context.Database.GetService<IDatabaseCreator>()).Exists())
-            {
-                context.Database.EnsureCreated();
-            }
             if (context.Database.GetPendingMigrations().Any())
             {
                 context.Database.Migrate();
+            }
+            else
+            {
+                context.Database.EnsureCreated();
             }
         }
 

@@ -1,5 +1,6 @@
 ﻿using Dme.Domain.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
 namespace Dme.Infrastructure.Persistence;
 
@@ -25,12 +26,12 @@ public sealed class DmeDbContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        //    if (optionsBuilder.IsConfigured) return;
-        //    var builder = new ConfigurationBuilder().SetBasePath(Directory.GetCurrentDirectory())
-        //        .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
-        //    string strConnection = builder.Build().GetSection("ConnectionStrings")["MyDbPost"];
-        //    optionsBuilder.UseNpgsql(strConnection);
-        //    optionsBuilder.EnableSensitiveDataLogging();
+        if (optionsBuilder.IsConfigured) return;
+        var builder = new ConfigurationBuilder().SetBasePath(Directory.GetCurrentDirectory())
+            .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
+        string strConnection = builder.Build().GetSection("ConnectionStrings")["MyDbPost"];
+        optionsBuilder.UseNpgsql(strConnection);
+        optionsBuilder.EnableSensitiveDataLogging();
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -65,8 +66,8 @@ public sealed class DmeDbContext : DbContext
             entity.Property(e => e.ConsultationId).HasColumnType("uuid").HasDefaultValueSql("uuid_generate_v4()").ValueGeneratedOnAdd();
             entity.Property(e => e.CreatedById).HasColumnType("uuid");
             entity.Property(e => e.LastModifiedById).HasColumnType("uuid");
-            entity.Property(e => e.Created).HasColumnType("datetime").HasDefaultValueSql("(NOW())").ValueGeneratedOnAdd();
-            entity.Property(e => e.LastModified).HasColumnType("datetime").HasDefaultValueSql("(NOW())").ValueGeneratedOnAddOrUpdate();
+            entity.Property(e => e.Created).HasDefaultValueSql("(NOW())").ValueGeneratedOnAdd();
+            entity.Property(e => e.LastModified).HasDefaultValueSql("(NOW())").ValueGeneratedOnAddOrUpdate();
 
             entity.Property(a => a.ReasonOfVisit).IsRequired(false).HasMaxLength(255);
             entity.Property(a => a.Symptoms).IsRequired(false).HasMaxLength(150);
@@ -76,8 +77,8 @@ public sealed class DmeDbContext : DbContext
             entity.Property(a => a.Temperature).IsRequired(false).HasColumnType("decimal(5, 2)");
             entity.Property(a => a.CardiacFrequency).IsRequired(false);
             entity.Property(a => a.SaturationOxygen).IsRequired(false).HasColumnType("decimal(5, 2)");
-            entity.Property(e => e.ConsultationDate).HasColumnType("datetime").HasDefaultValueSql("(NOW())").IsRequired();
-            entity.Property(e => e.NextConsultationDate).HasColumnType("datetime").IsRequired(false);
+            entity.Property(e => e.ConsultationDate).HasDefaultValueSql("(NOW())").IsRequired();
+            entity.Property(e => e.NextConsultationDate).IsRequired(false);
 
             entity.Property(a => a.Type).HasConversion<int>();
             entity.Property(a => a.State).HasConversion<int>();

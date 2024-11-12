@@ -16,16 +16,15 @@ namespace Dme.Infrastructure.Installation
         /// Add reference to database Context 
         /// </summary>
         /// <param name="services"></param>
-        /// <param name="migrationName"></param>
         /// <returns></returns>
-        public static IServiceCollection AddDmeDatabaseServiceCollection(this IServiceCollection services, string migrationName)
+        public static IServiceCollection AddDmeDatabaseServiceCollection(this IServiceCollection services)
         {
             var builder = new ConfigurationBuilder().SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
             string strConnection = builder.Build().GetConnectionString("MyDbPost");
             services.AddDbContext<DmeDbContext>(options =>
             {
-                options.UseNpgsql(strConnection, sql => sql.MigrationsAssembly(migrationName));
+                options.UseNpgsql(strConnection, sql => sql.MigrationsAssembly("Dme.Infrastructure"));
             }, ServiceLifetime.Transient);
             
             services.AddScoped(typeof(IRepository<,>), typeof(Repository<,>));

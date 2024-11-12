@@ -1,7 +1,5 @@
-﻿using System.Reflection;
-using Common.Extension;
+﻿using Dme.Application;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Dme.Infrastructure.Installation
 {
@@ -15,20 +13,8 @@ namespace Dme.Infrastructure.Installation
         /// <returns></returns>
         public static IServiceCollection AddDmeServiceCollection(this IServiceCollection services)
         {
-            services.AutoMapper();
-            var interfaces = Assembly.GetExecutingAssembly().GetTypes().Where(x => x.IsInterface).ToList();
-            foreach (var item in interfaces)
-            {
-                var implementation = Assembly.GetExecutingAssembly().GetTypes()
-                    .FirstOrDefault(p => p.IsClass && (item.IsAssignableFrom(p) || p.ImplementsGenericInterface(item)));
-                if (implementation != null)
-                {
-                    services.TryAdd(new ServiceDescriptor(item, implementation, ServiceLifetime.Transient));
-                }
-            }
-
+            services.AddAutoMapperConfiguration();
             return services;
         }
-        
     }
 }

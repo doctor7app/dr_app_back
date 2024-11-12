@@ -1,18 +1,16 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System;
+using System.Threading.Tasks;
+using Dme.Application.DTOs.Consultations;
+using Dme.Application.DTOs.Dmes;
+using Dme.Application.Interfaces;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Deltas;
 using Microsoft.AspNetCore.OData.Formatter;
 using Microsoft.AspNetCore.OData.Query;
 using Microsoft.AspNetCore.OData.Routing.Controllers;
-using System.Threading.Tasks;
-using System;
-using Dme.Application.DTOs.Consultations;
-using Dme.Application.DTOs.Dmes;
-using Dme.Application.Interfaces;
 
-namespace Dmes.Api.Controllers
+namespace Dme.Api.Controllers
 {
-    //[Route("api/[controller]")]
-    //[ApiController]
     [Route("api")]
     public class DmesController : ODataController
     {

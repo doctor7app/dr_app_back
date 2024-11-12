@@ -87,7 +87,4 @@ public interface IConsultationService
     Task<object> DeleteConsultationById(Guid idConsultation);
 
     #endregion
-
-
-
 }

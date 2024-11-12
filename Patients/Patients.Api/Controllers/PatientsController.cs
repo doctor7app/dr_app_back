@@ -8,10 +8,9 @@ using Patients.Application.DTOs.Contact;
 using Patients.Application.DTOs.MedicalInfo;
 using Patients.Application.DTOs.Patient;
 using Patients.Application.Interfaces;
+
 namespace Patients.Api.Controllers
 {
-    //[Route("api/[controller]")]
-    //[ApiController]
     [Route("api")]
     public class PatientsController : ODataController
     {
@@ -20,7 +19,10 @@ namespace Patients.Api.Controllers
         private readonly IAdresseService _adresseService;
         private readonly IMedicalInfoService _medicalInfoService;
 
-        public PatientsController(IPatientService patientService,IContactService contactService,IAdresseService adresseService,IMedicalInfoService medicalInfoService)
+        public PatientsController(IPatientService patientService,
+            IContactService contactService,
+            IAdresseService adresseService,
+            IMedicalInfoService medicalInfoService)
         {
             _patientService = patientService;
             _contactService = contactService;

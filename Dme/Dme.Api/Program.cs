@@ -1,17 +1,15 @@
+using Dme.Api.Helpers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.OData;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System.Reflection;
 using Dme.Infrastructure.Installation;
-using Dmes.Api.Helpers;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-var migrationName = typeof(Program).GetTypeInfo().Assembly.GetName().Name;
-builder.Services.AddDmeDatabaseServiceCollection(migrationName);
+builder.Services.AddDmeDatabaseServiceCollection();
 builder.Services.AddDmeServiceCollection();
 
 builder.Services.AddControllers();
@@ -25,7 +23,7 @@ builder.Services.AddControllers().AddNewtonsoftJson().AddOData(opt =>
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerConfig();
 
 var app = builder.Build();
 
@@ -40,6 +38,8 @@ app.UseODataRouteDebug();
 app.UseODataQueryRequest();
 app.UseODataBatching();
 
+app.UseCustomSwaggerConfig();
+
 app.UseHttpsRedirection();
 
 //app.UseAuthorization();
@@ -47,5 +47,9 @@ app.UseHttpsRedirection();
 app.UseRouting();
 
 app.MapControllers();
+
+//app.UseExceptionHandler();
+
+app.UseInitializeDbDomain();
 
 app.Run();
