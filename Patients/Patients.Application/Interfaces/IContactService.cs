@@ -5,7 +5,7 @@ using Patients.Domain.Models;
 
 namespace Patients.Application.Interfaces;
 
-public interface IContactService : IServiceGeneric<Contact,ContactDto, ContactCreateDto, ContactDto>
+public interface IContactService
 {
     Task<object> GetContact(Guid patientId, Guid contactId);
     Task<IEnumerable<ContactDto>> GetRelative(Guid patientId);

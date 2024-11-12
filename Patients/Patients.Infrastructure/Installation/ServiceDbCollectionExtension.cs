@@ -21,16 +21,14 @@ namespace Patients.Infrastructure.Installation
             var builder = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
-
-            string strConnection = builder.Build().GetConnectionString("MyDbPost");
-
+            var strConnection = builder.Build().GetConnectionString("MyDbPost");
             services.AddDbContext<PatientDbContext>(options =>
             {
                 options.UseNpgsql(strConnection, sql => sql.MigrationsAssembly("Patients.Infrastructure"));
             }, ServiceLifetime.Transient);
 
-            services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
-            services.AddScoped(typeof(IServiceGeneric<,,,>), typeof(ServiceGeneric<,,,>));
+            services.AddTransient(typeof(IRepository<,>), typeof(Repository<,>));
+            services.AddTransient(typeof(IServiceGeneric<,,,,>), typeof(ServiceGeneric<,,,,>));
             return services;
         }
 

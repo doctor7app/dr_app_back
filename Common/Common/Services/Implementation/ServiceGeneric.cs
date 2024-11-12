@@ -1,20 +1,22 @@
 ﻿using AutoMapper;
 using Common.Services.Interfaces;
 using Microsoft.AspNetCore.OData.Deltas;
+using Microsoft.EntityFrameworkCore;
 
 namespace Common.Services.Implementation
 {
-    public class ServiceGeneric<TEntity, TEntityRead, TEntityCreate,TEntityUpdate> :
-        IServiceGeneric<TEntity, TEntityRead, TEntityCreate, TEntityUpdate>
+    public class ServiceGeneric<TEntity, TEntityRead, TEntityCreate,TEntityUpdate, TDbContext> :
+        IServiceGeneric<TEntity, TEntityRead, TEntityCreate, TEntityUpdate, TDbContext>
         where TEntity : class
         where TEntityCreate : class
         where TEntityRead : class
         where TEntityUpdate : class
+        where TDbContext : DbContext
     {
-        private readonly IRepository<TEntity> _work;
+        private readonly IRepository<TEntity, TDbContext> _work;
         private readonly IMapper _mapper;
 
-        public ServiceGeneric(IRepository<TEntity> work, IMapper mapper)
+        public ServiceGeneric(IRepository<TEntity, TDbContext> work, IMapper mapper)
         {
             _work = work;
             _mapper = mapper;

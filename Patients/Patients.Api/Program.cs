@@ -1,4 +1,3 @@
-using System.Reflection;
 using Microsoft.AspNetCore.OData;
 using Patients.Api.Extensions;
 using Patients.Api.Handler;
@@ -31,7 +30,8 @@ builder.Services.AddControllers().AddNewtonsoftJson().AddOData(opt =>
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+
+builder.Services.AddSwaggerConfig();
 
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
@@ -56,6 +56,8 @@ if (app.Environment.IsDevelopment())
 app.UseODataRouteDebug();
 app.UseODataQueryRequest();
 app.UseODataBatching();
+
+app.UseCustomSwaggerConfig();
 
 app.UseHttpsRedirection();
 

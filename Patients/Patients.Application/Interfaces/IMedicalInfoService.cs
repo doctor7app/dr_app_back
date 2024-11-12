@@ -5,7 +5,7 @@ using Patients.Domain.Models;
 
 namespace Patients.Application.Interfaces;
 
-public interface IMedicalInfoService : IServiceGeneric<MedicalInformation, MedicalInfoDto, MedicalInfoCreateDto, MedicalInfoDto>
+public interface IMedicalInfoService
 {
     Task<object> GetMedicalInfo(Guid patientId, Guid medicalInfoId);
     Task<IEnumerable<MedicalInfoDto>> GetRelative(Guid patientId);

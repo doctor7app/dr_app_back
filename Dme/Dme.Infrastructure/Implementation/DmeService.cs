@@ -3,6 +3,7 @@ using Common.Extension;
 using Common.Services.Interfaces;
 using Dme.Application.DTOs.Dmes;
 using Dme.Application.Interfaces;
+using Dme.Infrastructure.Persistence;
 using Microsoft.AspNetCore.OData.Deltas;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,10 +11,10 @@ namespace Dme.Infrastructure.Implementation;
 
 public class DmeService : IDmeService
 {
-    private readonly IRepository<Domain.Models.Dme> _repository;
+    private readonly IRepository<Domain.Models.Dme, DmeDbContext> _repository;
     private readonly IMapper _mapper;
 
-    public DmeService(IRepository<Domain.Models.Dme> repository, IMapper mapper)
+    public DmeService(IRepository<Domain.Models.Dme, DmeDbContext> repository, IMapper mapper)
     {
         _repository = repository;
         _mapper = mapper;

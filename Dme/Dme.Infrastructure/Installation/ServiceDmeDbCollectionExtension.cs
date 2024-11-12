@@ -28,8 +28,8 @@ namespace Dme.Infrastructure.Installation
                 options.UseNpgsql(strConnection, sql => sql.MigrationsAssembly(migrationName));
             }, ServiceLifetime.Transient);
             
-            services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
-            services.AddScoped(typeof(IServiceGeneric<,,,>), typeof(ServiceGeneric<,,,>));
+            services.AddScoped(typeof(IRepository<,>), typeof(Repository<,>));
+            services.AddScoped(typeof(IServiceGeneric<,,,,>), typeof(ServiceGeneric<,,,,>));
             
             services.AddScoped<IDmeService, DmeService>();
             services.AddScoped<IConsultationService, ConsultationService>();

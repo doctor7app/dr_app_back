@@ -1,18 +1,18 @@
 ﻿using AutoMapper;
-using Common.Services.Implementation;
 using Common.Services.Interfaces;
 using Microsoft.AspNetCore.OData.Deltas;
 using Patients.Application.DTOs.Contact;
 using Patients.Application.Interfaces;
 using Patients.Domain.Models;
+using Patients.Infrastructure.Persistence;
 
 namespace Patients.Infrastructure.Implementation;
 
-public class ContactService : ServiceGeneric<Contact, ContactDto, ContactCreateDto, ContactDto>, IContactService
+public class ContactService : IContactService
 {
-    private readonly IRepository<Contact> _work;
+    private readonly IRepository<Contact, PatientDbContext> _work;
     private readonly IMapper _mapper;
-    public ContactService(IRepository<Contact> work, IMapper mapper) : base(work, mapper)
+    public ContactService(IRepository<Contact, PatientDbContext> work, IMapper mapper)
     {
         _work = work;
         _mapper = mapper;

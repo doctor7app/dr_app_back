@@ -1,24 +1,23 @@
 ﻿using AutoMapper;
-using Common.Services.Implementation;
 using Common.Services.Interfaces;
 using Microsoft.AspNetCore.OData.Deltas;
 using Patients.Application.DTOs.Adresse;
 using Patients.Application.Interfaces;
 using Patients.Domain.Models;
+using Patients.Infrastructure.Persistence;
 
 namespace Patients.Infrastructure.Implementation;
 
-public class AdresseService : ServiceGeneric<Adresse, AdresseDto, AdresseCreateDto, AdresseDto>, IAdresseService
+public class AdresseService : IAdresseService
 {
-    private readonly IRepository<Adresse> _work;
+    private readonly IRepository<Adresse, PatientDbContext> _work;
     private readonly IMapper _mapper;
-    public AdresseService(IRepository<Adresse> work, IMapper mapper) : base(work, mapper)
+    public AdresseService(IRepository<Adresse,PatientDbContext> work, IMapper mapper)
     {
         _work = work;
         _mapper = mapper;
     }
-
-
+    
     public async Task<object> GetAdresse(Guid patientId, Guid adresseId)
     {
         if (patientId == Guid.Empty || adresseId == Guid.Empty)

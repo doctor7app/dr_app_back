@@ -49,15 +49,15 @@ public sealed class PatientDbContext :DbContext
             entity.Property(e => e.PatientId).HasColumnType("uuid").HasDefaultValueSql("uuid_generate_v4()").ValueGeneratedOnAdd();
             entity.Property(e => e.CreatedById).HasColumnType("uuid");
             entity.Property(e => e.LastModifiedById).HasColumnType("uuid");
-            entity.Property(e => e.Created).HasColumnType("timestamp").HasDefaultValueSql("(NOW())").ValueGeneratedOnAdd();
-            entity.Property(e => e.LastModified).HasColumnType("timestamp").HasDefaultValueSql("(NOW())").ValueGeneratedOnAddOrUpdate();
+            entity.Property(e => e.Created).HasDefaultValueSql("(NOW())").ValueGeneratedOnAdd();
+            entity.Property(e => e.LastModified).HasDefaultValueSql("(NOW())").ValueGeneratedOnAddOrUpdate();
 
             entity.Property(a => a.FirstName).IsRequired().HasMaxLength(150);
             entity.Property(a => a.LastName).IsRequired().HasMaxLength(150);
             entity.Property(a => a.MiddleName).IsRequired(false).HasMaxLength(150);
             entity.Property(a => a.SocialSecurityNumber).IsRequired(false).HasMaxLength(200);
-            entity.Property(a => a.BirthDate).HasColumnType("timestamp").IsRequired();
-            entity.Property(a => a.DeathDate).HasColumnType("timestamp").IsRequired(false);
+            entity.Property(a => a.BirthDate).IsRequired();
+            entity.Property(a => a.DeathDate).IsRequired(false);
             entity.Property(a => a.Email).HasMaxLength(200);
             entity.Property(a => a.PhoneNumber).HasMaxLength(20);
             entity.Property(a => a.HomeNumber).HasMaxLength(20);

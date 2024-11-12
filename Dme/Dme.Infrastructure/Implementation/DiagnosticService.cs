@@ -4,17 +4,18 @@ using Common.Services.Interfaces;
 using Dme.Application.DTOs.Diagnostics;
 using Dme.Application.Interfaces;
 using Dme.Domain.Models;
+using Dme.Infrastructure.Persistence;
 using Microsoft.AspNetCore.OData.Deltas;
 
 namespace Dme.Infrastructure.Implementation;
 
 public class DiagnosticService : IDiagnosticService
 {
-    public IRepository<Consultations> _consultationRepository { get; }
-    private readonly IRepository<Diagnostics> _repositoryDiagnostic;
+    private readonly IRepository<Consultations, DmeDbContext> _consultationRepository;
+    private readonly IRepository<Diagnostics, DmeDbContext> _repositoryDiagnostic;
     private readonly IMapper _mapper;
 
-    public DiagnosticService(IRepository<Diagnostics> repositoryDiagnostic,IRepository<Consultations> consultationRepository,IMapper mapper)
+    public DiagnosticService(IRepository<Diagnostics, DmeDbContext> repositoryDiagnostic,IRepository<Consultations, DmeDbContext> consultationRepository,IMapper mapper)
     {
         _consultationRepository = consultationRepository;
         _repositoryDiagnostic = repositoryDiagnostic;

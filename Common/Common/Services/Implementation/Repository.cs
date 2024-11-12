@@ -5,10 +5,12 @@ using Microsoft.EntityFrameworkCore.Query;
 
 namespace Common.Services.Implementation
 {
-    public class Repository<TEntity> : IRepository<TEntity> where TEntity : class
+    public class Repository<TEntity, TDbContext> : IRepository<TEntity, TDbContext>
+        where TEntity : class
+        where TDbContext : DbContext
     {
-        protected DbContext Context { get; set; }
-        public Repository(DbContext context)
+        protected TDbContext Context { get; set; }
+        public Repository(TDbContext context)
         {
             Context = context;
         }

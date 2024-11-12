@@ -1,10 +1,13 @@
-﻿using Common.Services.Interfaces;
+﻿using Microsoft.AspNetCore.OData.Deltas;
 using Patients.Application.DTOs.Patient;
-using Patients.Domain.Models;
 
 namespace Patients.Application.Interfaces;
 
-public interface IPatientService : IServiceGeneric<Patient, PatientDto,PatientCreateDto,PatientUpdateDto>
+public interface IPatientService
 {
-    
+    Task<object> Get(Guid id);
+    Task<IEnumerable<PatientDto>> Get();
+    Task<object> Create(PatientCreateDto entity);
+    Task<object> Update(Guid key, Delta<PatientUpdateDto> entity);
+    Task<object> Delete(Guid id);
 }

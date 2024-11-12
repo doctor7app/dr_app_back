@@ -12,7 +12,7 @@ using Patients.Infrastructure.Persistence;
 namespace Patients.Infrastructure.Migrations
 {
     [DbContext(typeof(PatientDbContext))]
-    [Migration("20241111225721_InitialCreate")]
+    [Migration("20241112211615_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />

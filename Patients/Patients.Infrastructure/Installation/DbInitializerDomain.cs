@@ -1,7 +1,5 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.DependencyInjection;
 using Patients.Infrastructure.Persistence;
 
@@ -28,7 +26,17 @@ namespace Patients.Infrastructure.Installation
         /// <param name="context"></param>
         private static void MigrateDb(PatientDbContext context)
         {
-            context.Database.Migrate();
+            // Check if the database exists
+            if (context.Database.GetPendingMigrations().Any())
+            {
+                // Apply pending migrations
+                context.Database.Migrate();
+            }
+            else
+            {
+                // Ensure the database is created
+                context.Database.EnsureCreated();
+            }
         }
 
         /// <summary>

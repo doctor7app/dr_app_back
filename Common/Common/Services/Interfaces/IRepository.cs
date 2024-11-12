@@ -4,10 +4,8 @@ using Microsoft.EntityFrameworkCore.Query;
 
 namespace Common.Services.Interfaces
 {
-    public interface IRepository<TEntity> where TEntity : class
+    public interface IRepository<TEntity, TDbContext> where TEntity : class where TDbContext : DbContext
     {
-
-
         #region Async Functions
 
         Task AddAsync(TEntity entity);
@@ -81,5 +79,4 @@ namespace Common.Services.Interfaces
         void Dispose();
 
     }
-
 }

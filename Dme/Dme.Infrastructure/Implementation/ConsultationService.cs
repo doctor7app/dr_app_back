@@ -4,6 +4,7 @@ using Common.Services.Interfaces;
 using Dme.Application.DTOs.Consultations;
 using Dme.Application.Interfaces;
 using Dme.Domain.Models;
+using Dme.Infrastructure.Persistence;
 using Microsoft.AspNetCore.OData.Deltas;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,10 +12,10 @@ namespace Dme.Infrastructure.Implementation;
 
 public class ConsultationService : IConsultationService
 {
-    private readonly IRepository<Consultations> _repository;
+    private readonly IRepository<Consultations,DmeDbContext> _repository;
     private readonly IMapper _mapper;
 
-    public ConsultationService(IRepository<Consultations> repository,IMapper mapper)
+    public ConsultationService(IRepository<Consultations, DmeDbContext> repository,IMapper mapper)
     {
         _repository = repository;
         _mapper = mapper;

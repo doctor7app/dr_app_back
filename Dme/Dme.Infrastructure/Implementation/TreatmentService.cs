@@ -4,17 +4,19 @@ using Common.Services.Interfaces;
 using Dme.Application.DTOs.Treatments;
 using Dme.Application.Interfaces;
 using Dme.Domain.Models;
+using Dme.Infrastructure.Persistence;
 using Microsoft.AspNetCore.OData.Deltas;
 
 namespace Dme.Infrastructure.Implementation;
 
 public class TreatmentService : ITreatmentService
 {
-    private readonly IRepository<Treatments> _repositoryTreatment;
-    private readonly IRepository<Consultations> _repositoryConsultation;
+    private readonly IRepository<Treatments, DmeDbContext> _repositoryTreatment;
+    private readonly IRepository<Consultations, DmeDbContext> _repositoryConsultation;
     private readonly IMapper _mapper;
 
-    public TreatmentService(IRepository<Treatments> repositoryTreatment,IRepository<Consultations> repositoryConsultation,IMapper mapper)
+    public TreatmentService(IRepository<Treatments, DmeDbContext> repositoryTreatment,
+        IRepository<Consultations, DmeDbContext> repositoryConsultation,IMapper mapper)
     {
         _repositoryTreatment = repositoryTreatment;
         _repositoryConsultation = repositoryConsultation;
