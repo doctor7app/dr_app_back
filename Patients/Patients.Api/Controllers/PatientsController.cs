@@ -35,7 +35,6 @@ namespace Patients.Api.Controllers
         ///  <summary>
         ///  Get item with parameter passed in the query.
         ///  </summary>
-        [HttpGet("Patients({key})")]
         [HttpGet("Patients/{key}")]
         [EnableQuery]
         public async Task<IActionResult> Get([FromODataUri] Guid key)
