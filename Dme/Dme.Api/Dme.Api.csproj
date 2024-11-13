@@ -42,8 +42,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\..\Patients\Patients.Api\Patients.Api.csproj" />
-	  <ProjectReference Include="..\Dme.Infrastructure\Dme.Infrastructure.csproj" />
+		<ProjectReference Include="..\Dme.Infrastructure\Dme.Infrastructure.csproj" />
 	</ItemGroup>
 
 </Project>

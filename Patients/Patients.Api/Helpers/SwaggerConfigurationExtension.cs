@@ -1,6 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc.Formatters;
-using Microsoft.Net.Http.Headers;
-using Microsoft.OpenApi.Models;
+﻿using Microsoft.OpenApi.Models;
+using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace Patients.Api.Helpers
 {
@@ -8,6 +7,7 @@ namespace Patients.Api.Helpers
     {
         public static void AddSwaggerConfig(this IServiceCollection services)
         {
+            services.AddEndpointsApiExplorer();
             services.AddSwaggerGen(c =>
             {
                 c.ResolveConflictingActions(apiDescriptions => apiDescriptions.First());
@@ -39,8 +39,8 @@ namespace Patients.Api.Helpers
                         Id = "Bearer",
                     }}, new string[] {}}
                 });
+                c.OperationFilter<ODataSwaggerOperationFilter>();
             });
-            AddFormatters(services);
         }
 
         public static void UseCustomSwaggerConfig(this IApplicationBuilder app)
@@ -51,30 +51,67 @@ namespace Patients.Api.Helpers
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "Patient API V1");
             });
         }
+    }
 
-        /// <summary>
-        /// Used for swagger and odata
-        /// </summary>
-        /// <param name="services"></param>
-        public static void AddFormatters(IServiceCollection services)
+    public class ODataSwaggerOperationFilter : IOperationFilter
+    {
+        public void Apply(OpenApiOperation operation, OperationFilterContext context)
         {
-            //application/odata
-            services.AddMvcCore((options =>
+            var addedParameters = new List<string>();
+            if (context.ApiDescription.RelativePath == null ||
+                !context.ApiDescription.RelativePath.Contains("(")) return;
+            foreach (var param in context.ApiDescription.ActionDescriptor.Parameters)
             {
-                foreach (var outputFormatter in options.OutputFormatters.OfType<OutputFormatter>()
-                    .Where(x => x.SupportedMediaTypes.Count == 0))
+
+                if (param.Name.Equals("key", StringComparison.OrdinalIgnoreCase))
                 {
-                    outputFormatter.SupportedMediaTypes.Add(
-                        new MediaTypeHeaderValue("application/prs.odatatestxx-odata"));
+                    var existingKeyParam = operation.Parameters
+                        .FirstOrDefault(p => p.Name.Equals("key", StringComparison.OrdinalIgnoreCase));
+                    if (existingKeyParam != null)
+                    {
+                        operation.Parameters.Remove(existingKeyParam);
+                    }
+
+                    operation.Parameters.Add(new OpenApiParameter
+                    {
+                        Name = "key",
+                        In = ParameterLocation.Path,
+                        Required = true,
+                        Schema = new OpenApiSchema { Type = "string", Format = "uuid" }
+                    });
+
+                    addedParameters.Add("key");
                 }
-                foreach (var inputFormatter in options.InputFormatters.OfType<InputFormatter>()
-                    .Where(x => x.SupportedMediaTypes.Count == 0))
+                else if (param.Name.Contains("id", StringComparison.OrdinalIgnoreCase))
                 {
-                    inputFormatter.SupportedMediaTypes.Add(
-                        new MediaTypeHeaderValue("application/prs.odatatestxx-odata"));
+                    if (addedParameters.Contains(param.Name)) continue;
+
+                    var existingChildParam = operation.Parameters
+                        .FirstOrDefault(p => p.Name.Equals(param.Name, StringComparison.OrdinalIgnoreCase));
+                    if (existingChildParam != null)
+                    {
+                        operation.Parameters.Remove(existingChildParam);
+                    }
+
+                    operation.Parameters.Add(new OpenApiParameter
+                    {
+                        Name = param.Name,
+                        In = ParameterLocation.Path,
+                        Required = true,
+                        Schema = new OpenApiSchema { Type = "string", Format = "uuid" }
+                    });
+
+                    addedParameters.Add(param.Name);
                 }
-                options.EnableEndpointRouting = false;
-            }));
+            }
+
+            if (operation.Tags == null || !operation.Tags.Contains(new OpenApiTag { Name = "api" })) return;
+            var path = context.ApiDescription.RelativePath;
+            if (path.Contains("({key})"))
+            {
+                operation.Summary += " (Entity)";
+            }
         }
     }
+
 }

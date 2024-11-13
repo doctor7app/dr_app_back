@@ -9,61 +9,50 @@ using Microsoft.AspNetCore.OData.Routing.Controllers;
 
 namespace Dme.Api.Controllers
 {
-    [Route("api")]
-    public class DmesController(IDmeService dmeService, IConsultationService consultationService) : ODataController
+    [Route("api/Dmes")]
+    public class DmesController : ODataController
     {
+        private readonly IDmeService _dmeService;
+        private readonly IConsultationService _consultationService;
 
+        public DmesController(IDmeService dmeService, IConsultationService consultationService)
+        {
+            _dmeService = dmeService;
+            _consultationService = consultationService;
+        }
 
         #region Dme Actions
-
-        ///  <summary>
-        ///  Get item with parameter passed in the query.
-        ///  </summary>
-        [HttpGet("Dmes({key})")]
-        [HttpGet("Dmes/{key}")]
+        
+        [HttpGet("({key})")]
         [EnableQuery]
         public async Task<IActionResult> Get([FromODataUri] Guid key)
         {
-            return Ok(await dmeService.Get(key));
+            return Ok(await _dmeService.Get(key));
         }
-
-        ///  <summary>
-        ///  Get list  with parameter passed in the query.(Odata filtered)
-        ///  </summary>
-        [HttpGet("Dmes")]
-        [HttpGet("Dmes/$count")]
+        
+        [HttpGet("$count")]
         [EnableQuery(PageSize = 20, AllowedQueryOptions = AllowedQueryOptions.All, MaxOrderByNodeCount = 10)]
         public async Task<IActionResult> Get()
         {
-            return Ok(await dmeService.Get());
+            return Ok(await _dmeService.Get());
         }
-
-        ///  <summary>
-        ///  Add a list of entities to the database from the body of the api call.(Passed by as an array)
-        ///  </summary>
-        /// <param name="entity"></param>
-        [HttpPost("Dmes")]
+        
+        [HttpPost]
         public async Task<IActionResult> Post([FromBody] DmeCreateDto entity)
         {
-            return Ok(await dmeService.Create(entity));
+            return Ok(await _dmeService.Create(entity));
         }
 
-        [HttpPatch("Dmes({key})")]
-        [HttpPatch("Dmes/{key}")]
+        [HttpPatch("({key})")]
         public async Task<IActionResult> Patch([FromODataUri] Guid key, [FromBody] Delta<DmeUpdateDto> entity)
         {
-            return Ok(await dmeService.Update(key, entity));
+            return Ok(await _dmeService.Update(key, entity));
         }
-
-        ///  <summary>
-        ///  Delete client from the database.
-        ///  </summary>
-        /// <param name="key"></param>
-        [HttpDelete("Dmes({key})")]
-        [HttpDelete("Dmes/{key}")]
+        
+        [HttpDelete("({key})")]
         public async Task<IActionResult> Delete([FromODataUri] Guid key)
         {
-            return Ok(await dmeService.Delete(key));
+            return Ok(await _dmeService.Delete(key));
         }
 
         #endregion
@@ -71,35 +60,35 @@ namespace Dme.Api.Controllers
         #region Consultations Actions
 
         [EnableQuery]
-        [HttpGet("Dmes({idDme})/Consultations({idConsultation})")]
-        public async Task<IActionResult> GetConsultation(Guid idDme, Guid idConsultation)
+        [HttpGet("({key})/Consultations({idConsultation})")]
+        public async Task<IActionResult> GetConsultation(Guid key, Guid idConsultation)
         {
-            return Ok(await consultationService.GetConsultationForDme(idDme,idConsultation));
+            return Ok(await _consultationService.GetConsultationForDme(key, idConsultation));
         }
 
         [EnableQuery]
-        [HttpGet("Dmes({idDme})/Consultations")]
-        public async Task<IActionResult> GetConsultation(Guid idDme)
+        [HttpGet("({key})/Consultations")]
+        public async Task<IActionResult> GetConsultation(Guid key)
         {
-            return Ok(await consultationService.GetAllConsultationForDme(idDme));
+            return Ok(await _consultationService.GetAllConsultationForDme(key));
         }
 
-        [HttpPost("Dmes({idDme})/Consultations")]
-        public async Task<IActionResult> CreateConsultation([FromODataUri] Guid idDme, [FromBody] ConsultationsCreateDto entity)
+        [HttpPost("({key})/Consultations")]
+        public async Task<IActionResult> CreateConsultation([FromODataUri] Guid key, [FromBody] ConsultationsCreateDto entity)
         {
-            return Ok(await consultationService.CreateConsultationForDme(idDme, entity));
+            return Ok(await _consultationService.CreateConsultationForDme(key, entity));
         }
 
-        [HttpPatch("Dmes({idDme})/Consultations({id})")]
-        public async Task<IActionResult> PatchConsultation([FromODataUri] Guid idDme, [FromODataUri] Guid id, [FromBody] Delta<ConsultationsUpdateDto> entity)
+        [HttpPatch("({key})/Consultations({idConsultation})")]
+        public async Task<IActionResult> PatchConsultation([FromODataUri] Guid key, [FromODataUri] Guid idConsultation, [FromBody] Delta<ConsultationsUpdateDto> entity)
         {
-            return Ok(await consultationService.UpdateConsultationForDme(idDme, id, entity));
+            return Ok(await _consultationService.UpdateConsultationForDme(key, idConsultation, entity));
         }
 
-        [HttpDelete("Dmes({idDme})/Consultations({id})")]
-        public async Task<IActionResult> DeleteConsultation([FromODataUri] Guid idDme, [FromODataUri] Guid id)
+        [HttpDelete("({key})/Consultations({idConsultation})")]
+        public async Task<IActionResult> DeleteConsultation([FromODataUri] Guid key, [FromODataUri] Guid idConsultation)
         {
-            return Ok(await consultationService.DeleteConsultationForDme(idDme, id));
+            return Ok(await _consultationService.DeleteConsultationForDme(key, idConsultation));
         }
 
         #endregion

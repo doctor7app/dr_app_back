@@ -10,133 +10,133 @@ using Microsoft.AspNetCore.OData.Routing.Controllers;
 
 namespace Dme.Api.Controllers
 {
-    [Route("api")]
-    public class ConsultationsController(IConsultationService consultationService, ITreatmentService treatmentService, IDiagnosticService diagnosticService) : ODataController
+    [Route("api/Consultations")]
+    public class ConsultationsController : ODataController
     {
+        private readonly IConsultationService _consultationService;
+        private readonly ITreatmentService _treatmentService;
+        private readonly IDiagnosticService _diagnosticService;
+
+        public ConsultationsController(IConsultationService consultationService, ITreatmentService treatmentService,
+            IDiagnosticService diagnosticService)
+        {
+            _consultationService = consultationService;
+            _treatmentService = treatmentService;
+            _diagnosticService = diagnosticService;
+        }
 
         #region Consultations Actions
 
-        ///  <summary>
-        ///  Get item with parameter passed in the query.
-        ///  </summary>
-        [HttpGet("Consultations({key})")]
-        [HttpGet("Consultations/{key}")]
+        [HttpGet("({key})")]
         [EnableQuery]
         public async Task<IActionResult> Get([FromODataUri] Guid key)
         {
-            return Ok(await consultationService.GetConsultationById(key));
+            return Ok(await _consultationService.GetConsultationById(key));
         }
 
-        ///  <summary>
-        ///  Get list  with parameter passed in the query.(Odata filtered)
-        ///  </summary>
-        [HttpGet("Consultations")]
-        [HttpGet("Consultations/$count")]
-        [EnableQuery(PageSize = 20, AllowedQueryOptions = AllowedQueryOptions.All, MaxOrderByNodeCount = 10)]
+        [HttpGet]
+        [EnableQuery(PageSize = 20)]
         public async Task<IActionResult> Get()
         {
-            return Ok(await consultationService.GetAllConsultation());
+            return Ok(await _consultationService.GetAllConsultation());
         }
 
-        ///  <summary>
-        ///  Add a list of entities to the database from the body of the api call.(Passed by as an array)
-        ///  </summary>
-        /// <param name="entity"></param>
-        [HttpPost("Consultations")]
+        [HttpPost]
         public async Task<IActionResult> Post([FromBody] ConsultationsCreateDto entity)
         {
-            return Ok(await consultationService.CreateConsultation(entity));
+            return Ok(await _consultationService.CreateConsultation(entity));
         }
 
-        [HttpPatch("Consultations({key})")]
-        [HttpPatch("Consultations/{key}")]
+        [HttpPatch("({key})")]
         public async Task<IActionResult> Patch([FromODataUri] Guid key, [FromBody] Delta<ConsultationsUpdateDto> entity)
         {
-            return Ok(await consultationService.UpdateConsultationById(key, entity));
+            return Ok(await _consultationService.UpdateConsultationById(key, entity));
         }
 
-        ///  <summary>
-        ///  Delete client from the database.
-        ///  </summary>
-        /// <param name="key"></param>
-        [HttpDelete("Consultations({key})")]
-        [HttpDelete("Consultations/{key}")]
+        [HttpDelete("({key})")]
         public async Task<IActionResult> Delete([FromODataUri] Guid key)
         {
-            return Ok(await consultationService.DeleteConsultationById(key));
+            return Ok(await _consultationService.DeleteConsultationById(key));
         }
 
         #endregion
 
         #region Treatments Actions
 
+        [HttpGet("({key})/Treatments({idTreatments})")]
         [EnableQuery]
-        [HttpGet("Consultations({idConsultation})/Treatments({idTreatments})")]
-        public async Task<IActionResult> GetTreatment(Guid idConsultation, Guid idTreatments)
+        public async Task<IActionResult> GetTreatment([FromODataUri] Guid key,
+            [FromODataUri] Guid idTreatments)
         {
-            return Ok(await treatmentService.GetTreatmentForConsultationById(idConsultation, idTreatments));
+            return Ok(await _treatmentService.GetTreatmentForConsultationById(key, idTreatments));
         }
 
+        [HttpGet("({key})/Treatments")]
         [EnableQuery]
-        [HttpGet("Consultations({idConsultation})/Treatments")]
-        public async Task<IActionResult> GetTreatment(Guid idConsultation)
+        public async Task<IActionResult> GetTreatment([FromODataUri] Guid key)
         {
-            return Ok(await treatmentService.GetAllTreatmentForConsultationById(idConsultation));
+            return Ok(await _treatmentService.GetAllTreatmentForConsultationById(key));
         }
 
-        [HttpPost("Consultations({idConsultation})/Treatments")]
-        public async Task<IActionResult> CreateTreatment([FromODataUri] Guid idConsultation, [FromBody] TreatmentsCreateDto entity)
+        [HttpPost("({key})/Treatments")]
+        public async Task<IActionResult> CreateTreatment([FromODataUri] Guid key,
+            [FromBody] TreatmentsCreateDto entity)
         {
-            return Ok(await treatmentService.CreateTreatmentForConsultation(idConsultation, entity));
+            return Ok(await _treatmentService.CreateTreatmentForConsultation(key, entity));
         }
 
-        [HttpPatch("Consultations({idConsultation})/Treatments({idTreatments})")]
-        public async Task<IActionResult> PatchTreatment([FromODataUri] Guid idConsultation, [FromODataUri] Guid idTreatments, [FromBody] Delta<TreatmentsUpdateDto> entity)
+        [HttpPatch("({key})/Treatments({idTreatments})")]
+        public async Task<IActionResult> PatchTreatment([FromODataUri] Guid key,
+            [FromODataUri] Guid idTreatments, [FromBody] Delta<TreatmentsUpdateDto> entity)
         {
-            return Ok(await treatmentService.UpdateTreatmentForConsultation(idConsultation, idTreatments, entity));
+            return Ok(await _treatmentService.UpdateTreatmentForConsultation(key, idTreatments, entity));
         }
 
-        [HttpDelete("Consultations({idConsultation})/Treatments({idTreatments})")]
-        public async Task<IActionResult> DeleteTreatment([FromODataUri] Guid idConsultation, [FromODataUri] Guid idTreatments)
+        [HttpDelete("({key})/Treatments({idTreatments})")]
+        public async Task<IActionResult> DeleteTreatment([FromODataUri] Guid key,
+            [FromODataUri] Guid idTreatments)
         {
-            return Ok(await treatmentService.DeleteTreatmentForConsultation(idConsultation, idTreatments));
+            return Ok(await _treatmentService.DeleteTreatmentForConsultation(key, idTreatments));
         }
 
         #endregion
 
-
         #region Diagnostics Actions
 
+        [HttpGet("({key})/Diagnostics({idDiagnostics})")]
         [EnableQuery]
-        [HttpGet("Consultations({idConsultation})/Diagnostics({idTreatments})")]
-        public async Task<IActionResult> GetDiagnostic(Guid idConsultation, Guid idTreatments)
+        public async Task<IActionResult> GetDiagnostic([FromODataUri] Guid key,
+            [FromODataUri] Guid idDiagnostics)
         {
-            return Ok(await diagnosticService.GetDiagnosticForConsultation(idConsultation, idTreatments));
+            return Ok(await _diagnosticService.GetDiagnosticForConsultation(key, idDiagnostics));
         }
 
+        [HttpGet("({key})/Diagnostics")]
         [EnableQuery]
-        [HttpGet("Consultations({idConsultation})/Diagnostics")]
-        public async Task<IActionResult> GetDiagnostic(Guid idConsultation)
+        public async Task<IActionResult> GetDiagnostic([FromODataUri] Guid key)
         {
-            return Ok(await diagnosticService.GetAllDiagnosticForConsultation(idConsultation));
+            return Ok(await _diagnosticService.GetAllDiagnosticForConsultation(key));
         }
 
-        [HttpPost("Consultations({idConsultation})/Diagnostics")]
-        public async Task<IActionResult> CreateDiagnostic([FromODataUri] Guid idConsultation, [FromBody] DiagnosticsCreateDto entity)
+        [HttpPost("({key})/Diagnostics")]
+        public async Task<IActionResult> CreateDiagnostic([FromODataUri] Guid key,
+            [FromBody] DiagnosticsCreateDto entity)
         {
-            return Ok(await diagnosticService.CreateDiagnosticForConsultation(idConsultation, entity));
+            return Ok(await _diagnosticService.CreateDiagnosticForConsultation(key, entity));
         }
 
-        [HttpPatch("Consultations({idConsultation})/Diagnostics({idDiagnostics})")]
-        public async Task<IActionResult> PatchDiagnostic([FromODataUri] Guid idConsultation, [FromODataUri] Guid idDiagnostics, [FromBody] Delta<DiagnosticsUpdateDto> entity)
+        [HttpPatch("({key})/Diagnostics({idDiagnostics})")]
+        public async Task<IActionResult> PatchDiagnostic([FromODataUri] Guid key,
+            [FromODataUri] Guid idDiagnostics, [FromBody] Delta<DiagnosticsUpdateDto> entity)
         {
-            return Ok(await diagnosticService.UpdateDiagnosticForConsultation(idConsultation, idDiagnostics, entity));
+            return Ok(await _diagnosticService.UpdateDiagnosticForConsultation(key, idDiagnostics, entity));
         }
 
-        [HttpDelete("Consultations({idConsultation})/Diagnostics({idDiagnostics})")]
-        public async Task<IActionResult> DeleteDiagnostic([FromODataUri] Guid idConsultation, [FromODataUri] Guid idDiagnostics)
+        [HttpDelete("({key})/Diagnostics({idDiagnostics})")]
+        public async Task<IActionResult> DeleteDiagnostic([FromODataUri] Guid key,
+            [FromODataUri] Guid idDiagnostics)
         {
-            return Ok(await diagnosticService.DeleteDiagnosticForConsultation(idConsultation, idDiagnostics));
+            return Ok(await _diagnosticService.DeleteDiagnosticForConsultation(key, idDiagnostics));
         }
 
         #endregion

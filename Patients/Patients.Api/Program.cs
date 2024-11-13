@@ -22,14 +22,21 @@ builder.Services.AddPatientServiceCollection();
 
 builder.Services.AddControllers();
 builder.Services.AddRouting();
-builder.Services.AddControllers().AddNewtonsoftJson().AddOData(opt =>
-{
-    opt.Select().Filter().OrderBy().Count().SetMaxTop(20).Expand();
-    opt.AddRouteComponents("api", EdmModelBuilder.Build());
-});
+builder.Services.AddControllers().AddOData(
+    options =>
+    {
+        options.Select().Filter().OrderBy().Count().SetMaxTop(20).Expand();
+        options.EnableQueryFeatures();
+        options.AddRouteComponents(
+            routePrefix: "api",
+            model: EdmModelBuilder.Build(),
+            configureServices: (services) =>
+            {
+                services.AddScoped<Microsoft.OData.Json.IJsonWriterFactory>(
+                    _ => new Microsoft.OData.Json.ODataJsonWriterFactory());
+            });
+    });
 
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddSwaggerConfig();
 

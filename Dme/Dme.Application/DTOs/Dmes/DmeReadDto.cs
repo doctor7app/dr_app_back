@@ -35,8 +35,6 @@ public class DmeReadDto :IMapFrom<Domain.Models.Dme>
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.DmeId))
             .ForMember(dest => dest.PatientId, opt => opt.MapFrom(src => src.FkIdPatient))
             .ForMember(dest => dest.DoctorId, opt => opt.MapFrom(src => src.FkIdDoctor))
-            //.ForMember(dest => dest.PatientId, opt => opt.MapFrom(src => src.FkIdPatient))
-            //.ForMember(dest => dest.DoctorId, opt => opt.MapFrom(src => src.FkIdDoctor))
             .ForMember(dest => dest.Notes, opt => opt.MapFrom(src => src.Notes))
             .ForMember(dest => dest.AdditionalInformations, opt => opt.MapFrom(src => src.AdditionalInformations))
             .ForMember(dest => dest.Created, opt => opt.MapFrom(src => src.Created))
