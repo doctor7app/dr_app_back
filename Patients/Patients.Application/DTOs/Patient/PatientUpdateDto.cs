@@ -7,16 +7,14 @@ namespace Patients.Application.DTOs.Patient;
 
 public class PatientUpdateDto : IMapFrom<Domain.Models.Patient>
 {
-    [Key]
-    [Required]
+    [Key,Required]
     public Guid Id { get; set; }
     public string SocialNumber { get; set; }
     [Required]
     public string FirstName { get; set; }
-    [Required]
+    //[Required]
     public string LastName { get; set; }
     public string MiddleName { get; set; }
-    [Required]
     public DateTime BirthDate { get; set; }
     public DateTime DeathDate { get; set; }
     public Gender Gender { get; set; }
@@ -38,6 +36,7 @@ public class PatientUpdateDto : IMapFrom<Domain.Models.Patient>
             .ForMember(dest => dest.DeathDate, opt => opt.MapFrom(src => src.DeathDate))
             .ForMember(dest => dest.PhoneNumber, opt => opt.MapFrom(src => src.PhoneNumber))
             .ForMember(dest => dest.HomeNumber, opt => opt.MapFrom(src => src.HomeNumber))
+            .ReverseMap()
             ;
     }
 }

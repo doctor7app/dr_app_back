@@ -5,9 +5,9 @@ namespace Common.Extension;
 
 public static class AutoMapperExtension
 {
-    public static IServiceCollection AutoMapper(this IServiceCollection services)
+    public static IServiceCollection AddAutoMapperConfiguration(this IServiceCollection services)
     {
-        services.AddAutoMapper(Assembly.GetExecutingAssembly());
+        services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
         return services;
     }
 }

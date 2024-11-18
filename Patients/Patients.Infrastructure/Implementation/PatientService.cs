@@ -44,9 +44,15 @@ public class PatientService : IPatientService
 
     public async Task<object> Update(Guid key, Delta<PatientUpdateDto> entity)
     {
-        if (key == Guid.Empty)
+        if (key == Guid.Empty || entity == null)
         {
-            throw new Exception("L'id ne peut pas être un Guid Vide");
+            throw new Exception("Merci de vérifier les données saisie !");
+        }
+
+        var changedProperties = entity.GetChangedPropertyNames();
+        if (!changedProperties.Any())
+        {
+            throw new InvalidOperationException("No changes detected in the Delta object.");
         }
 
         var entityToUpdate = await _work.GetAsync(z => z.PatientId == key);

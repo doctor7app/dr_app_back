@@ -6,6 +6,7 @@ using Patients.Api.Middleware;
 using Patients.Infrastructure.Installation;
 using Prometheus;
 using Serilog;
+using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -37,6 +38,11 @@ builder.Services.AddControllers().AddOData(
             });
     });
 
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+    });
 
 builder.Services.AddSwaggerConfig();
 
@@ -50,21 +56,18 @@ builder.Services.AddOpenTelemetry(builder.Configuration["Tracing:Application"]);
 var app = builder.Build();
 
 // Enable Prometheus metrics
-app.UseMetricServer();  // Exposes metrics at `/metrics`
+app.UseMetricServer();
 app.UseHttpMetrics();
 
-// Configure the HTTP request pipeline.
+
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseCustomSwaggerConfig();
 }
 
 app.UseODataRouteDebug();
 app.UseODataQueryRequest();
 app.UseODataBatching();
-
-app.UseCustomSwaggerConfig();
 
 app.UseHttpsRedirection();
 

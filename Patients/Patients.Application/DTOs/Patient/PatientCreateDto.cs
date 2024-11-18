@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 using AutoMapper;
 using Common.Enums;
 using Common.Interfaces;
@@ -8,6 +9,7 @@ namespace Patients.Application.DTOs.Patient;
 public class PatientCreateDto : IMapFrom<Domain.Models.Patient>
 {
     [MaxLength(80, ErrorMessage = "SocialNumber must not exceed 80 characters")]
+    [JsonPropertyName("socialNumber")]
     public string SocialNumber { get; set; }
     [Required]
     public string FirstName { get; set; }
