@@ -3,7 +3,7 @@ using Microsoft.OpenApi.Any;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
-namespace Common.Helpers;
+namespace Common.Helpers.Swagger;
 
 public class ODataSwaggerOperationFilter : IOperationFilter
 {
@@ -99,22 +99,22 @@ public class ODataSwaggerOperationFilter : IOperationFilter
         {
             var propertySchema = new OpenApiSchema
             {
-                Type = "string" 
+                Type = "string"
             };
-                
+
             if (property.PropertyType.IsEnum)
             {
                 propertySchema.Enum = property.PropertyType.GetEnumNames()
                     .Select(x => (IOpenApiAny)new OpenApiString(x))
                     .ToList();
             }
-                
+
             else if (property.PropertyType == typeof(DateTime) || property.PropertyType == typeof(DateTime?))
             {
                 propertySchema.Type = "string";
                 propertySchema.Format = "date-time";
             }
-               
+
             else if (property.PropertyType == typeof(Guid) || property.PropertyType == typeof(Guid?))
             {
                 propertySchema.Type = "string";

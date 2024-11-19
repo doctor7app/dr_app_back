@@ -1,11 +1,10 @@
+using Common.Extension;
+using Common.Middleware;
 using Dme.Api.Helpers;
 using Microsoft.AspNetCore.OData;
 using Dme.Infrastructure.Installation;
 using Serilog;
-using Dme.Api.Extensions;
-using Dme.Api.Middleware;
 using Prometheus;
-using Dme.Api.Handler;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -55,15 +54,12 @@ app.UseHttpMetrics();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseCustomSwaggerConfig();
 }
 
 app.UseODataRouteDebug();
 app.UseODataQueryRequest();
 app.UseODataBatching();
-
-app.UseCustomSwaggerConfig();
 
 app.UseHttpsRedirection();
 
@@ -77,8 +73,6 @@ app.UseMiddleware<RequestLoggingMiddleware>();
 app.UseSerilogRequestLogging();
 
 app.UseExceptionHandler();
-
-//app.UseExceptionHandler();
 
 app.UseInitializeDbDomain();
 

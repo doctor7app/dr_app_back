@@ -1,12 +1,10 @@
+using Common.Extension;
+using Common.Middleware;
 using Microsoft.AspNetCore.OData;
-using Patients.Api.Extensions;
-using Patients.Api.Handler;
 using Patients.Api.Helpers;
-using Patients.Api.Middleware;
 using Patients.Infrastructure.Installation;
 using Prometheus;
 using Serilog;
-using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -36,12 +34,6 @@ builder.Services.AddControllers().AddOData(
                 services.AddScoped<Microsoft.OData.Json.IJsonWriterFactory>(
                     _ => new Microsoft.OData.Json.ODataJsonWriterFactory());
             });
-    });
-
-builder.Services.AddControllers()
-    .AddJsonOptions(options =>
-    {
-        options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
     });
 
 builder.Services.AddSwaggerConfig();

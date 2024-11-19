@@ -1,5 +1,4 @@
 ﻿using Dme.Application.DTOs.Treatments;
-using Microsoft.AspNetCore.OData.Deltas;
 
 namespace Dme.Application.Interfaces;
 
@@ -35,7 +34,7 @@ public interface ITreatmentService
     /// <param name="entity"></param>
     /// <param name="idConsultation"></param>
     /// <returns></returns>
-    Task<object> UpdateTreatmentForConsultation(Guid idConsultation,Guid idTreatment, Delta<TreatmentsUpdateDto> entity);
+    Task<object> PatchTreatmentForConsultation(Guid idConsultation,Guid idTreatment, TreatmentsPatchDto entity);
 
     /// <summary>
     /// Delete a treatment related to a specific consultation

@@ -1,7 +1,8 @@
-﻿using Microsoft.Extensions.Primitives;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Primitives;
 using Serilog.Context;
 
-namespace Patients.Api.Middleware;
+namespace Common.Middleware;
 
 public class RequestContextLoggingMiddleware(RequestDelegate next)
 {

@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
+using Common.Extension;
 using Common.Services.Interfaces;
-using Microsoft.AspNetCore.OData.Deltas;
 using Patients.Application.DTOs.Adresse;
 using Patients.Application.Interfaces;
 using Patients.Domain.Models;
@@ -53,7 +53,7 @@ public class AdresseService : IAdresseService
         return await _work.Complete();
     }
 
-    public async Task<object> Update(Guid patientId, Guid adresseId, Delta<AdresseDto> entity)
+    public async Task<object> Patch(Guid patientId, Guid adresseId, AdressePatchDto entity)
     {
         if (patientId == Guid.Empty || adresseId == Guid.Empty)
         {
@@ -65,9 +65,7 @@ public class AdresseService : IAdresseService
         {
             throw new Exception($"L'élement avec l'id {adresseId} n'existe pas dans la base de données!");
         }
-        var entityDto = _mapper.Map<AdresseDto>(entityToUpdate);
-        entity.Patch(entityDto);
-        _mapper.Map(entityDto, entityToUpdate);
+        entityToUpdate.UpdateWithDto(entity);
         return await _work.Complete();
     }
 

@@ -28,8 +28,7 @@ namespace Dme.Api.Helpers
             consultations.HasKey(a => a.Id);
             consultations.HasMany(a => a.Treatments);
             consultations.HasMany(a => a.Diagnostics);
-
-            //builder.EnableLowerCamelCase();
+            
             return builder.GetEdmModel();
         }
 

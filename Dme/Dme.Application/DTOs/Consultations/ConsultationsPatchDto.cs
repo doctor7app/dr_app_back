@@ -1,15 +1,11 @@
-﻿using System.ComponentModel.DataAnnotations;
-using AutoMapper;
+﻿using AutoMapper;
 using Common.Enums;
 using Common.Interfaces;
 
 namespace Dme.Application.DTOs.Consultations;
 
-public class ConsultationsUpdateDto : IMapFrom<Domain.Models.Consultations>
+public class ConsultationsPatchDto : IMapFrom<Domain.Models.Consultations>
 {
-    [Key]
-    [Required(ErrorMessage = "Consultation id is required")]
-    public Guid Id { get; set; }
     public string ReasonOfVisit { get; set; }
     public string Symptoms { get; set; }
     public decimal Weight { get; set; }
@@ -26,8 +22,7 @@ public class ConsultationsUpdateDto : IMapFrom<Domain.Models.Consultations>
 
     public void Mapping(Profile profile)
     {
-        profile.CreateMap < ConsultationsUpdateDto,Domain.Models.Consultations>()
-            .ForMember(dest => dest.ConsultationId, opt => opt.MapFrom(src => src.Id))
+        profile.CreateMap < ConsultationsPatchDto,Domain.Models.Consultations>()
             .ForMember(dest => dest.ReasonOfVisit, opt => opt.MapFrom(src => src.ReasonOfVisit))
             .ForMember(dest => dest.Symptoms, opt => opt.MapFrom(src => src.Symptoms))
             .ForMember(dest => dest.Weight, opt => opt.MapFrom(src => src.Weight))

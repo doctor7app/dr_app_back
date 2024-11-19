@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
+using Common.Extension;
 using Common.Services.Interfaces;
-using Microsoft.AspNetCore.OData.Deltas;
 using Patients.Application.DTOs.Patient;
 using Patients.Application.Interfaces;
 using Patients.Domain.Models;
@@ -42,27 +42,19 @@ public class PatientService : IPatientService
         return await _work.Complete();
     }
 
-    public async Task<object> Update(Guid key, Delta<PatientUpdateDto> entity)
+    public async Task<object> Patch(Guid key, PatientPatchDto entity)
     {
-        if (key == Guid.Empty || entity == null)
+        if (key == Guid.Empty)
         {
             throw new Exception("Merci de vérifier les données saisie !");
         }
-
-        var changedProperties = entity.GetChangedPropertyNames();
-        if (!changedProperties.Any())
-        {
-            throw new InvalidOperationException("No changes detected in the Delta object.");
-        }
-
+        
         var entityToUpdate = await _work.GetAsync(z => z.PatientId == key);
         if (entityToUpdate == null)
         {
             throw new Exception($"L'élement avec l'id {key} n'existe pas dans la base de données!");
         }
-        var entityDto = _mapper.Map<PatientUpdateDto>(entityToUpdate);
-        entity.Patch(entityDto);
-        _mapper.Map(entityDto, entityToUpdate);
+        entityToUpdate.UpdateWithDto(entity);
         return await _work.Complete();
     }
 

@@ -1,6 +1,7 @@
-﻿using Serilog;
+﻿using Microsoft.AspNetCore.Http;
+using Serilog;
 
-namespace Patients.Api.Middleware;
+namespace Common.Middleware;
 
 public class RequestLoggingMiddleware(RequestDelegate next)
 {

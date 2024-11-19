@@ -1,5 +1,5 @@
-﻿using Microsoft.OpenApi.Models;
-using Swashbuckle.AspNetCore.SwaggerGen;
+﻿using Common.Helpers.Swagger;
+using Microsoft.OpenApi.Models;
 
 namespace Dme.Api.Helpers
 {
@@ -40,6 +40,7 @@ namespace Dme.Api.Helpers
                     }}, new string[] {}}
                 });
                 c.OperationFilter<ODataSwaggerOperationFilter>();
+                c.DocumentFilter<RemoveODataPathsDocumentFilter>();
             });
         }
 
@@ -52,58 +53,5 @@ namespace Dme.Api.Helpers
             });
         }
     }
-
-    public class ODataSwaggerOperationFilter : IOperationFilter
-    {
-        public void Apply(OpenApiOperation operation, OperationFilterContext context)
-        {
-            var addedParameters = new List<string>();
-            if (context.ApiDescription.RelativePath == null ||
-                !context.ApiDescription.RelativePath.Contains("(")) return;
-            foreach (var param in context.ApiDescription.ActionDescriptor.Parameters)
-            {
-
-                if (param.Name.Equals("key", StringComparison.OrdinalIgnoreCase))
-                {
-                    var existingKeyParam = operation.Parameters
-                        .FirstOrDefault(p => p.Name.Equals("key", StringComparison.OrdinalIgnoreCase));
-                    if (existingKeyParam != null)
-                    {
-                        operation.Parameters.Remove(existingKeyParam);
-                    }
-
-                    operation.Parameters.Add(new OpenApiParameter
-                    {
-                        Name = "key",
-                        In = ParameterLocation.Path,
-                        Required = true,
-                        Schema = new OpenApiSchema { Type = "string", Format = "uuid" }
-                    });
-
-                    addedParameters.Add("key");
-                }
-                else if (param.Name.Contains("id", StringComparison.OrdinalIgnoreCase))
-                {
-                    if (addedParameters.Contains(param.Name)) continue;
-
-                    var existingChildParam = operation.Parameters
-                        .FirstOrDefault(p => p.Name.Equals(param.Name, StringComparison.OrdinalIgnoreCase));
-                    if (existingChildParam != null)
-                    {
-                        operation.Parameters.Remove(existingChildParam);
-                    }
-
-                    operation.Parameters.Add(new OpenApiParameter
-                    {
-                        Name = param.Name,
-                        In = ParameterLocation.Path,
-                        Required = true,
-                        Schema = new OpenApiSchema { Type = "string", Format = "uuid" }
-                    });
-
-                    addedParameters.Add(param.Name);
-                }
-            }
-        }
-    }
+    
 }

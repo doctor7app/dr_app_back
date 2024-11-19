@@ -1,8 +1,9 @@
-﻿using OpenTelemetry.Metrics;
+﻿using Microsoft.Extensions.DependencyInjection;
+using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 
-namespace Dme.Api.Extensions;
+namespace Common.Extension;
 
 public static class TelemetryExtensions
 {

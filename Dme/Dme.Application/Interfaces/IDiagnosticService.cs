@@ -1,5 +1,4 @@
 ﻿using Dme.Application.DTOs.Diagnostics;
-using Microsoft.AspNetCore.OData.Deltas;
 
 namespace Dme.Application.Interfaces;
 
@@ -35,7 +34,7 @@ public interface IDiagnosticService
     /// <param name="entity"></param>
     /// <param name="idConsultation"></param>
     /// <returns></returns>
-    Task<object> UpdateDiagnosticForConsultation(Guid idConsultation, Guid idDiagnostic, Delta<DiagnosticsUpdateDto> entity);
+    Task<object> PatchDiagnosticForConsultation(Guid idConsultation, Guid idDiagnostic, DiagnosticsPatchDto entity);
 
     /// <summary>
     /// Delete a specific diagnostic for a specific consultation

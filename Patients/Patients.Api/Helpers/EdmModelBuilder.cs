@@ -27,8 +27,7 @@ namespace Patients.Api.Helpers
             patients.HasMany(a => a.Adresses);
             patients.HasMany(a => a.Contacts);
             patients.HasMany(a => a.MedicalInfos);
-
-            //builder.EnableLowerCamelCase();
+            
             return builder.GetEdmModel();
         }
     }

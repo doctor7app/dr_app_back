@@ -5,14 +5,12 @@ using Common.Interfaces;
 
 namespace Patients.Application.DTOs.Patient;
 
-public class PatientUpdateDto : IMapFrom<Domain.Models.Patient>
+public class PatientPatchDto : IMapFrom<Domain.Models.Patient>
 {
-    [Key,Required]
-    public Guid Id { get; set; }
     public string SocialNumber { get; set; }
     [Required]
     public string FirstName { get; set; }
-    //[Required]
+    [Required]
     public string LastName { get; set; }
     public string MiddleName { get; set; }
     public DateTime BirthDate { get; set; }
@@ -24,8 +22,7 @@ public class PatientUpdateDto : IMapFrom<Domain.Models.Patient>
 
     public void Mapping(Profile profile)
     {
-        profile.CreateMap<PatientUpdateDto, Domain.Models.Patient>()
-            .ForMember(dest => dest.PatientId, opt => opt.MapFrom(src => src.Id))
+        profile.CreateMap<PatientPatchDto, Domain.Models.Patient>()
             .ForMember(dest => dest.SocialSecurityNumber, opt => opt.MapFrom(src => src.SocialNumber))
             .ForMember(dest => dest.FirstName, opt => opt.MapFrom(src => src.FirstName))
             .ForMember(dest => dest.LastName, opt => opt.MapFrom(src => src.LastName))

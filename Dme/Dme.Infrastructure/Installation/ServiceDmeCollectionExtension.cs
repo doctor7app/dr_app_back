@@ -1,4 +1,4 @@
-﻿using Dme.Application;
+﻿using Common.Extension;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Dme.Infrastructure.Installation

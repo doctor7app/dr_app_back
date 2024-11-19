@@ -1,4 +1,4 @@
-﻿using Common.Helpers;
+﻿using Common.Helpers.Swagger;
 using Microsoft.OpenApi.Models;
 
 namespace Patients.Api.Helpers

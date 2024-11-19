@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
+using Common.Extension;
 using Common.Services.Interfaces;
-using Microsoft.AspNetCore.OData.Deltas;
 using Patients.Application.DTOs.MedicalInfo;
 using Patients.Application.Interfaces;
 using Patients.Domain.Models;
@@ -54,7 +54,7 @@ public class MedicalInfoService : IMedicalInfoService
         return await _work.Complete();
     }
 
-    public async Task<object> Update(Guid patientId, Guid medicalInfoId, Delta<MedicalInfoDto> entity)
+    public async Task<object> Patch(Guid patientId, Guid medicalInfoId, MedicalInfoPatchDto entity)
     {
         if (patientId == Guid.Empty || medicalInfoId == Guid.Empty)
         {
@@ -66,9 +66,7 @@ public class MedicalInfoService : IMedicalInfoService
         {
             throw new Exception($"L'élement avec l'id {medicalInfoId} n'existe pas dans la base de données!");
         }
-        var entityDto = _mapper.Map<MedicalInfoDto>(entityToUpdate);
-        entity.Patch(entityDto);
-        _mapper.Map(entityDto, entityToUpdate);
+        entityToUpdate.UpdateWithDto(entity);
         return await _work.Complete();
     }
 

@@ -4,7 +4,6 @@ using Common.Services.Interfaces;
 using Dme.Application.DTOs.Dmes;
 using Dme.Application.Interfaces;
 using Dme.Infrastructure.Persistence;
-using Microsoft.AspNetCore.OData.Deltas;
 using Microsoft.EntityFrameworkCore;
 
 namespace Dme.Infrastructure.Implementation;
@@ -49,7 +48,7 @@ public class DmeService : IDmeService
         return await _repository.Complete();
     }
 
-    public async Task<object> Update(Guid idDme, Delta<DmeUpdateDto> entity)
+    public async Task<object> Patch(Guid idDme, DmePatchDto entity)
     {
         if (idDme.IsNullOrEmpty() || entity == null)
         {
@@ -60,9 +59,7 @@ public class DmeService : IDmeService
         {
             throw new Exception($"Impossible de trouver l'entité à mettre à jour!");
         }
-        var entityDto = _mapper.Map<DmeUpdateDto>(entityToUpdate);
-        entity.Patch(entityDto);
-        _mapper.Map(entityDto, entityToUpdate);
+        entityToUpdate.UpdateWithDto(entity);
         return await _repository.Complete();
 
     }

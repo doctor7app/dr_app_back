@@ -1,5 +1,4 @@
 ﻿using Dme.Application.DTOs.Consultations;
-using Microsoft.AspNetCore.OData.Deltas;
 
 namespace Dme.Application.Interfaces;
 
@@ -31,13 +30,13 @@ public interface IConsultationService
     Task<object> CreateConsultationForDme(Guid idDme, ConsultationsCreateDto entity);
 
     /// <summary>
-    /// Update a consultation for a specific DME
+    /// Patch  consultation for a specific DME
     /// </summary>
     /// <param name="idDme"></param>
     /// <param name="idConsultation"></param>
     /// <param name="entity"></param>
     /// <returns></returns>
-    Task<object> UpdateConsultationForDme(Guid idDme, Guid idConsultation, Delta<ConsultationsUpdateDto> entity);
+    Task<object> PatchConsultationForDme(Guid idDme, Guid idConsultation, ConsultationsPatchDto entity);
 
     /// <summary>
     /// Delete one consultation related to a specific DME
@@ -77,7 +76,7 @@ public interface IConsultationService
     /// <param name="idConsultation"></param>
     /// <param name="entity"></param>
     /// <returns></returns>
-    Task<object> UpdateConsultationById(Guid idConsultation, Delta<ConsultationsUpdateDto> entity);
+    Task<object> PatchConsultationById(Guid idConsultation, ConsultationsPatchDto entity);
 
     /// <summary>
     /// Delete Consultation By it's Id

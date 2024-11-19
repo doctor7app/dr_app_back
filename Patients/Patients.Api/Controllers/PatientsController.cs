@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.OData.Deltas;
 using Microsoft.AspNetCore.OData.Formatter;
 using Microsoft.AspNetCore.OData.Query;
 using Microsoft.AspNetCore.OData.Routing.Controllers;
@@ -49,17 +48,21 @@ namespace Patients.Api.Controllers
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] PatientCreateDto entity)
         {
+            if (!ModelState.IsValid)
+            {
+                throw new Exception("Merci de vérifier les données saisie !");
+            }
             return Ok(await _patientService.Create(entity));
         }
 
         [HttpPatch("{key}")]
-        public async Task<IActionResult> Patch([FromODataUri] Guid key, [FromBody] Delta<PatientUpdateDto> entity)
+        public async Task<IActionResult> Patch([FromODataUri] Guid key, [FromBody] PatientPatchDto entity)
         {
             if (!ModelState.IsValid)
             {
                 throw new Exception("Merci de vérifier les données saisie !");
             }
-            return Ok(await _patientService.Update(key, entity));
+            return Ok(await _patientService.Patch(key, entity));
         }
         
         [HttpDelete("{key}")]
@@ -89,13 +92,23 @@ namespace Patients.Api.Controllers
         [HttpPost("{key}/Adresses")]
         public async Task<IActionResult> CreateAdresse([FromODataUri] Guid key, [FromBody] AdresseCreateDto entity)
         {
+            if (!ModelState.IsValid)
+            {
+                throw new Exception("Merci de vérifier les données saisie !");
+            }
             return Ok(await _adresseService.Create(key, entity));
         }
         
         [HttpPatch("{key}/Adresses/{idAdress}")]
-        public async Task<IActionResult> PatchAdresse([FromODataUri] Guid key, [FromODataUri] Guid idAdress, [FromBody] Delta<AdresseDto> entity)
+        public async Task<IActionResult> PatchAdresse([FromODataUri] Guid key, 
+            [FromODataUri] Guid idAdress, 
+            [FromBody] AdressePatchDto entity)
         {
-            return Ok(await _adresseService.Update(key, idAdress, entity));
+            if (!ModelState.IsValid)
+            {
+                throw new Exception("Merci de vérifier les données saisie !");
+            }
+            return Ok(await _adresseService.Patch(key, idAdress, entity));
         }
         
         [HttpDelete("{key}/Adresses/{idAdress}")]
@@ -125,13 +138,23 @@ namespace Patients.Api.Controllers
         [HttpPost("{key}/Contacts")]
         public async Task<IActionResult> CreateContact([FromODataUri] Guid key, [FromBody] ContactCreateDto entity)
         {
+            if (!ModelState.IsValid)
+            {
+                throw new Exception("Merci de vérifier les données saisie !");
+            }
             return Ok(await _contactService.Create(key, entity));
         }
 
         [HttpPatch("{key}/Contacts/{idContact}")]
-        public async Task<IActionResult> PatchContact([FromODataUri] Guid key, [FromODataUri] Guid idContact, [FromBody] Delta<ContactDto> entity)
+        public async Task<IActionResult> PatchContact([FromODataUri] Guid key, 
+            [FromODataUri] Guid idContact, 
+            [FromBody] ContactPatchDto entity)
         {
-            return Ok(await _contactService.Update(key, idContact, entity));
+            if (!ModelState.IsValid)
+            {
+                throw new Exception("Merci de vérifier les données saisie !");
+            }
+            return Ok(await _contactService.Patch(key, idContact, entity));
         }
 
         [HttpDelete("{key}/Contacts/{idContact}")]
@@ -162,13 +185,23 @@ namespace Patients.Api.Controllers
         [HttpPost("{key}/MedicalInfos")]
         public async Task<IActionResult> CreateMedical([FromODataUri] Guid key, [FromBody] MedicalInfoCreateDto entity)
         {
+            if (!ModelState.IsValid)
+            {
+                throw new Exception("Merci de vérifier les données saisie !");
+            }
             return Ok(await _medicalInfoService.Create(key, entity));
         }
 
         [HttpPatch("{key}/MedicalInfos/{idMedicalInfo}")]
-        public async Task<IActionResult> PatchMedical([FromODataUri] Guid key, [FromODataUri] Guid idMedicalInfo, [FromBody] Delta<MedicalInfoDto> entity)
+        public async Task<IActionResult> PatchMedical([FromODataUri] Guid key, 
+            [FromODataUri] Guid idMedicalInfo, 
+            [FromBody] MedicalInfoPatchDto entity)
         {
-            return Ok(await _medicalInfoService.Update(key, idMedicalInfo, entity));
+            if (!ModelState.IsValid)
+            {
+                throw new Exception("Merci de vérifier les données saisie !");
+            }
+            return Ok(await _medicalInfoService.Patch(key, idMedicalInfo, entity));
         }
 
         [HttpDelete("{key}/MedicalInfos/{idMedicalInfo}")]

@@ -5,13 +5,10 @@ using Common.Interfaces;
 
 namespace Dme.Application.DTOs.Dmes;
 
-public class DmeUpdateDto : IMapFrom<Domain.Models.Dme>
+public class DmePatchDto : IMapFrom<Domain.Models.Dme>
 {
-    [Key]
-    public Guid Id { get; set; }
     public string Notes { get; set; }
     public string AdditionalInformations { get; set; }
-
     [Required(ErrorMessage = "Patient is required")]
     public Guid PatientId { get; set; }
     [Required(ErrorMessage = "Doctor is required")]
@@ -21,8 +18,7 @@ public class DmeUpdateDto : IMapFrom<Domain.Models.Dme>
     
     public void Mapping(Profile profile)
     {
-        profile.CreateMap<DmeUpdateDto,Domain.Models.Dme>()
-            .ForMember(dest => dest.DmeId, opt => opt.MapFrom(src => src.Id))
+        profile.CreateMap<DmePatchDto,Domain.Models.Dme>()
             .ForMember(dest => dest.FkIdPatient, opt => opt.MapFrom(src => src.PatientId))
             .ForMember(dest => dest.FkIdDoctor, opt => opt.MapFrom(src => src.DoctorId))
             .ForMember(dest => dest.Notes, opt => opt.MapFrom(src => src.Notes))

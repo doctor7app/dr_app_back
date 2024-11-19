@@ -1,7 +1,7 @@
 ﻿using Serilog;
 using Serilog.Events;
 
-namespace Patients.Api.Extensions;
+namespace Common.Extension;
 
 public static class SerilogExtensions
 {

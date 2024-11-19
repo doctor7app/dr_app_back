@@ -2,7 +2,6 @@
 using Dme.Application.DTOs.Dmes;
 using Dme.Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.OData.Deltas;
 using Microsoft.AspNetCore.OData.Formatter;
 using Microsoft.AspNetCore.OData.Query;
 using Microsoft.AspNetCore.OData.Routing.Controllers;
@@ -23,14 +22,14 @@ namespace Dme.Api.Controllers
 
         #region Dme Actions
         
-        [HttpGet("({key})")]
+        [HttpGet("{key}")]
         [EnableQuery]
         public async Task<IActionResult> Get([FromODataUri] Guid key)
         {
             return Ok(await _dmeService.Get(key));
         }
         
-        [HttpGet("$count")]
+        [HttpGet]
         [EnableQuery(PageSize = 20, AllowedQueryOptions = AllowedQueryOptions.All, MaxOrderByNodeCount = 10)]
         public async Task<IActionResult> Get()
         {
@@ -40,16 +39,24 @@ namespace Dme.Api.Controllers
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] DmeCreateDto entity)
         {
+            if (!ModelState.IsValid)
+            {
+                throw new Exception("Merci de vérifier les données saisie !");
+            }
             return Ok(await _dmeService.Create(entity));
         }
 
-        [HttpPatch("({key})")]
-        public async Task<IActionResult> Patch([FromODataUri] Guid key, [FromBody] Delta<DmeUpdateDto> entity)
+        [HttpPatch("{key}")]
+        public async Task<IActionResult> Patch([FromODataUri] Guid key, [FromBody] DmePatchDto entity)
         {
-            return Ok(await _dmeService.Update(key, entity));
+            if (!ModelState.IsValid)
+            {
+                throw new Exception("Merci de vérifier les données saisie !");
+            }
+            return Ok(await _dmeService.Patch(key, entity));
         }
         
-        [HttpDelete("({key})")]
+        [HttpDelete("{key}")]
         public async Task<IActionResult> Delete([FromODataUri] Guid key)
         {
             return Ok(await _dmeService.Delete(key));
@@ -60,32 +67,42 @@ namespace Dme.Api.Controllers
         #region Consultations Actions
 
         [EnableQuery]
-        [HttpGet("({key})/Consultations({idConsultation})")]
+        [HttpGet("{key}/Consultations/{idConsultation}")]
         public async Task<IActionResult> GetConsultation(Guid key, Guid idConsultation)
         {
             return Ok(await _consultationService.GetConsultationForDme(key, idConsultation));
         }
 
         [EnableQuery]
-        [HttpGet("({key})/Consultations")]
+        [HttpGet("{key}/Consultations")]
         public async Task<IActionResult> GetConsultation(Guid key)
         {
             return Ok(await _consultationService.GetAllConsultationForDme(key));
         }
 
-        [HttpPost("({key})/Consultations")]
+        [HttpPost("{key}/Consultations")]
         public async Task<IActionResult> CreateConsultation([FromODataUri] Guid key, [FromBody] ConsultationsCreateDto entity)
         {
+            if (!ModelState.IsValid)
+            {
+                throw new Exception("Merci de vérifier les données saisie !");
+            }
             return Ok(await _consultationService.CreateConsultationForDme(key, entity));
         }
 
-        [HttpPatch("({key})/Consultations({idConsultation})")]
-        public async Task<IActionResult> PatchConsultation([FromODataUri] Guid key, [FromODataUri] Guid idConsultation, [FromBody] Delta<ConsultationsUpdateDto> entity)
+        [HttpPatch("{key}/Consultations/{idConsultation}")]
+        public async Task<IActionResult> PatchConsultation([FromODataUri] Guid key, 
+            [FromODataUri] Guid idConsultation, 
+            [FromBody] ConsultationsPatchDto entity)
         {
-            return Ok(await _consultationService.UpdateConsultationForDme(key, idConsultation, entity));
+            if (!ModelState.IsValid)
+            {
+                throw new Exception("Merci de vérifier les données saisie !");
+            }
+            return Ok(await _consultationService.PatchConsultationForDme(key, idConsultation, entity));
         }
 
-        [HttpDelete("({key})/Consultations({idConsultation})")]
+        [HttpDelete("{key}/Consultations/{idConsultation}")]
         public async Task<IActionResult> DeleteConsultation([FromODataUri] Guid key, [FromODataUri] Guid idConsultation)
         {
             return Ok(await _consultationService.DeleteConsultationForDme(key, idConsultation));

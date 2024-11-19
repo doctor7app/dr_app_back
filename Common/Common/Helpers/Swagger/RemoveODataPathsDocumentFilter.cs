@@ -1,7 +1,7 @@
 ﻿using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
-namespace Common.Helpers;
+namespace Common.Helpers.Swagger;
 
 public class RemoveODataPathsDocumentFilter : IDocumentFilter
 {

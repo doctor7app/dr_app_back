@@ -5,7 +5,6 @@ using Dme.Application.DTOs.Consultations;
 using Dme.Application.Interfaces;
 using Dme.Domain.Models;
 using Dme.Infrastructure.Persistence;
-using Microsoft.AspNetCore.OData.Deltas;
 using Microsoft.EntityFrameworkCore;
 
 namespace Dme.Infrastructure.Implementation;
@@ -57,7 +56,7 @@ public class ConsultationService : IConsultationService
         return await _repository.Complete();
     }
 
-    public async Task<object> UpdateConsultationForDme(Guid idDme, Guid idConsultation, Delta<ConsultationsUpdateDto> entity)
+    public async Task<object> PatchConsultationForDme(Guid idDme, Guid idConsultation, ConsultationsPatchDto entity)
     {
         if (idConsultation.IsNullOrEmpty() || entity == null || idDme.IsNullOrEmpty())
         {
@@ -68,9 +67,7 @@ public class ConsultationService : IConsultationService
         {
             throw new Exception($"Impossible de trouver l'entité à mettre à jour!");
         }
-        var entityDto = _mapper.Map<ConsultationsUpdateDto>(entityToUpdate);
-        entity.Patch(entityDto);
-        _mapper.Map(entityDto, entityToUpdate);
+        entityToUpdate.UpdateWithDto(entity);
         return await _repository.Complete();
     }
 
@@ -124,7 +121,7 @@ public class ConsultationService : IConsultationService
         
     }
 
-    public async Task<object> UpdateConsultationById(Guid idConsultation, Delta<ConsultationsUpdateDto> entity)
+    public async Task<object> PatchConsultationById(Guid idConsultation, ConsultationsPatchDto entity)
     {
         if (idConsultation.IsNullOrEmpty() || entity ==null)
         {
@@ -135,9 +132,7 @@ public class ConsultationService : IConsultationService
         {
             throw new Exception($"Impossible de trouver l'entité à mettre à jour!");
         }
-        var entityDto = _mapper.Map<ConsultationsUpdateDto>(entityToUpdate);
-        entity.Patch(entityDto);
-        _mapper.Map(entityDto, entityToUpdate);
+        entityToUpdate.UpdateWithDto(entity);
         return await _repository.Complete();
     }
 

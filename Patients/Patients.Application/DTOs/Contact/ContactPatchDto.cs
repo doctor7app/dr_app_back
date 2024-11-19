@@ -5,11 +5,11 @@ using Common.Interfaces;
 
 namespace Patients.Application.DTOs.Contact;
 
-public class ContactDto : IMapFrom<Domain.Models.Contact>
+public class ContactPatchDto : IMapFrom<Domain.Models.Contact>
 {
-    [Key]
-    public Guid Id { get; set; }
+    [Required]
     public string FirstName { get; set; }
+    [Required]
     public string LastName { get; set; }
     public string PhoneNumber { get; set; }
     public string Email { get; set; }
@@ -17,8 +17,7 @@ public class ContactDto : IMapFrom<Domain.Models.Contact>
 
     public void Mapping(Profile profile)
     {
-        profile.CreateMap<Domain.Models.Contact, ContactDto>()
-            .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.ContactId))
+        profile.CreateMap<Domain.Models.Contact, ContactPatchDto>()
             .ForMember(dest => dest.FirstName, opt => opt.MapFrom(src => src.FirstName))
             .ForMember(dest => dest.LastName, opt => opt.MapFrom(src => src.LastName))
             .ForMember(dest => dest.PhoneNumber, opt => opt.MapFrom(src => src.PhoneNumber))
