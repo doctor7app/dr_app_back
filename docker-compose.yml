@@ -1,5 +1,6 @@
-services:
+version: '3.9'
 
+services:
   seq:
     image: datalust/seq:latest
     container_name: seq
@@ -18,6 +19,11 @@ services:
       - "5303:9090"
     command:
       - "--config.file=/etc/prometheus/prometheus.yml"
+    healthcheck:
+      test: ["CMD-SHELL", "wget --spider -q http://localhost:9090/-/healthy"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   grafana:
     image: grafana/grafana:latest
@@ -30,16 +36,23 @@ services:
     volumes:
       - ./grafana/provisioning:/etc/grafana/provisioning
     depends_on:
-      - prometheus
+      prometheus:
+        condition: service_healthy
 
   postgres:
-    image: postgres
+    image: postgres:latest
+    container_name: postgres
     environment:
       - POSTGRES_PASSWORD=postgrespw
     ports:
       - 5201:5432
     volumes:
       - ./.containers/postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   rabbitmq:
     image: rabbitmq:3-management
@@ -51,7 +64,12 @@ services:
       RABBITMQ_DEFAULT_USER: admin
       RABBITMQ_DEFAULT_PASS: admin
     volumes:
-      - ./.containers/rabbitmq:/var/lib/rabbitmq 
+      - ./.containers/rabbitmq:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD-SHELL", "rabbitmq-diagnostics -q ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   docmanagement-svc:
     image: ${DOCKER_REGISTRY-}docmanagement-svc
@@ -72,9 +90,12 @@ services:
     volumes:
       - ./.containers/docmanagement-svc/DocumentStorage:/DocumentStorage
     depends_on:
-      - postgres
-      - seq
-      - prometheus 
+      postgres:
+        condition: service_healthy
+      seq:
+        condition: service_started
+      prometheus:
+        condition: service_healthy
 
   patients-svc:
     image: ${DOCKER_REGISTRY-}patients-svc
@@ -92,11 +113,15 @@ services:
       - 5102:8080
       - 5902:9090
     depends_on:
-      - postgres
-      - seq
-      - prometheus
-      - rabbitmq
-  
+      postgres:
+        condition: service_healthy
+      seq:
+        condition: service_started
+      prometheus:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+
   dme-svc:
     image: ${DOCKER_REGISTRY-}dme-svc
     build:
@@ -113,8 +138,11 @@ services:
       - 5103:8080
       - 5903:9090
     depends_on:
-      - postgres
-      - seq
-      - prometheus
-      - rabbitmq    
-
+      postgres:
+        condition: service_healthy
+      seq:
+        condition: service_started
+      prometheus:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy

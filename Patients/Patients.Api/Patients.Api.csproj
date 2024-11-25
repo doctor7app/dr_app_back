@@ -32,6 +32,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<ProjectReference Include="..\..\Common\Contracts\Contracts.csproj" />
 		<ProjectReference Include="..\Patients.Infrastructure\Patients.Infrastructure.csproj" />
 	</ItemGroup>
 

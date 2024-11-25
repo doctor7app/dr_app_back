@@ -17,7 +17,7 @@ builder.Host.UseSerilog();
 
 builder.Services.AddDmeDatabaseServiceCollection();
 builder.Services.AddDmeServiceCollection();
-
+builder.Services.AddDmeMassTransitConfig(builder.Configuration);
 builder.Services.AddControllers();
 
 builder.Services.AddRouting();
@@ -44,6 +44,7 @@ builder.Services.AddProblemDetails();
 builder.Services.UseHttpClientMetrics();
 
 builder.Services.AddOpenTelemetry(builder.Configuration["Tracing:Application"]);
+
 
 var app = builder.Build();
 

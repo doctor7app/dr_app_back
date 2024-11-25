@@ -18,6 +18,7 @@ builder.Host.UseSerilog();
 
 builder.Services.AddPatientDatabaseServiceCollection();
 builder.Services.AddPatientServiceCollection();
+builder.Services.AddPatientMassTransitConfig(builder.Configuration);
 
 builder.Services.AddControllers();
 builder.Services.AddRouting();
