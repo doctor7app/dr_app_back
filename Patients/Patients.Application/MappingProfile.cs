@@ -1,7 +1,7 @@
 ﻿using System.Reflection;
 using Common.Interfaces;
 
-namespace Patients.Infrastructure
+namespace Patients.Application
 {
     public class MappingProfile : AutoMapper.Profile
     {
