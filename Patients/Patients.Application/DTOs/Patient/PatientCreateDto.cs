@@ -18,7 +18,7 @@ public class PatientCreateDto : IMapFrom<Domain.Models.Patient>
     public string MiddleName { get; set; }
     [Required]
     public DateTime BirthDate { get; set; }
-    public DateTime DeathDate { get; set; }
+    public DateTime? DeathDate { get; set; }
     public Gender Gender { get; set; }
     public string Email { get; set; }
     public string PhoneNumber { get; set; }

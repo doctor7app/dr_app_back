@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Folder Include="Messages\Dmes\" />
     <Folder Include="Messages\Patients\" />
   </ItemGroup>
 

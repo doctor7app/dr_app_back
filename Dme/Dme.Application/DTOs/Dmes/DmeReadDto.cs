@@ -19,7 +19,6 @@ public class DmeReadDto :IMapFrom<Domain.Models.Dme>
     //Can be removed.
     public string DoctorName { get; set; }
     public Guid DoctorId { get; set; }
-
     public DateTime Created { get; set; }
     public Guid CreatedById { get; set; }
     public DateTime? LastModified { get; set; }

@@ -38,13 +38,10 @@ public class PatientDto : IMapFrom<Domain.Models.Patient>
             .ForMember(dest => dest.MiddleName, opt => opt.MapFrom(src => src.MiddleName))
             .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email))
             .ForMember(dest => dest.Gender, opt => opt.MapFrom(src => src.Gender))
-
             .ForMember(dest => dest.BirthDate, opt => opt.MapFrom(src => src.BirthDate))
             .ForMember(dest => dest.DeathDate, opt => opt.MapFrom(src => src.DeathDate))
-
             .ForMember(dest => dest.PhoneNumber, opt => opt.MapFrom(src => src.PhoneNumber))
             .ForMember(dest => dest.HomeNumber, opt => opt.MapFrom(src => src.HomeNumber))
-
             .ForMember(dest => dest.Age, opt => opt.MapFrom(src =>
 
                  DateTime.Today.Year - src.BirthDate.Year

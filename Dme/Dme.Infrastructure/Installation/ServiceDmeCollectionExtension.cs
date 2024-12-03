@@ -1,5 +1,7 @@
 ﻿using Common.Extension;
+using Dme.Application.Interfaces;
 using Dme.Infrastructure.Consumers;
+using Dme.Infrastructure.Implementation;
 using MassTransit;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -16,7 +18,14 @@ namespace Dme.Infrastructure.Installation
         /// <returns></returns>
         public static IServiceCollection AddDmeServiceCollection(this IServiceCollection services)
         {
-            services.AddAutoMapperConfiguration();
+            
+            var applicationAssembly = typeof(Application.MappingProfile).Assembly;
+            var infrastructureAssembly = typeof(MessageMappingProfile).Assembly;
+            services.AddAutoMapperConfigurationV2(applicationAssembly, infrastructureAssembly);
+            services.AddTransient<IConsultationService, ConsultationService>();
+            services.AddTransient<IDiagnosticService, DiagnosticService>();
+            services.AddTransient<IDmeService, DmeService>();
+            services.AddTransient<ITreatmentService, TreatmentService>();
             return services;
         }
 

@@ -17,7 +17,10 @@ namespace Patients.Infrastructure.Installation
         /// <returns></returns>
         public static IServiceCollection AddPatientServiceCollection(this IServiceCollection services)
         {
-            services.AddAutoMapperConfiguration();
+            var applicationAssembly = typeof(Application.MappingProfile).Assembly;
+            var infrastructureAssembly = typeof(MessageMappingProfile).Assembly;
+            services.AddAutoMapperConfigurationV2(applicationAssembly, infrastructureAssembly);
+
             services.AddTransient<IPatientService, PatientService>();
             services.AddTransient<IAdresseService, AdresseService>();
             services.AddTransient<IContactService, ContactService>();

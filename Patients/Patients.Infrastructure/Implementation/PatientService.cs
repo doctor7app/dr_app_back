@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using Common.Extension;
 using Common.Services.Interfaces;
+using Contracts.Messages.Patients;
+using MassTransit;
 using Patients.Application.DTOs.Patient;
 using Patients.Application.Interfaces;
 using Patients.Domain.Models;
@@ -12,10 +14,14 @@ public class PatientService : IPatientService
 {
     private readonly IRepository<Patient, PatientDbContext> _work;
     private readonly IMapper _mapper;
-    public PatientService(IRepository<Patient, PatientDbContext> work, IMapper mapper)
+    private readonly IPublishEndpoint _publishEndpoint;
+
+    public PatientService(IRepository<Patient, PatientDbContext> work, 
+        IMapper mapper,IPublishEndpoint publishEndpoint)
     {
         _work = work;
         _mapper = mapper;
+        _publishEndpoint = publishEndpoint;
     }
 
     public async Task<object> Get(Guid id)
@@ -39,7 +45,14 @@ public class PatientService : IPatientService
     {
         var item = _mapper.Map<Patient>(entity);
         await _work.AddAsync(item);
-        return await _work.Complete();
+        var result =  await _work.Complete() > 0;
+        if (!result)
+        {
+            throw new Exception("Could not save Patient to database");
+        }
+        var newPatient = _mapper.Map<PatientDto>(item);
+        await _publishEndpoint.Publish(_mapper.Map<PatientCreatedEvent>(newPatient));
+        return true;
     }
 
     public async Task<object> Patch(Guid key, PatientPatchDto entity)

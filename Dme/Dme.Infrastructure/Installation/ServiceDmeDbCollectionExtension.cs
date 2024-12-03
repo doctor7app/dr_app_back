@@ -1,7 +1,5 @@
 ﻿using Common.Services.Implementation;
 using Common.Services.Interfaces;
-using Dme.Application.Interfaces;
-using Dme.Infrastructure.Implementation;
 using Dme.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
@@ -29,11 +27,6 @@ namespace Dme.Infrastructure.Installation
             
             services.AddScoped(typeof(IRepository<,>), typeof(Repository<,>));
             services.AddScoped(typeof(IServiceGeneric<,,,,>), typeof(ServiceGeneric<,,,,>));
-            
-            services.AddScoped<IDmeService, DmeService>();
-            services.AddScoped<IConsultationService, ConsultationService>();
-            services.AddScoped<IDiagnosticService, DiagnosticService>();
-            services.AddScoped<ITreatmentService, TreatmentService>();
             return services;
         }
 

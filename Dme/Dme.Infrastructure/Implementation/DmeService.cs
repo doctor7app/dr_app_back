@@ -1,9 +1,11 @@
 ﻿using AutoMapper;
 using Common.Extension;
 using Common.Services.Interfaces;
+using Contracts.Messages.Dmes;
 using Dme.Application.DTOs.Dmes;
 using Dme.Application.Interfaces;
 using Dme.Infrastructure.Persistence;
+using MassTransit;
 using Microsoft.EntityFrameworkCore;
 
 namespace Dme.Infrastructure.Implementation;
@@ -12,11 +14,15 @@ public class DmeService : IDmeService
 {
     private readonly IRepository<Domain.Models.Dme, DmeDbContext> _repository;
     private readonly IMapper _mapper;
+    private readonly IPublishEndpoint _publishEndpoint;
 
-    public DmeService(IRepository<Domain.Models.Dme, DmeDbContext> repository, IMapper mapper)
+    public DmeService(IRepository<Domain.Models.Dme, DmeDbContext> repository, 
+        IMapper mapper,
+        IPublishEndpoint publishEndpoint)
     {
         _repository = repository;
         _mapper = mapper;
+        _publishEndpoint = publishEndpoint;
     }
 
     public async Task<object> Get(Guid id)
@@ -43,9 +49,15 @@ public class DmeService : IDmeService
             throw new Exception("L'id ne peut pas être un Guid Vide");
         }
         var itemToCreate = _mapper.Map<Domain.Models.Dme>(entity);
-
         await _repository.AddAsync(itemToCreate);
-        return await _repository.Complete();
+        var result =  await _repository.Complete() > 0;
+        if (!result)
+        {
+            throw new Exception("Could not insert item to the database");
+        }
+        var newDme = _mapper.Map<DmeReadDto>(itemToCreate);
+        await _publishEndpoint.Publish(_mapper.Map<DmeCreatedEvent>(newDme));
+        return true;
     }
 
     public async Task<object> Patch(Guid idDme, DmePatchDto entity)
