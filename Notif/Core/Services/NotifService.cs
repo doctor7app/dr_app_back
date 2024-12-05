@@ -1,54 +1,66 @@
 ﻿
 
-using Common.Contracts.Notification.V1;
+using AutoMapper;
+using Common.Contracts.Notif;
 using MailKit.Net.Smtp;
 using MailKit.Security;
 using MimeKit;
+using Notif.Core.Interfaces.Data;
 using Notif.Core.Interfaces.Services;
 using Notif.Core.Models;
-using Notif.Infrastructure.Data;
 
 namespace Notif.Core.Services;
 
-public class NotifService(DataDbContext context) : INotifService
+public class NotifService(IMapper mapper, INotifItemRepository notifItemRepository) : INotifService
 {
-    public async Task ProcessNotificationAsync(NotifMessage message)
+    public async Task SaveNotificationAsync(NotifRequest notifRequest)
     {
-        var notification = new NotifItem
-        {
-            Recipient = message.Recipient,
-            Message = message.Message,
-            Type = message.Type,
-            Priority = message.Priority,
-            Status = NotifStatus.Pending,
-            CreatedAt = DateTime.UtcNow
-        };
+        var notification = mapper.Map<NotifItem>(notifRequest);
+        notification.Status = NotifStatus.Pending;
+        await notifItemRepository.AddAsync(notification);
+    }
+    public async Task SendEmailAsync(NotifPriority priority, int batch = 10)
+    {
+        var notifications = await notifItemRepository.GetByAsync(NotifType.Email,NotifStatus.Pending, priority, batch);
+        foreach (var notification in notifications) {
+            await ProcessNotificationAsync(notification);
+        }
+    }
 
+    public async Task ProcessNotificationAsync(NotifItem notification)
+    {
         try
         {
-            // Simulate sending a notification
-            await SendEmailAsync(notification.Recipient, notification.Message);
             notification.Status = NotifStatus.Sent;
             notification.SentAt = DateTime.UtcNow;
+            switch (notification.Type)
+            {
+                case NotifType.Email:
+                    await SendEmailAsync(notification);
+                    break;
+                default:
+                    break;
+            }
         }
-        catch
+        catch (Exception ex)
         {
+            notification.ErrorMessage = ex.Message;
+            notification.SentAt = null;
             notification.Status = NotifStatus.Failed;
         }
         finally
         {
-            context.Notifications.Add(notification);
-            await context.SaveChangesAsync();
+            await notifItemRepository.UpdateAsync(notification);
         }
     }
 
-    private async Task SendEmailAsync(string recipient, string message)
+    private async Task SendEmailAsync(NotifItem notification)
     {
         var email = new MimeMessage();
         email.From.Add(new MailboxAddress("Notification Service", "noreply@yourapp.com"));
-        email.To.Add(MailboxAddress.Parse(recipient));
-        email.Subject = "Notification";
-        email.Body = new TextPart("plain") { Text = message };
+        email.To.Add(MailboxAddress.Parse(notification.Recipient));
+        email.Subject = notification.Subject;
+        email.Body = new TextPart("plain") { Text = notification.Content };
 
         using var smtp = new SmtpClient();
         await smtp.ConnectAsync("smtp.mailtrap.io", 587, SecureSocketOptions.StartTls);

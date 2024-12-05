@@ -9,13 +9,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-	  <Compile Remove="Core\Interfaces\Data\**" />
-	  <Content Remove="Core\Interfaces\Data\**" />
-	  <EmbeddedResource Remove="Core\Interfaces\Data\**" />
-	  <None Remove="Core\Interfaces\Data\**" />
-	</ItemGroup>
-
-	<ItemGroup>
+		<PackageReference Include="AutoMapper" Version="13.0.1" />
 		<PackageReference Include="CSharpFunctionalExtensions" Version="3.1.0" />
 		<PackageReference Include="FluentValidation" Version="11.11.0" />
 		<PackageReference Include="MailKit" Version="4.8.0" />

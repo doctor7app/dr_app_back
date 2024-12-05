@@ -1,4 +1,4 @@
-﻿namespace Common.Contracts.Notification.V1;
+﻿namespace Common.Contracts.Notif;
 
 public enum NotifType
 {

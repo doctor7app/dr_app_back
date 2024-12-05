@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Prometheus;
+using System.Reflection;
 
 namespace Common.Infrastructure.Installation
 {
@@ -15,6 +16,7 @@ namespace Common.Infrastructure.Installation
         public static IServiceCollection AddCommonServices<TConsumer, TDbContext>(
             this IServiceCollection services
             , IConfiguration configuration
+            , Assembly[] assemblies
             , bool pipelineLogging = true
             )
             where TConsumer : IConsumer
@@ -28,8 +30,11 @@ namespace Common.Infrastructure.Installation
             // Add PostgreSQL DbContext
             services.AddDbContext<TDbContext>(configuration);
 
+            // Add AutoMapper
+            services.AddAutoMapper(assemblies);
+
             // MassTransit Configuration (RabbitMQ)
-             services.AddMassTransit<TConsumer, TDbContext>(configuration);
+            services.AddMassTransit<TConsumer, TDbContext>(configuration);
 
             // Add logging with MediatR
             if (pipelineLogging)
