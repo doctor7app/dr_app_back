@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using MassTransit;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Patients.Domain.Models;
 
@@ -39,8 +40,12 @@ public sealed class PatientDbContext :DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
-        modelBuilder.HasPostgresExtension("uuid-ossp");
+        
+        modelBuilder.AddInboxStateEntity();
+        modelBuilder.AddOutboxMessageEntity();
+        modelBuilder.AddOutboxStateEntity();
 
+        modelBuilder.HasPostgresExtension("uuid-ossp");
 
         modelBuilder.Entity<Patient>(entity =>
         {

@@ -16,9 +16,10 @@ public class DmeService : IDmeService
     private readonly IMapper _mapper;
     private readonly IPublishEndpoint _publishEndpoint;
 
-    public DmeService(IRepository<Domain.Models.Dme, DmeDbContext> repository, 
-        IMapper mapper,
-        IPublishEndpoint publishEndpoint)
+    public DmeService(IRepository<Domain.Models.Dme, 
+            DmeDbContext> repository, 
+            IMapper mapper,
+            IPublishEndpoint publishEndpoint)
     {
         _repository = repository;
         _mapper = mapper;
@@ -50,13 +51,16 @@ public class DmeService : IDmeService
         }
         var itemToCreate = _mapper.Map<Domain.Models.Dme>(entity);
         await _repository.AddAsync(itemToCreate);
+
+        var newDme = _mapper.Map<DmeReadDto>(itemToCreate);
+        await _publishEndpoint.Publish(_mapper.Map<DmeCreatedEvent>(newDme));
+
         var result =  await _repository.Complete() > 0;
         if (!result)
         {
             throw new Exception("Could not insert item to the database");
         }
-        var newDme = _mapper.Map<DmeReadDto>(itemToCreate);
-        await _publishEndpoint.Publish(_mapper.Map<DmeCreatedEvent>(newDme));
+        
         return true;
     }
 
@@ -72,7 +76,19 @@ public class DmeService : IDmeService
             throw new Exception($"Impossible de trouver l'entité à mettre à jour!");
         }
         entityToUpdate.UpdateWithDto(entity);
-        return await _repository.Complete();
+
+        var updatedEvent = _mapper.Map<DmePatchDto>(entityToUpdate);
+        var entityToPublish = _mapper.Map<DmeUpdatedEvent>(updatedEvent);
+        entityToPublish.Id = idDme;
+        await _publishEndpoint.Publish(_mapper.Map<DmeUpdatedEvent>(entityToPublish));
+
+
+        var result =  await _repository.Complete() > 0;
+        if (!result)
+        {
+            throw new Exception("Could not update the Dme in Database");
+        }
+        return true;
 
     }
 
@@ -89,6 +105,14 @@ public class DmeService : IDmeService
             throw new Exception($"Impossible de trouver l'entité à mettre à jour!");
         }
         _repository.Remove(entity);
-        return await _repository.Complete();
+
+        await _publishEndpoint.Publish(new DmeDeletedEvent { Id = idDme });
+
+        var result =  await _repository.Complete() > 0;
+        if (!result)
+        {
+            throw new Exception("Could not Delete DME from Database");
+        }
+        return true;
     }
 }

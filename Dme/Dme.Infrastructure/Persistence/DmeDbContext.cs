@@ -1,4 +1,5 @@
 ﻿using Dme.Domain.Models;
+using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 
@@ -37,6 +38,11 @@ public sealed class DmeDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+
+        modelBuilder.AddInboxStateEntity();
+        modelBuilder.AddOutboxMessageEntity();
+        modelBuilder.AddOutboxStateEntity();
+        
         modelBuilder.HasPostgresExtension("uuid-ossp");
 
         modelBuilder.Entity<Domain.Models.Dme>(entity =>

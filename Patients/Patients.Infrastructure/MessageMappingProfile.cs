@@ -36,11 +36,7 @@ namespace Patients.Infrastructure
                 .ForMember(dest => dest.PhoneNumber, opt => opt.MapFrom(src => src.PhoneNumber))
                 .ForMember(dest => dest.HomeNumber, opt => opt.MapFrom(src => src.HomeNumber))
                 .ReverseMap();
-
-            //CreateMap<PatientDeletedEvent, Patient>()
-            //    .ForMember(dest => dest.PatientId, opt => opt.MapFrom(src => src.Id))
-            //    .ReverseMap();
-
+            
             #endregion
 
         }
