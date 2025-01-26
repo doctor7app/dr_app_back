@@ -100,6 +100,10 @@ public class PatientService : IPatientService
             throw new Exception("L'id ne peut pas être un Guid Vide");
         }
         var obj = await _work.GetAsync(x => x.PatientId == id);
+        if (obj == null)
+        {
+            throw new Exception($"L'élement avec l'id {id} n'existe pas dans la base de données!");
+        }
         _work.Remove(obj);
 
         var deletedPatient = new PatientDeletedEvent { Id = id };

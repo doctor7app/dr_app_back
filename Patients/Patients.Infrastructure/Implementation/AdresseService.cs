@@ -47,8 +47,8 @@ public class AdresseService : IAdresseService
             throw new Exception("L'id ne peut pas être un Guid Vide");
         }
         
-        entity.IdPatient = patientId;
         var item = _mapper.Map<Adresse>(entity);
+        item.FkIdPatient = patientId;
         await _work.AddAsync(item);
         return await _work.Complete();
     }
@@ -76,6 +76,10 @@ public class AdresseService : IAdresseService
             throw new Exception("L'id ne peut pas être un Guid Vide");
         }
         var obj = await _work.GetAsync(x => x.FkIdPatient == patientId && x.AdresseId == adresseId);
+        if (obj == null)
+        {
+            throw new Exception($"L'élement avec l'id {adresseId} n'existe pas dans la base de données!");
+        }
         _work.Remove(obj);
         return await _work.Complete();
     }

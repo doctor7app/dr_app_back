@@ -8,13 +8,13 @@ namespace Patients.Application.DTOs.Patient;
 public class PatientPatchDto : IMapFrom<Domain.Models.Patient>
 {
     public string SocialNumber { get; set; }
-    [Required]
+    [Required(ErrorMessage = "First Name is Required"), MinLength(1, ErrorMessage = "First Name can not be empty.")]
     public string FirstName { get; set; }
-    [Required]
+    [Required(ErrorMessage = "Last Name is Required"), MinLength(1, ErrorMessage = "Last Name can not be empty.")]
     public string LastName { get; set; }
     public string MiddleName { get; set; }
     public DateTime BirthDate { get; set; }
-    public DateTime DeathDate { get; set; }
+    public DateTime? DeathDate { get; set; }
     public Gender Gender { get; set; }
     public string Email { get; set; }
     public string PhoneNumber { get; set; }
