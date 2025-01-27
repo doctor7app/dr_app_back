@@ -6,7 +6,7 @@ using Patients.Api.Controllers;
 using Patients.Application.DTOs.Adresse;
 using Patients.Application.Interfaces;
 
-namespace Patients.UnitTest.Controller;
+namespace Patients.UnitTest.Controllers;
 
 /// <summary>
 /// This test class , check the relation ship between Patient and adresse
@@ -14,7 +14,7 @@ namespace Patients.UnitTest.Controller;
 public class PatientAdresseControllerTest
 {
     private readonly Mock<IPatientService> _patientServiceMock;
-    private readonly Mock<IContactService> _contractServiceMock;
+    private readonly Mock<IContactService> _contactServiceMock;
     private readonly Mock<IAdresseService> _adresseServiceMock;
     private readonly Mock<IMedicalInfoService> _medicalInfoServiceMock;
     private readonly PatientsController _patientController;
@@ -22,12 +22,12 @@ public class PatientAdresseControllerTest
     public PatientAdresseControllerTest()
     {
         _patientServiceMock = new Mock<IPatientService>();
-        _contractServiceMock = new Mock<IContactService>();
+        _contactServiceMock = new Mock<IContactService>();
         _adresseServiceMock = new Mock<IAdresseService>();
         _medicalInfoServiceMock = new Mock<IMedicalInfoService>();
 
         _patientController = new PatientsController(_patientServiceMock.Object,
-            _contractServiceMock.Object,
+            _contactServiceMock.Object,
             _adresseServiceMock.Object,
             _medicalInfoServiceMock.Object);
     }
@@ -99,9 +99,9 @@ public class PatientAdresseControllerTest
 
         //Assert
         var okResult = Assert.IsType<OkObjectResult>(result);
-        var returnedPatients = Assert.IsAssignableFrom<List<AdresseDto>>(okResult.Value);
-        Assert.Equal(2, returnedPatients.Count);
-        Assert.Equal(adresseList, returnedPatients);
+        var returnedResult = Assert.IsAssignableFrom<List<AdresseDto>>(okResult.Value);
+        Assert.Equal(2, returnedResult.Count);
+        Assert.Equal(adresseList, returnedResult);
     }
 
 
@@ -119,8 +119,8 @@ public class PatientAdresseControllerTest
 
         //Assert
         var okResult = Assert.IsType<OkObjectResult>(result);
-        var returnedPatients = Assert.IsAssignableFrom<List<AdresseDto>>(okResult.Value);
-        Assert.Empty(returnedPatients);
+        var returnedResult = Assert.IsAssignableFrom<List<AdresseDto>>(okResult.Value);
+        Assert.Empty(returnedResult);
     }
 
     [Fact]
@@ -164,7 +164,7 @@ public class PatientAdresseControllerTest
 
         _patientController.ModelState.AddModelError("Street", "Street is Required");
         _patientController.ModelState.AddModelError("City", "City is Required");
-        _adresseServiceMock.Setup(a => a.Create(patientId, adresseToCreate)).ReturnsAsync(true);
+        _adresseServiceMock.Setup(a => a.Create(patientId, adresseToCreate)).ReturnsAsync(false);
 
         //Act & Assert
         var exception = await Assert.ThrowsAsync<Exception>(() => _patientController.CreateAdresse(patientId,adresseToCreate));
@@ -200,7 +200,7 @@ public class PatientAdresseControllerTest
     }
 
     [Fact]
-    public async void UpdateAdresse_ReturnTrue_WhenModalIsNotValid()
+    public async void UpdateAdresse_ReturnException_WhenModalIsNotValid()
     {
         var patientId = Guid.NewGuid();
         var adresseId = Guid.NewGuid();
@@ -215,10 +215,9 @@ public class PatientAdresseControllerTest
 
         _patientController.ModelState.AddModelError("Street", "Street is Required");
         _patientController.ModelState.AddModelError("City", "City is Required");
-        _adresseServiceMock.Setup(a => a.Patch(patientId, adresseId, adresseToUpdate)).ReturnsAsync(true);
+        _adresseServiceMock.Setup(a => a.Patch(patientId, adresseId, adresseToUpdate)).ReturnsAsync(false);
 
         //Act & Arrange
-
         var exception = await Assert.ThrowsAsync<Exception>(() => _patientController.PatchAdresse(patientId,adresseId, adresseToUpdate));
         Assert.Equal("Merci de vérifier les données saisie !", exception.Message);
     }

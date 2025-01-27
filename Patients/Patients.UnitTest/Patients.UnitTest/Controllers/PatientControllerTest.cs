@@ -5,9 +5,8 @@ using Moq;
 using Patients.Api.Controllers;
 using Patients.Application.DTOs.Patient;
 using Patients.Application.Interfaces;
-using Patients.Domain.Models;
 
-namespace Patients.UnitTest.Controller;
+namespace Patients.UnitTest.Controllers;
 
 public class PatientControllerTest
 {

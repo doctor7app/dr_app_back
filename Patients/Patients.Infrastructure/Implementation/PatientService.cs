@@ -56,12 +56,12 @@ public class PatientService : IPatientService
         var item = _mapper.Map<Patient>(entity);
         await _work.AddAsync(item);
         var newPatient = _mapper.Map<PatientDto>(item);
-        await _publishEndpoint.Publish(_mapper.Map<PatientCreatedEvent>(newPatient));
         var result = await _work.Complete() > 0;
         if (!result)
         {
             throw new Exception("Could not save Patient to database");
         }
+        await _publishEndpoint.Publish(_mapper.Map<PatientCreatedEvent>(newPatient));
         return true;
     }
 
@@ -78,18 +78,15 @@ public class PatientService : IPatientService
             throw new Exception($"L'élement avec l'id {key} n'existe pas dans la base de données!");
         }
         entityToUpdate.UpdateWithDto(entity);
-
-        var updatedPatient = _mapper.Map<PatientDto>(entityToUpdate);
-        var entityToPublish = _mapper.Map<PatientUpdatedEvent>(updatedPatient);
-        entityToPublish.Id = key;
-        await _publishEndpoint.Publish(entityToPublish);
-
         var result = await _work.Complete() > 0;
         if (!result)
         {
             throw new Exception("Could not update Patient to database");
         }
-
+        var updatedPatient = _mapper.Map<PatientDto>(entityToUpdate);
+        var entityToPublish = _mapper.Map<PatientUpdatedEvent>(updatedPatient);
+        entityToPublish.Id = key;
+        await _publishEndpoint.Publish(entityToPublish);
         return true;
     }
 
@@ -105,17 +102,13 @@ public class PatientService : IPatientService
             throw new Exception($"L'élement avec l'id {id} n'existe pas dans la base de données!");
         }
         _work.Remove(obj);
-
-        var deletedPatient = new PatientDeletedEvent { Id = id };
-        await _publishEndpoint.Publish(deletedPatient);
-
         var result = await _work.Complete() > 0;
         if (!result)
         {
             throw new Exception("Could not Delete Patient from database");
         }
-
-
+        var deletedPatient = new PatientDeletedEvent { Id = id };
+        await _publishEndpoint.Publish(deletedPatient);
         return true;
     }
 }

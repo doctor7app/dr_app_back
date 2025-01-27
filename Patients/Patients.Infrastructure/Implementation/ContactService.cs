@@ -36,7 +36,6 @@ public class ContactService : IContactService
         {
             throw new Exception("L'id ne peut pas être un Guid Vide");
         }
-
         var obj = await _work.GetListAsync(x => x.FkIdPatient == patientId);
         return _mapper.Map<IEnumerable<ContactDto>>(obj);
     }
@@ -47,9 +46,8 @@ public class ContactService : IContactService
         {
             throw new Exception("L'id ne peut pas être un Guid Vide");
         }
-
-        entity.IdPatient = patientId;
         var item = _mapper.Map<Contact>(entity);
+        item.FkIdPatient = patientId;
         await _work.AddAsync(item);
         return await _work.Complete();
     }

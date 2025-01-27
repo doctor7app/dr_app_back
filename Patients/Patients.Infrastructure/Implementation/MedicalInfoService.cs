@@ -47,9 +47,9 @@ public class MedicalInfoService : IMedicalInfoService
         {
             throw new Exception("L'id ne peut pas être un Guid Vide");
         }
-
-        entity.PatientId = patientId;
+        
         var item = _mapper.Map<MedicalInformation>(entity);
+        item.FkIdPatient = patientId;
         await _work.AddAsync(item);
         return await _work.Complete();
     }
