@@ -55,12 +55,13 @@ public class PatientService : IPatientService
     {
         var item = _mapper.Map<Patient>(entity);
         await _work.AddAsync(item);
-        var newPatient = _mapper.Map<PatientDto>(item);
+        
         var result = await _work.Complete() > 0;
         if (!result)
         {
             throw new Exception("Could not save Patient to database");
         }
+        var newPatient = _mapper.Map<PatientDto>(item);
         await _publishEndpoint.Publish(_mapper.Map<PatientCreatedEvent>(newPatient));
         return true;
     }
