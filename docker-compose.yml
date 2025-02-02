@@ -32,6 +32,12 @@ services:
     depends_on:
       - prometheus
 
+  mailhog:
+    image: mailhog/mailhog
+    ports:
+      - "5305:1025"  # SMTP server
+      - "5306:8025"  # Web UI
+
   postgres:
     image: postgres
     environment:
@@ -119,7 +125,7 @@ services:
     image: ${DOCKER_REGISTRY-}notif-svc
     build:
       context: .
-      dockerfile: Notif/Dockerfile
+      dockerfile: Notify/Dockerfile
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_HTTP_PORTS=8080
@@ -130,6 +136,12 @@ services:
       - RabbitMQ__Host=rabbitmq
       - RabbitMQ__Username=admin
       - RabbitMQ__Password=admin
+      - EmailSettings__SmtpHost=mailhog
+      - EmailSettings__SmtpPort=1025
+      - EmailSettings__SmtpUser=
+      - EmailSettings__SmtpPass=
+      - EmailSettings__smtpFrom=notif-svc@docapp.com
+      - EmailSettings__smtpName=notif-svc
     ports:
       - 5104:8080
     depends_on:
@@ -137,4 +149,5 @@ services:
       - seq
       - prometheus 
       - rabbitmq
+      - mailhog
 

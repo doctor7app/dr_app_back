@@ -1,4 +1,6 @@
-﻿using Common.Infrastructure.Extension;
+﻿using System.Text.Json;
+using System.Text.Json.Serialization;
+using Common.Infrastructure.Extension;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -39,7 +41,15 @@ public static class MassTransitExtension
                 });
 
                 cfg.ConfigureEndpoints(context);
+
+                cfg.ConfigureJsonSerializerOptions(options =>
+                {
+                    options.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+                    options.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase, true));
+                    return options;
+                });
             });
+
         });
     }
 }

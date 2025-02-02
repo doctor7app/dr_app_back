@@ -16,7 +16,7 @@ namespace Common.Infrastructure.Installation
         public static IServiceCollection AddCommonServices<TConsumer, TDbContext>(
             this IServiceCollection services
             , IConfiguration configuration
-            , Assembly[] assemblies
+            , Assembly assembly
             , bool pipelineLogging = true
             )
             where TConsumer : IConsumer
@@ -31,7 +31,7 @@ namespace Common.Infrastructure.Installation
             services.AddDbContext<TDbContext>(configuration);
 
             // Add AutoMapper
-            services.AddAutoMapper(assemblies);
+            services.AddAutoMapper(assembly);
 
             // MassTransit Configuration (RabbitMQ)
             services.AddMassTransit<TConsumer, TDbContext>(configuration);

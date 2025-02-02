@@ -39,11 +39,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Patients.Application", "Pat
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Dme.Api", "Dme\Dme.Api\Dme.Api.csproj", "{E8D23983-F471-4034-873C-C89D0EFFE6F3}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Notif", "Notif\Notif.csproj", "{15E621A1-B2A2-4B1B-AD7D-E1BC76E16AF3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Notify", "Notify\Notify.csproj", "{15E621A1-B2A2-4B1B-AD7D-E1BC76E16AF3}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Common.Contracts", "Common\Common.Contracts\Common.Contracts.csproj", "{9C88ADF7-2A63-4147-88AB-E7FED75CF9A9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common.Infrastructure", "Common\Common.Infrastructure\Common.Infrastructure.csproj", "{3E1D45BA-61D8-4A50-B2D1-3BEBB587F358}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Common.Infrastructure", "Common\Common.Infrastructure\Common.Infrastructure.csproj", "{3E1D45BA-61D8-4A50-B2D1-3BEBB587F358}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
