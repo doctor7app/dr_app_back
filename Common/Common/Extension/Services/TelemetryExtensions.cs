@@ -3,7 +3,7 @@ using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 
-namespace Common.Extension;
+namespace Common.Extension.Services;
 
 public static class TelemetryExtensions
 {
@@ -25,7 +25,7 @@ public static class TelemetryExtensions
                     .AddHttpClientInstrumentation()
                     .AddRuntimeInstrumentation()
                     .AddPrometheusExporter()
-                    .AddOtlpExporter(); 
+                    .AddOtlpExporter();
             }); ;
     }
 }

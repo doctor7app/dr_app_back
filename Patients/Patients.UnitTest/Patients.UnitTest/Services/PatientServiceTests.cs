@@ -14,14 +14,14 @@ using Patients.Infrastructure.Persistence;
 
 namespace Patients.UnitTest.Services;
 
-public class PatientServiceTest
+public class PatientServiceTests
 {
     private readonly IPatientService _patientService;
     private readonly Mock<IRepository<Patient, PatientDbContext>> _mockRepository;
     private readonly Mock<IMapper> _mockMapper;
     private readonly Mock<IPublishEndpoint> _mockPublishEndpoint;
 
-    public PatientServiceTest()
+    public PatientServiceTests()
     {
         _mockRepository = new Mock<IRepository<Patient, PatientDbContext>>();
         _mockMapper = new Mock<IMapper>();
@@ -100,8 +100,8 @@ public class PatientServiceTest
         };
 
         _mockRepository.Setup(u => u.GetListAsync(
-            It.IsAny<Expression<Func<Patient, bool>>>(), // Allow any condition
-            It.IsAny<Func<IQueryable<Patient>, IIncludableQueryable<Patient, object>>>() // Allow any includes
+            It.IsAny<Expression<Func<Patient, bool>>>(),
+            It.IsAny<Func<IQueryable<Patient>, IIncludableQueryable<Patient, object>>>() 
         )).ReturnsAsync(entities);
 
         _mockMapper.Setup(m => m.Map<IEnumerable<PatientDto>>(entities)).Returns(expectedDtos);
@@ -185,8 +185,8 @@ public class PatientServiceTest
     public async Task CreatePatientAsync_ShouldThrowException_WhenSaveFails()
     {
         // Arrange
-        var entityDto = new PatientCreateDto {  };
-        var entity = new Patient {  };
+        var entityDto = new PatientCreateDto();
+        var entity = new Patient();
         _mockMapper.Setup(m => m.Map<Patient>(entityDto)).Returns(entity);
         _mockRepository.Setup(u => u.AddAsync(entity)).Returns(Task.CompletedTask);
         _mockRepository.Setup(u => u.Complete()).ReturnsAsync(0); 
@@ -204,7 +204,7 @@ public class PatientServiceTest
     {
         // Arrange
         var emptyKey = Guid.Empty;
-        var patchDto = new PatientPatchDto {  };
+        var patchDto = new PatientPatchDto();
 
         // Act & Assert
         var exception = await Assert.ThrowsAsync<Exception>(() => _patientService.Patch(emptyKey, patchDto));
@@ -216,8 +216,8 @@ public class PatientServiceTest
     {
         // Arrange
         var key = Guid.NewGuid();
-        var patchDto = new PatientPatchDto {  };
-        _mockRepository.Setup(u => u.GetAsync(a => a.PatientId == key,null))!.ReturnsAsync((Patient)null!);
+        var patchDto = new PatientPatchDto();
+        _mockRepository.Setup(u => u.GetAsync(a => a.PatientId == key,null)).ReturnsAsync((Patient)null!);
 
         // Act & Assert
         var exception = await Assert.ThrowsAsync<Exception>(() => _patientService.Patch(key, patchDto));
@@ -229,8 +229,8 @@ public class PatientServiceTest
     {
         // Arrange
         var key = Guid.NewGuid();
-        var patchDto = new PatientPatchDto() {  };
-        var entityToUpdate = new Patient() { PatientId = key };
+        var patchDto = new PatientPatchDto() ;
+        var entityToUpdate = new Patient { PatientId = key };
 
         // Setup the unit of work mock to return the entity
         _mockRepository.Setup(u => u.GetAsync(a=>a.PatientId == key,null)).ReturnsAsync(entityToUpdate);
@@ -246,10 +246,10 @@ public class PatientServiceTest
     {
         // Arrange
         var key = Guid.NewGuid();
-        var patchDto = new PatientPatchDto {  };
+        var patchDto = new PatientPatchDto ();
         var entityToUpdate = new Patient { PatientId = key }; 
-        var updatedDto = new PatientDto {  };
-        var updatedEvent = new PatientUpdatedEvent {  };
+        var updatedDto = new PatientDto ();
+        var updatedEvent = new PatientUpdatedEvent ();
 
         _mockRepository.Setup(u => u.GetAsync(a=>a.PatientId == key,null)).ReturnsAsync(entityToUpdate);
         _mockRepository.Setup(u => u.Complete()).ReturnsAsync(1);
@@ -287,7 +287,7 @@ public class PatientServiceTest
         _mockRepository.Setup(u => u.GetAsync(
             It.Is<Expression<Func<Patient, bool>>>(expr => expr.Compile()(entity)),
             It.IsAny<Func<IQueryable<Patient>, IIncludableQueryable<Patient, object>>>()
-        ))!.ReturnsAsync((Patient)null!);
+        )).ReturnsAsync((Patient)null!);
         
         // Act & Assert
         var exception = await Assert.ThrowsAsync<Exception>(() => _patientService.Delete(id));
@@ -303,7 +303,7 @@ public class PatientServiceTest
         _mockRepository.Setup(u => u.GetAsync(
             It.Is<Expression<Func<Patient, bool>>>(expr => expr.Compile()(patient)),
             It.IsAny<Func<IQueryable<Patient>, IIncludableQueryable<Patient, object>>>()
-        ))!.ReturnsAsync(patient);
+        )).ReturnsAsync(patient);
         _mockRepository.Setup(u => u.Complete()).ReturnsAsync(0);
 
         // Act & Assert
@@ -320,7 +320,7 @@ public class PatientServiceTest
         _mockRepository.Setup(u => u.GetAsync(
             It.Is<Expression<Func<Patient, bool>>>(expr => expr.Compile()(patient)),
             It.IsAny<Func<IQueryable<Patient>, IIncludableQueryable<Patient, object>>>()
-        ))!.ReturnsAsync(patient);
+        )).ReturnsAsync(patient);
         _mockRepository.Setup(u => u.Complete()).ReturnsAsync(1);
 
         // Act

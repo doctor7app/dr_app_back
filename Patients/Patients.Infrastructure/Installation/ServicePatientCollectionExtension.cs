@@ -1,4 +1,4 @@
-﻿using Common.Extension;
+﻿using Common.Extension.Services;
 using MassTransit;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -20,7 +20,7 @@ namespace Patients.Infrastructure.Installation
         {
             var applicationAssembly = typeof(Application.MappingProfile).Assembly;
             var infrastructureAssembly = typeof(MessageMappingProfile).Assembly;
-            services.AddAutoMapperConfigurationV2(applicationAssembly, infrastructureAssembly);
+            services.AddAutoMapperConfiguration(applicationAssembly, infrastructureAssembly);
 
             services.AddTransient<IPatientService, PatientService>();
             services.AddTransient<IAdresseService, AdresseService>();

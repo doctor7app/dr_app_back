@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using Common.Extension;
+using Common.Extension.Common;
 using Common.Services.Interfaces;
 using Dme.Application.DTOs.Diagnostics;
 using Dme.Application.Interfaces;
@@ -54,7 +54,13 @@ public class DiagnosticService : IDiagnosticService
         var itemToCreate = _mapper.Map<Diagnostics>(entity);
         itemToCreate.FkIdConsultation = idConsultation;
         await _repositoryDiagnostic.AddAsync(itemToCreate);
-        return await _repositoryDiagnostic.Complete();
+        var result =  await _repositoryDiagnostic.Complete() > 0;
+        if (!result)
+        {
+            throw new Exception("Could not save the data to the database");
+        }
+
+        return true;
     }
 
     public async Task<object> PatchDiagnosticForConsultation(Guid idConsultation, Guid idDiagnostic, DiagnosticsPatchDto entity)
@@ -69,7 +75,13 @@ public class DiagnosticService : IDiagnosticService
             throw new Exception($"Impossible de trouver l'entité à mettre à jour!");
         }
         entityToUpdate.UpdateWithDto(entity);
-        return await _repositoryDiagnostic.Complete();
+        var result = await _repositoryDiagnostic.Complete() > 0;
+        if (!result)
+        {
+            throw new Exception("Could not save the data to the database");
+        }
+
+        return true;
     }
 
     public async Task<object> DeleteDiagnosticForConsultation(Guid idConsultation, Guid idDiagnostic)
@@ -78,12 +90,18 @@ public class DiagnosticService : IDiagnosticService
         {
             throw new Exception("Merci de vérifier les données saisie !");
         }
-        var entity = await _repositoryDiagnostic.GetAsync(x => x.DiagnosticId == idDiagnostic || x.FkIdConsultation == idConsultation);
+        var entity = await _repositoryDiagnostic.GetAsync(x => x.DiagnosticId == idDiagnostic && x.FkIdConsultation == idConsultation);
         if (entity == null)
         {
             throw new Exception($"Impossible de trouver l'entité à mettre à jour!");
         }
         _repositoryDiagnostic.Remove(entity);
-        return await _repositoryDiagnostic.Complete();
+        var result = await _repositoryDiagnostic.Complete() > 0;
+        if (!result)
+        {
+            throw new Exception("Could not save the data to the database");
+        }
+
+        return true;
     }
 }

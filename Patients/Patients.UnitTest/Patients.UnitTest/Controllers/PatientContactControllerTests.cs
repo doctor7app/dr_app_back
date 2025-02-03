@@ -11,7 +11,7 @@ namespace Patients.UnitTest.Controllers;
 /// <summary>
 /// This class test the parent child relation ship between Patient and contact
 /// </summary>
-public class PatientContactControllerTest
+public class PatientContactControllerTests
 {
     private readonly Mock<IPatientService> _patientServiceMock;
     private readonly Mock<IContactService> _contactServiceMock;
@@ -19,7 +19,7 @@ public class PatientContactControllerTest
     private readonly Mock<IMedicalInfoService> _medicalInfoServiceMock;
     private readonly PatientsController _patientController;
 
-    public PatientContactControllerTest()
+    public PatientContactControllerTests()
     {
         _patientServiceMock = new Mock<IPatientService>();
         _contactServiceMock = new Mock<IContactService>();

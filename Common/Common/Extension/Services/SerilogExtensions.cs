@@ -1,7 +1,7 @@
 ﻿using Serilog;
 using Serilog.Events;
 
-namespace Common.Extension;
+namespace Common.Extension.Services;
 
 public static class SerilogExtensions
 {
@@ -18,7 +18,7 @@ public static class SerilogExtensions
                 outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}",
                 theme: Serilog.Sinks.SystemConsole.Themes.AnsiConsoleTheme.Literate
             )
-            .WriteTo.Debug() 
+            .WriteTo.Debug()
             .WriteTo.OpenTelemetry(options =>
             {
                 options.ResourceAttributes = new Dictionary<string, object>
@@ -32,6 +32,6 @@ public static class SerilogExtensions
             loggerConfiguration
             .WriteTo.Seq(seqUrl);
         }
-        return loggerConfiguration;   
+        return loggerConfiguration;
     }
 }

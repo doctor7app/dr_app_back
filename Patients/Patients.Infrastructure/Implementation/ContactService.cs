@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using Common.Extension;
+using Common.Extension.Common;
 using Common.Services.Interfaces;
 using Contracts.Messages.Patients;
 using MassTransit;

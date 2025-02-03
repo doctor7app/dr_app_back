@@ -1,10 +1,10 @@
-using Common.Extension;
 using Common.Middleware;
 using Dme.Api.Helpers;
 using Microsoft.AspNetCore.OData;
 using Dme.Infrastructure.Installation;
 using Serilog;
 using Prometheus;
+using Common.Extension.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 

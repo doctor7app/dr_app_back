@@ -1,4 +1,4 @@
-﻿using Common.Extension;
+﻿using Common.Extension.Services;
 using Dme.Application.Interfaces;
 using Dme.Infrastructure.Consumers;
 using Dme.Infrastructure.Implementation;
@@ -22,7 +22,7 @@ namespace Dme.Infrastructure.Installation
             
             var applicationAssembly = typeof(Application.MappingProfile).Assembly;
             var infrastructureAssembly = typeof(MessageMappingProfile).Assembly;
-            services.AddAutoMapperConfigurationV2(applicationAssembly, infrastructureAssembly);
+            services.AddAutoMapperConfiguration(applicationAssembly, infrastructureAssembly);
             services.AddTransient<IConsultationService, ConsultationService>();
             services.AddTransient<IDiagnosticService, DiagnosticService>();
             services.AddTransient<IDmeService, DmeService>();

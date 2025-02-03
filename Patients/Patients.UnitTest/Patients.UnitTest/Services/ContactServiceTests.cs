@@ -15,14 +15,14 @@ using MassTransit;
 
 namespace Patients.UnitTest.Services;
 
-public class ContactServiceTest
+public class ContactServiceTests
 {
     private readonly IContactService _contactService;
     private readonly Mock<IRepository<Contact, PatientDbContext>> _mockRepository;
     private readonly Mock<IMapper> _mockMapper;
     private readonly Mock<IPublishEndpoint> _mockPublishEndpoint;
 
-    public ContactServiceTest()
+    public ContactServiceTests()
     {
         _mockRepository = new Mock<IRepository<Contact, PatientDbContext>>();
         _mockMapper = new Mock<IMapper>();
@@ -107,8 +107,8 @@ public class ContactServiceTest
         };
 
         _mockRepository.Setup(u => u.GetListAsync(
-            It.IsAny<Expression<Func<Contact, bool>>>(), // Allow any condition
-            It.IsAny<Func<IQueryable<Contact>, IIncludableQueryable<Contact, object>>>() // Allow any includes
+            It.IsAny<Expression<Func<Contact, bool>>>(),
+            It.IsAny<Func<IQueryable<Contact>, IIncludableQueryable<Contact, object>>>()
         )).ReturnsAsync(entities);
 
         _mockMapper.Setup(m => m.Map<IEnumerable<ContactDto>>(entities)).Returns(expectedDtos);
@@ -260,7 +260,7 @@ public class ContactServiceTest
         var patientId = Guid.NewGuid();
         var patchDto = new ContactPatchDto { };
         var entityToUpdate = new Contact { ContactId = contactId,FkIdPatient = patientId};
-        var updatedDto = new ContactDto() { };
+        var updatedDto = new ContactDto { };
         var updatedEvent = new ContactUpdatedEvent { };
 
         _mockRepository.Setup(u => u.GetAsync(a => a.ContactId == contactId && a.FkIdPatient == patientId, null))
@@ -300,7 +300,7 @@ public class ContactServiceTest
         // Arrange
         var contactId = Guid.NewGuid();
         var patientId = Guid.NewGuid();
-        var entity = new Contact() { ContactId = contactId,FkIdPatient = patientId};
+        var entity = new Contact { ContactId = contactId,FkIdPatient = patientId};
         _mockRepository.Setup(u => u.GetAsync(
             It.Is<Expression<Func<Contact, bool>>>(expr => expr.Compile()(entity)),
             It.IsAny<Func<IQueryable<Contact>, IIncludableQueryable<Contact, object>>>()
@@ -317,7 +317,7 @@ public class ContactServiceTest
         // Arrange
         var contactId = Guid.NewGuid();
         var patientId = Guid.NewGuid();
-        var patient = new Contact() { ContactId = contactId,FkIdPatient = patientId};
+        var patient = new Contact { ContactId = contactId,FkIdPatient = patientId};
         _mockRepository.Setup(u => u.GetAsync(
             It.Is<Expression<Func<Contact, bool>>>(expr => expr.Compile()(patient)),
             It.IsAny<Func<IQueryable<Contact>, IIncludableQueryable<Contact, object>>>()

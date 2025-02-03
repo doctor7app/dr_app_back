@@ -68,6 +68,23 @@ namespace Dme.Infrastructure
                 .ReverseMap()
                 ;
 
+            CreateMap<ConsultationsPatchDto, ConsultationsReadDto>()
+                // Need to get the ID
+                .ForMember(dest => dest.ReasonOfVisit, opt => opt.MapFrom(src => src.ReasonOfVisit))
+                .ForMember(dest => dest.Symptoms, opt => opt.MapFrom(src => src.Symptoms))
+                .ForMember(dest => dest.Weight, opt => opt.MapFrom(src => src.Weight))
+                .ForMember(dest => dest.Height, opt => opt.MapFrom(src => src.Height))
+                .ForMember(dest => dest.PressureArterial, opt => opt.MapFrom(src => src.PressureArterial))
+                .ForMember(dest => dest.Temperature, opt => opt.MapFrom(src => src.Temperature))
+                .ForMember(dest => dest.CardiacFrequency, opt => opt.MapFrom(src => src.CardiacFrequency))
+                .ForMember(dest => dest.SaturationOxygen, opt => opt.MapFrom(src => src.SaturationOxygen))
+                .ForMember(dest => dest.ConsultationDate, opt => opt.MapFrom(src => src.ConsultationDate))
+                .ForMember(dest => dest.NextConsultationDate, opt => opt.MapFrom(src => src.NextConsultationDate))
+                .ForMember(dest => dest.Type, opt => opt.MapFrom(src => src.Type))
+                .ForMember(dest => dest.State, opt => opt.MapFrom(src => src.State))
+                .ReverseMap()
+                ;
+
             #endregion
         }
     }

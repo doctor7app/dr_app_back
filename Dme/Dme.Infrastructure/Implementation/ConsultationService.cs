@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using Common.Extension;
+using Common.Extension.Common;
 using Common.Services.Interfaces;
 using Contracts.Messages.Consultations;
 using Dme.Application.DTOs.Consultations;
@@ -55,17 +55,14 @@ public class ConsultationService : IConsultationService
             throw new Exception("L'id ne peut pas être un Guid Vide");
         }
         var itemToCreate = _mapper.Map<Consultations>(entity);
-
         await _repository.AddAsync(itemToCreate);
-
-        var newConsultation = _mapper.Map<ConsultationsReadDto>(itemToCreate);
-        await _publishEndpoint.Publish(_mapper.Map<ConsultationCreatedEvent>(newConsultation));
-
         var result =  await _repository.Complete() > 0;
         if (!result)
         {
             throw new Exception("Could Not Create Create Consultation in Database");
         }
+        var newConsultation = _mapper.Map<ConsultationsReadDto>(itemToCreate);
+        await _publishEndpoint.Publish(_mapper.Map<ConsultationCreatedEvent>(newConsultation));
         return true;
     }
 
@@ -81,18 +78,17 @@ public class ConsultationService : IConsultationService
             throw new Exception($"Impossible de trouver l'entité à mettre à jour!");
         }
         entityToUpdate.UpdateWithDto(entity);
-
-        var updatedConsultation = _mapper.Map<ConsultationsReadDto>(entityToUpdate);
-        var entityToPublish = _mapper.Map<ConsultationUpdatedEvent>(updatedConsultation);
-        entityToPublish.Id = idConsultation;
-        await _publishEndpoint.Publish(entityToPublish);
-
+        
         var result= await _repository.Complete() > 0;
         if (!result)
         {
             throw new Exception("Could not Update Consultation");
         }
-        
+
+        var updatedConsultation = _mapper.Map<ConsultationsReadDto>(entityToUpdate);
+        var entityToPublish = _mapper.Map<ConsultationUpdatedEvent>(updatedConsultation);
+        entityToPublish.Id = idConsultation;
+        await _publishEndpoint.Publish(entityToPublish);
         return true;
     }
 
@@ -109,15 +105,14 @@ public class ConsultationService : IConsultationService
             throw new Exception($"Impossible de trouver l'entité à mettre à jour!");
         }
         _repository.Remove(entity);
-
-        var deletedConsultation = new ConsultationDeletedEvent { Id = idConsultation };
-        await _publishEndpoint.Publish(deletedConsultation);
-
+        
         var result = await _repository.Complete() > 0;
         if (!result)
         {
             throw new Exception("Could not Delete Consultation");
         }
+        var deletedConsultation = new ConsultationDeletedEvent { Id = idConsultation };
+        await _publishEndpoint.Publish(deletedConsultation);
         return true;
     }
 
@@ -151,15 +146,15 @@ public class ConsultationService : IConsultationService
 
         var itemToCreate = _mapper.Map<Consultations>(entity);
         await _repository.AddAsync(itemToCreate);
-
-        var newConsultation = _mapper.Map<ConsultationsReadDto>(itemToCreate);
-        await _publishEndpoint.Publish(_mapper.Map<ConsultationCreatedEvent>(newConsultation));
-
+        
         var result = await _repository.Complete() > 0;
         if (!result)
         {
             throw new Exception("Could Not Create Create Consultation in Database");
         }
+
+        var newConsultation = _mapper.Map<ConsultationsReadDto>(itemToCreate);
+        await _publishEndpoint.Publish(_mapper.Map<ConsultationCreatedEvent>(newConsultation));
         return true;
     }
 
@@ -175,17 +170,17 @@ public class ConsultationService : IConsultationService
             throw new Exception($"Impossible de trouver l'entité à mettre à jour!");
         }
         entityToUpdate.UpdateWithDto(entity);
-
-        var updatedConsultation = _mapper.Map<ConsultationsReadDto>(entityToUpdate);
-        var entityToPublish = _mapper.Map<ConsultationUpdatedEvent>(updatedConsultation);
-        entityToPublish.Id = idConsultation;
-        await _publishEndpoint.Publish(entityToPublish);
-
+        
         var result = await _repository.Complete() > 0;
         if (!result)
         {
             throw new Exception("Could not Update Consultation");
         }
+
+        var updatedConsultation = _mapper.Map<ConsultationsReadDto>(entityToUpdate);
+        var entityToPublish = _mapper.Map<ConsultationUpdatedEvent>(updatedConsultation);
+        entityToPublish.Id = idConsultation;
+        await _publishEndpoint.Publish(entityToPublish);
         return true;
     }
 
@@ -202,15 +197,14 @@ public class ConsultationService : IConsultationService
             throw new Exception($"Impossible de trouver l'entité à mettre à jour!");
         }
         _repository.Remove(entity);
-        var deletedConsultation = new ConsultationDeletedEvent { Id = idConsultation };
-        await _publishEndpoint.Publish(deletedConsultation);
-
+        
         var result = await _repository.Complete() > 0;
         if (!result)
         {
             throw new Exception("Could not delete Consultation");
         }
-
+        
+        await _publishEndpoint.Publish(new ConsultationDeletedEvent { Id = idConsultation });
         return true;
     }
     #endregion

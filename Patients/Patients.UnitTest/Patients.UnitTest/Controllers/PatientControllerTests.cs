@@ -8,7 +8,7 @@ using Patients.Application.Interfaces;
 
 namespace Patients.UnitTest.Controllers;
 
-public class PatientControllerTest
+public class PatientControllerTests
 {
 
     private readonly Mock<IPatientService> _patientServiceMock;
@@ -17,7 +17,7 @@ public class PatientControllerTest
     private readonly Mock<IMedicalInfoService> _medicalInfoServiceMock;
     private readonly PatientsController _patientController;
 
-    public PatientControllerTest()
+    public PatientControllerTests()
     {
         _patientServiceMock = new Mock<IPatientService>();
         _contractServiceMock = new Mock<IContactService>();

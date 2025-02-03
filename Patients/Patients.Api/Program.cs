@@ -1,4 +1,4 @@
-using Common.Extension;
+using Common.Extension.Services;
 using Common.Middleware;
 using Microsoft.AspNetCore.OData;
 using Patients.Api.Helpers;

@@ -11,7 +11,7 @@ namespace Patients.UnitTest.Controllers;
 /// <summary>
 /// This test class , check the relation ship between Patient and adresse
 /// </summary>
-public class PatientAdresseControllerTest
+public class PatientAdresseControllerTests
 {
     private readonly Mock<IPatientService> _patientServiceMock;
     private readonly Mock<IContactService> _contactServiceMock;
@@ -19,7 +19,7 @@ public class PatientAdresseControllerTest
     private readonly Mock<IMedicalInfoService> _medicalInfoServiceMock;
     private readonly PatientsController _patientController;
 
-    public PatientAdresseControllerTest()
+    public PatientAdresseControllerTests()
     {
         _patientServiceMock = new Mock<IPatientService>();
         _contactServiceMock = new Mock<IContactService>();
