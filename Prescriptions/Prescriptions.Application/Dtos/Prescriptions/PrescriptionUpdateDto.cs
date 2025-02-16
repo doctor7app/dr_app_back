@@ -19,6 +19,8 @@ public class PrescriptionUpdateDto : IMapFrom<Prescription>
             .ForMember(dest => dest.Notes, opt => opt.MapFrom(src => src.Notes))
             .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status))
             .ForMember(dest => dest.ExpirationDate, opt => opt.MapFrom(src => src.ExpirationDate))
+             //this is used to handle the odata null patch return 
+            .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null))
             ;
     }
 }

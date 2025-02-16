@@ -2,6 +2,7 @@
 using Common.Extension.Common;
 using Common.Services.Interfaces;
 using MassTransit;
+using Microsoft.AspNetCore.OData.Deltas;
 using Microsoft.EntityFrameworkCore;
 using Prescriptions.Application.Dtos.Events;
 using Prescriptions.Application.Dtos.Prescriptions;
@@ -9,6 +10,7 @@ using Prescriptions.Application.Interfaces;
 using Prescriptions.Domain.Event;
 using Prescriptions.Domain.Models;
 using Prescriptions.Infrastructure.Persistence;
+using static Grpc.Core.Metadata;
 
 namespace Prescriptions.Infrastructure.Implementation;
 
@@ -84,18 +86,21 @@ public class PrescriptionService : IPrescriptionService
         return true;
     }
 
-    public async Task<bool> UpdatePrescriptionAsync(PrescriptionUpdateDto dto)
+    public async Task<bool> UpdatePrescriptionAsync(Guid id, Delta<PrescriptionUpdateDto> patch)
     {
-        if (dto.Id.IsNullOrEmptyGuid())
+        if (id.IsNullOrEmptyGuid())
         {
             throw new Exception("L'id ne peut pas être un Guid Vide");
         }
-        var entityToUpdate = await _work.GetAsync(z => z.PrescriptionId == dto.Id);
+        var entityToUpdate = await _work.GetAsync(z => z.PrescriptionId == id);
         if (entityToUpdate == null)
         {
-            throw new Exception($"L'élement avec l'id {dto.Id} n'existe pas dans la base de données!");
+            throw new Exception($"L'élement avec l'id {id} n'existe pas dans la base de données!");
         }
-        entityToUpdate.UpdateWithDto(dto);
+        var dto = new PrescriptionUpdateDto();
+        patch.Patch(dto);
+
+        _mapper.Map(dto, entityToUpdate);
         var result = await _work.Complete() > 0;
         if (!result)
         {
