@@ -1,4 +1,4 @@
-﻿namespace Common.Enums;
+﻿namespace Common.Enums.Patients;
 
 public enum Gender
 {

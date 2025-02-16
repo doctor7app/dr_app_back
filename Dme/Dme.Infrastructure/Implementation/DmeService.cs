@@ -28,7 +28,7 @@ public class DmeService : IDmeService
 
     public async Task<object> Get(Guid id)
     {
-        if (id.IsNullOrEmpty())
+        if (id.IsNullOrEmptyGuid())
         {
             throw new Exception("L'id ne peut pas être un Guid Vide");
         }
@@ -45,7 +45,7 @@ public class DmeService : IDmeService
 
     public async Task<object> Create(DmeCreateDto entity)
     {
-        if (entity== null || entity.DoctorId.IsNullOrEmpty())
+        if (entity== null || entity.DoctorId.IsNullOrEmptyGuid())
         {
             throw new Exception("L'id ne peut pas être un Guid Vide");
         }
@@ -64,7 +64,7 @@ public class DmeService : IDmeService
 
     public async Task<object> Patch(Guid idDme, DmePatchDto entity)
     {
-        if (idDme.IsNullOrEmpty() || entity == null)
+        if (idDme.IsNullOrEmptyGuid() || entity == null)
         {
             throw new Exception("Merci de vérifier les données saisie !");
         }
@@ -90,7 +90,7 @@ public class DmeService : IDmeService
 
     public async Task<object> Delete(Guid idDme)
     {
-        if (idDme.IsNullOrEmpty())
+        if (idDme.IsNullOrEmptyGuid())
         {
             throw new Exception("Merci de vérifier les données saisie !");
         }

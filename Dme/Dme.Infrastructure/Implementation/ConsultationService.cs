@@ -28,7 +28,7 @@ public class ConsultationService : IConsultationService
 
     public async Task<object> GetConsultationForDme(Guid idDme, Guid idConsultation)
     {
-        if (idConsultation.IsNullOrEmpty() || idDme.IsNullOrEmpty())
+        if (idConsultation.IsNullOrEmptyGuid() || idDme.IsNullOrEmptyGuid())
         {
             throw new Exception("L'id ne peut pas être un Guid Vide");
         }
@@ -39,7 +39,7 @@ public class ConsultationService : IConsultationService
 
     public async Task<IEnumerable<ConsultationsReadDto>> GetAllConsultationForDme(Guid idDme)
     {
-        if (idDme.IsNullOrEmpty())
+        if (idDme.IsNullOrEmptyGuid())
         {
             throw new Exception("L'id ne peut pas être un Guid Vide");
         }
@@ -50,7 +50,7 @@ public class ConsultationService : IConsultationService
 
     public async Task<object> CreateConsultationForDme(Guid idDme, ConsultationsCreateDto entity)
     {
-        if (entity == null || idDme.IsNullOrEmpty())
+        if (entity == null || idDme.IsNullOrEmptyGuid())
         {
             throw new Exception("L'id ne peut pas être un Guid Vide");
         }
@@ -68,7 +68,7 @@ public class ConsultationService : IConsultationService
 
     public async Task<object> PatchConsultationForDme(Guid idDme, Guid idConsultation, ConsultationsPatchDto entity)
     {
-        if (idConsultation.IsNullOrEmpty() || entity == null || idDme.IsNullOrEmpty())
+        if (idConsultation.IsNullOrEmptyGuid() || entity == null || idDme.IsNullOrEmptyGuid())
         {
             throw new Exception("Merci de vérifier les données saisie !");
         }
@@ -94,7 +94,7 @@ public class ConsultationService : IConsultationService
 
     public async Task<object> DeleteConsultationForDme(Guid idDme, Guid idConsultation)
     {
-        if (idConsultation.IsNullOrEmpty() || idDme.IsNullOrEmpty())
+        if (idConsultation.IsNullOrEmptyGuid() || idDme.IsNullOrEmptyGuid())
         {
             throw new Exception("Merci de vérifier les données saisie !");
         }
@@ -123,7 +123,7 @@ public class ConsultationService : IConsultationService
 
     public async Task<object> GetConsultationById(Guid idConsultation)
     {
-        if (idConsultation.IsNullOrEmpty())
+        if (idConsultation.IsNullOrEmptyGuid())
         {
             throw new Exception("L'id ne peut pas être null ou vide");
         }
@@ -139,7 +139,7 @@ public class ConsultationService : IConsultationService
 
     public async Task<object> CreateConsultation(ConsultationsCreateDto entity)
     {
-        if (entity.IdDme.IsNullOrEmpty())
+        if (entity.IdDme.IsNullOrEmptyGuid())
         {
             throw new Exception("L'id ne peut pas être null ou vide");
         }
@@ -160,7 +160,7 @@ public class ConsultationService : IConsultationService
 
     public async Task<object> PatchConsultationById(Guid idConsultation, ConsultationsPatchDto entity)
     {
-        if (idConsultation.IsNullOrEmpty() || entity ==null)
+        if (idConsultation.IsNullOrEmptyGuid() || entity ==null)
         {
             throw new Exception("L'id ne peut pas être null ou vide");
         }
@@ -186,7 +186,7 @@ public class ConsultationService : IConsultationService
 
     public async Task<object> DeleteConsultationById(Guid idConsultation)
     {
-        if (idConsultation.IsNullOrEmpty())
+        if (idConsultation.IsNullOrEmptyGuid())
         {
             throw new Exception("L'id ne peut pas être null ou vide");
         }

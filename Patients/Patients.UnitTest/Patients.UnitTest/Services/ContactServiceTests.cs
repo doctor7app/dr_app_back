@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using Common.Enums;
 using Common.Services.Interfaces;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
@@ -12,6 +11,7 @@ using System.Linq.Expressions;
 using Contracts.Messages.Patients;
 using Patients.Application.DTOs.Contact;
 using MassTransit;
+using Common.Enums.Patients;
 
 namespace Patients.UnitTest.Services;
 

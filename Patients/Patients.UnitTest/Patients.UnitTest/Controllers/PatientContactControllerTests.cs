@@ -1,4 +1,4 @@
-﻿using Common.Enums;
+﻿using Common.Enums.Patients;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Moq;

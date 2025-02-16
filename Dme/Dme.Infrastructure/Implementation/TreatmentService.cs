@@ -24,7 +24,7 @@ public class TreatmentService : ITreatmentService
 
     public async Task<object> GetTreatmentForConsultationById(Guid idConsultation, Guid idTreatment)
     {
-        if (idTreatment.IsNullOrEmpty() || idConsultation.IsNullOrEmpty())
+        if (idTreatment.IsNullOrEmptyGuid() || idConsultation.IsNullOrEmptyGuid())
         {
             throw new Exception("L'id ne peut pas être un Guid Vide");
         }
@@ -35,7 +35,7 @@ public class TreatmentService : ITreatmentService
 
     public async Task<IEnumerable<TreatmentsReadDto>> GetAllTreatmentForConsultationById(Guid idConsultation)
     {
-        if (idConsultation.IsNullOrEmpty())
+        if (idConsultation.IsNullOrEmptyGuid())
         {
             throw new Exception("L'id ne peut pas être un Guid Vide");
         }
@@ -46,7 +46,7 @@ public class TreatmentService : ITreatmentService
 
     public async Task<object> CreateTreatmentForConsultation(Guid idConsultation,TreatmentsCreateDto entity)
     {
-        if (entity == null || idConsultation.IsNullOrEmpty())
+        if (entity == null || idConsultation.IsNullOrEmptyGuid())
         {
             throw new Exception("L'id ne peut pas être un Guid Vide");
         }
@@ -70,7 +70,7 @@ public class TreatmentService : ITreatmentService
 
     public async Task<object> PatchTreatmentForConsultation(Guid idConsultation, Guid idTreatment, TreatmentsPatchDto entity)
     {
-        if (idConsultation.IsNullOrEmpty() || idTreatment.IsNullOrEmpty() || entity == null)
+        if (idConsultation.IsNullOrEmptyGuid() || idTreatment.IsNullOrEmptyGuid() || entity == null)
         {
             throw new Exception("Merci de vérifier les données saisie !");
         }
@@ -91,7 +91,7 @@ public class TreatmentService : ITreatmentService
     
     public async Task<object> DeleteTreatmentForConsultation(Guid idConsultation, Guid idTreatment)
     {
-        if (idConsultation.IsNullOrEmpty() || idTreatment.IsNullOrEmpty())
+        if (idConsultation.IsNullOrEmptyGuid() || idTreatment.IsNullOrEmptyGuid())
         {
             throw new Exception("Merci de vérifier les données saisie !");
         }

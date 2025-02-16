@@ -22,7 +22,7 @@ public class DiagnosticService : IDiagnosticService
     }
     public async Task<object> GetDiagnosticForConsultation(Guid idConsultation, Guid idDiagnostic)
     {
-        if (idConsultation.IsNullOrEmpty() || idDiagnostic.IsNullOrEmpty())
+        if (idConsultation.IsNullOrEmptyGuid() || idDiagnostic.IsNullOrEmptyGuid())
         {
             throw new Exception("L'id ne peut pas être un Guid Vide");
         }
@@ -32,7 +32,7 @@ public class DiagnosticService : IDiagnosticService
 
     public async Task<IEnumerable<DiagnosticsReadDto>> GetAllDiagnosticForConsultation(Guid idConsultation)
     {
-        if (idConsultation.IsNullOrEmpty())
+        if (idConsultation.IsNullOrEmptyGuid())
         {
             throw new Exception("L'id ne peut pas être un Guid Vide");
         }
@@ -42,7 +42,7 @@ public class DiagnosticService : IDiagnosticService
 
     public async Task<object> CreateDiagnosticForConsultation(Guid idConsultation, DiagnosticsCreateDto entity)
     {
-        if (entity == null || idConsultation.IsNullOrEmpty())
+        if (entity == null || idConsultation.IsNullOrEmptyGuid())
         {
             throw new Exception("L'id ne peut pas être un Guid Vide");
         }
@@ -65,7 +65,7 @@ public class DiagnosticService : IDiagnosticService
 
     public async Task<object> PatchDiagnosticForConsultation(Guid idConsultation, Guid idDiagnostic, DiagnosticsPatchDto entity)
     {
-        if (idConsultation.IsNullOrEmpty() || idConsultation.IsNullOrEmpty() || entity == null)
+        if (idConsultation.IsNullOrEmptyGuid() || idConsultation.IsNullOrEmptyGuid() || entity == null)
         {
             throw new Exception("Merci de vérifier les données saisie !");
         }
@@ -86,7 +86,7 @@ public class DiagnosticService : IDiagnosticService
 
     public async Task<object> DeleteDiagnosticForConsultation(Guid idConsultation, Guid idDiagnostic)
     {
-        if (idConsultation.IsNullOrEmpty() || idDiagnostic.IsNullOrEmpty())
+        if (idConsultation.IsNullOrEmptyGuid() || idDiagnostic.IsNullOrEmptyGuid())
         {
             throw new Exception("Merci de vérifier les données saisie !");
         }

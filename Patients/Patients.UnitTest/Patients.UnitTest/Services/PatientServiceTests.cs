@@ -1,6 +1,6 @@
 ﻿using System.Linq.Expressions;
 using AutoMapper;
-using Common.Enums;
+using Common.Enums.Patients;
 using Common.Services.Interfaces;
 using Contracts.Messages.Patients;
 using MassTransit;
