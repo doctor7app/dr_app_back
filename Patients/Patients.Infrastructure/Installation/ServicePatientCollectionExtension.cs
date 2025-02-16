@@ -1,13 +1,14 @@
-﻿using Common.Extension;
+﻿using Common.Extension.Services;
 using MassTransit;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Patients.Application.Interfaces;
 using Patients.Infrastructure.Implementation;
+using Patients.Infrastructure.Persistence;
 
 namespace Patients.Infrastructure.Installation
 {
-    public static class ServiceCollectionExtension
+    public static class ServicePatientCollectionExtension
     {
         /// <summary>
         /// Domain Centric Services related to the application
@@ -19,7 +20,7 @@ namespace Patients.Infrastructure.Installation
         {
             var applicationAssembly = typeof(Application.MappingProfile).Assembly;
             var infrastructureAssembly = typeof(MessageMappingProfile).Assembly;
-            services.AddAutoMapperConfigurationV2(applicationAssembly, infrastructureAssembly);
+            services.AddAutoMapperConfiguration(applicationAssembly, infrastructureAssembly);
 
             services.AddTransient<IPatientService, PatientService>();
             services.AddTransient<IAdresseService, AdresseService>();
@@ -38,6 +39,12 @@ namespace Patients.Infrastructure.Installation
         {
             services.AddMassTransit(a =>
             {
+                a.AddEntityFrameworkOutbox<PatientDbContext>(opt =>
+                {
+                    opt.QueryDelay =  TimeSpan.FromSeconds(100);
+                    opt.UsePostgres();
+                    opt.UseBusOutbox();
+                });
                 a.SetEndpointNameFormatter(new KebabCaseEndpointNameFormatter("patient", false));
                 a.UsingRabbitMq((context, config) =>
                 {
@@ -48,10 +55,6 @@ namespace Patients.Infrastructure.Installation
                     var rabbitMqUri = $"amqp://{rabbitMqUser}:{rabbitMqPass}@{rabbitMqHost}:{rabbitMqPort}";
                     config.Host(new Uri(rabbitMqUri));
                     config.ConfigureEndpoints(context);
-                    config.UseMessageRetry(retryConfig =>
-                    {
-                        retryConfig.Incremental(5, TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(2));
-                    });
                 });
             });
 

@@ -1,1 +1,2 @@
 ﻿dotnet ef migrations add InitialCreate --project .\Dme\Dme.Infrastructure --startup-project .\Dme\Dme.Api --output-dir Migrations
+dotnet ef migrations add Outbox

@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using Common.Extension;
+using Common.Extension.Common;
 using Common.Services.Interfaces;
 using Dme.Application.DTOs.Treatments;
 using Dme.Application.Interfaces;
@@ -59,7 +59,13 @@ public class TreatmentService : ITreatmentService
         var itemToCreate = _mapper.Map<Treatments>(entity);
         itemToCreate.FkIdConsultation = idConsultation;
         await _repositoryTreatment.AddAsync(itemToCreate);
-        return await _repositoryTreatment.Complete();
+        var result =  await _repositoryTreatment.Complete() > 0;
+        if (!result)
+        {
+            throw new Exception("Could not save data to the database");
+        }
+
+        return true;
     }
 
     public async Task<object> PatchTreatmentForConsultation(Guid idConsultation, Guid idTreatment, TreatmentsPatchDto entity)
@@ -74,7 +80,13 @@ public class TreatmentService : ITreatmentService
             throw new Exception($"Impossible de trouver l'entité à mettre à jour!");
         }
         entityToUpdate.UpdateWithDto(entity);
-        return await _repositoryTreatment.Complete();
+        var result =  await _repositoryTreatment.Complete() > 0;
+        if (!result)
+        {
+            throw new Exception("Could not save data to the database");
+        }
+
+        return true;
     }
     
     public async Task<object> DeleteTreatmentForConsultation(Guid idConsultation, Guid idTreatment)
@@ -90,6 +102,12 @@ public class TreatmentService : ITreatmentService
             throw new Exception($"Impossible de trouver l'entité à mettre à jour!");
         }
         _repositoryTreatment.Remove(entity);
-        return await _repositoryTreatment.Complete();
+        var result = await _repositoryTreatment.Complete() > 0;
+        if (!result)
+        {
+            throw new Exception("Could not save data to the database");
+        }
+
+        return true;
     }
 }

@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using Common.Extension;
+using Common.Extension.Common;
 using Common.Services.Interfaces;
 using Patients.Application.DTOs.MedicalInfo;
 using Patients.Application.Interfaces;
@@ -47,11 +47,18 @@ public class MedicalInfoService : IMedicalInfoService
         {
             throw new Exception("L'id ne peut pas être un Guid Vide");
         }
-
-        entity.PatientId = patientId;
+        
         var item = _mapper.Map<MedicalInformation>(entity);
+        item.FkIdPatient = patientId;
         await _work.AddAsync(item);
-        return await _work.Complete();
+        var res =  await _work.Complete() > 0;
+        if (!res)
+        {
+            throw new Exception("Could not save data to database");
+        }
+
+        return true;
+
     }
 
     public async Task<object> Patch(Guid patientId, Guid medicalInfoId, MedicalInfoPatchDto entity)
@@ -61,13 +68,20 @@ public class MedicalInfoService : IMedicalInfoService
             throw new Exception("L'id ne peut pas être un Guid Vide");
         }
 
-        var entityToUpdate = await _work.GetAsync(z => z.MedicalInformationId == medicalInfoId && z.FkIdPatient == patientId);
+        var entityToUpdate = await _work.GetAsync(z => z.MedicalInformationId == medicalInfoId 
+                                                       && z.FkIdPatient == patientId);
         if (entityToUpdate == null)
         {
             throw new Exception($"L'élement avec l'id {medicalInfoId} n'existe pas dans la base de données!");
         }
         entityToUpdate.UpdateWithDto(entity);
-        return await _work.Complete();
+        var result = await _work.Complete() > 0;
+        if (!result)
+        {
+            throw new Exception("Could not save data to the database");
+        }
+
+        return true;
     }
 
     public async Task<object> Delete(Guid patientId, Guid medicalInfoId)
@@ -78,6 +92,12 @@ public class MedicalInfoService : IMedicalInfoService
         }
         var obj = await _work.GetAsync(x => x.FkIdPatient == patientId && x.MedicalInformationId == medicalInfoId);
         _work.Remove(obj);
-        return await _work.Complete();
+        var res =  await _work.Complete() >0;
+        if (!res)
+        {
+            throw new Exception("Could not save data to the database");
+        }
+
+        return true;
     }
 }

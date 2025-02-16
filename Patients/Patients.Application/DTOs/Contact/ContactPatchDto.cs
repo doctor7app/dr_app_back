@@ -7,12 +7,13 @@ namespace Patients.Application.DTOs.Contact;
 
 public class ContactPatchDto : IMapFrom<Domain.Models.Contact>
 {
-    [Required]
+    [Required(ErrorMessage = "First Name is required"), MinLength(1, ErrorMessage = "First Name can not be empty.")]
     public string FirstName { get; set; }
-    [Required]
+    [Required(ErrorMessage = "Last Name is required"), MinLength(1, ErrorMessage = "Last Name can not be empty.")]
     public string LastName { get; set; }
     public string PhoneNumber { get; set; }
     public string Email { get; set; }
+    [Required(ErrorMessage = "Contact Type is required")]
     public ContactType Type { get; set; }
 
     public void Mapping(Profile profile)

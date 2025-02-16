@@ -1,7 +1,8 @@
-﻿using Common.Extension;
+﻿using Common.Extension.Services;
 using Dme.Application.Interfaces;
 using Dme.Infrastructure.Consumers;
 using Dme.Infrastructure.Implementation;
+using Dme.Infrastructure.Persistence;
 using MassTransit;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -21,7 +22,7 @@ namespace Dme.Infrastructure.Installation
             
             var applicationAssembly = typeof(Application.MappingProfile).Assembly;
             var infrastructureAssembly = typeof(MessageMappingProfile).Assembly;
-            services.AddAutoMapperConfigurationV2(applicationAssembly, infrastructureAssembly);
+            services.AddAutoMapperConfiguration(applicationAssembly, infrastructureAssembly);
             services.AddTransient<IConsultationService, ConsultationService>();
             services.AddTransient<IDiagnosticService, DiagnosticService>();
             services.AddTransient<IDmeService, DmeService>();
@@ -43,6 +44,12 @@ namespace Dme.Infrastructure.Installation
 
                 a.SetEndpointNameFormatter(new KebabCaseEndpointNameFormatter("dme",false));
 
+                a.AddEntityFrameworkOutbox<DmeDbContext>(opt =>
+                {
+                    opt.QueryDelay = TimeSpan.FromSeconds(100);
+                    opt.UsePostgres();
+                    opt.UseBusOutbox();
+                });
                 a.UsingRabbitMq((context, config) =>
                 {
                     var rabbitMqHost = configuration["RabbitMQ:Host"] ?? "localhost";
@@ -51,11 +58,11 @@ namespace Dme.Infrastructure.Installation
                     var rabbitMqPass = configuration["RabbitMQ:Password"] ?? "guest";
                     var rabbitMqUri = $"amqp://{rabbitMqUser}:{rabbitMqPass}@{rabbitMqHost}:{rabbitMqPort}";
                     config.Host(new Uri(rabbitMqUri));
-                    config.ConfigureEndpoints(context);
                     config.UseMessageRetry(retryConfig =>
                     {
-                        retryConfig.Incremental(5, TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(2));
+                        retryConfig.Incremental(5, TimeSpan.FromSeconds(10), TimeSpan.FromSeconds(20));
                     });
+                    config.ConfigureEndpoints(context);
                 });
             });
             return services;

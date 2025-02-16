@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using AutoMapper;
 using Common.Enums;
+using Common.Extension.DataAnnotations;
 using Common.Interfaces;
 
 namespace Dme.Application.DTOs.Consultations;
@@ -15,6 +16,7 @@ public class ConsultationsCreateDto : IMapFrom<Domain.Models.Consultations>
     public decimal? Temperature { get; set; }
     public int CardiacFrequency { get; set; }
     public decimal? SaturationOxygen { get; set; }
+    [DateGreaterThanOrEqualToToday(ErrorMessage = "The appointment date cannot be in the past.")]
     public DateTime ConsultationDate { get; set; }
     public DateTime? NextConsultationDate { get; set; }
     public ConsultationType Type { get; set; }

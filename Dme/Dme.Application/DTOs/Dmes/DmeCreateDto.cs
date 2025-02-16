@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using AutoMapper;
 using Common.Enums;
+using Common.Extension.DataAnnotations;
 using Common.Interfaces;
 
 namespace Dme.Application.DTOs.Dmes;
@@ -10,8 +11,10 @@ public class DmeCreateDto : IMapFrom<Domain.Models.Dme>
     public string Notes { get; set; }
     public string AdditionalInformations { get; set; }
     [Required(ErrorMessage = "Patient is required")]
+    [NotEmptyGuid(ErrorMessage = "The Id cannot be null or empty.")]
     public Guid PatientId { get; set; }
     [Required(ErrorMessage = "Doctor is required")]
+    [NotEmptyGuid(ErrorMessage = "The Id cannot be null or empty.")]
     public Guid DoctorId { get; set; }
 
     public PatientState State { get; set; }

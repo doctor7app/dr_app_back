@@ -8,7 +8,7 @@ using Patients.Infrastructure.Persistence;
 
 namespace Patients.Infrastructure.Installation
 {
-    public static class ServiceDbCollectionExtension
+    public static class ServicePatientDbCollectionExtension
     {
         /// <summary>
         /// Add reference to database Context and Asp.net Identity

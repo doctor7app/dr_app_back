@@ -7,22 +7,18 @@ namespace Patients.Application.DTOs.Contact;
 
 public class ContactCreateDto : IMapFrom<Domain.Models.Contact>
 {
-    [Required]
+    [Required(ErrorMessage = "First Name is required"), MinLength(1, ErrorMessage = "First Name can not be empty.")]
     public string FirstName { get; set; }
-    [Required]
+    [Required(ErrorMessage = "Last Name is required"), MinLength(1, ErrorMessage = "Last Name can not be empty.")]
     public string LastName { get; set; }
-
     public string PhoneNumber { get; set; }
     public string Email { get; set; }
-    [Required]
+    [Required(ErrorMessage = "Contact Type is required")]
     public ContactType Type { get; set; }
-    [Required(ErrorMessage = "Patient Id is required to create the adresse")]
-    public Guid IdPatient { get; set; }
-
+    
     public void Mapping(Profile profile)
     {
         profile.CreateMap<ContactCreateDto, Domain.Models.Contact>()
-            .ForMember(dest => dest.FkIdPatient, opt => opt.MapFrom(src => src.IdPatient))
             .ForMember(dest => dest.FirstName, opt => opt.MapFrom(src => src.FirstName))
             .ForMember(dest => dest.LastName, opt => opt.MapFrom(src => src.LastName))
             .ForMember(dest => dest.PhoneNumber, opt => opt.MapFrom(src => src.PhoneNumber))

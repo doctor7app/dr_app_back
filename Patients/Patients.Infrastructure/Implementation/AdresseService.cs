@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using Common.Extension;
+using Common.Extension.Common;
 using Common.Services.Interfaces;
 using Patients.Application.DTOs.Adresse;
 using Patients.Application.Interfaces;
@@ -47,10 +47,16 @@ public class AdresseService : IAdresseService
             throw new Exception("L'id ne peut pas être un Guid Vide");
         }
         
-        entity.IdPatient = patientId;
         var item = _mapper.Map<Adresse>(entity);
+        item.FkIdPatient = patientId;
         await _work.AddAsync(item);
-        return await _work.Complete();
+        var result =  await _work.Complete() > 0;
+        if (!result)
+        {
+            throw new Exception("Could not save data to the database");
+        }
+
+        return true;
     }
 
     public async Task<object> Patch(Guid patientId, Guid adresseId, AdressePatchDto entity)
@@ -66,7 +72,13 @@ public class AdresseService : IAdresseService
             throw new Exception($"L'élement avec l'id {adresseId} n'existe pas dans la base de données!");
         }
         entityToUpdate.UpdateWithDto(entity);
-        return await _work.Complete();
+        var result = await _work.Complete() > 0;
+        if (!result)
+        {
+            throw new Exception("Could not save data to the database");
+        }
+
+        return true;
     }
 
     public async Task<object> Delete(Guid patientId, Guid adresseId)
@@ -76,7 +88,17 @@ public class AdresseService : IAdresseService
             throw new Exception("L'id ne peut pas être un Guid Vide");
         }
         var obj = await _work.GetAsync(x => x.FkIdPatient == patientId && x.AdresseId == adresseId);
+        if (obj == null)
+        {
+            throw new Exception($"L'élement avec l'id {adresseId} n'existe pas dans la base de données!");
+        }
         _work.Remove(obj);
-        return await _work.Complete();
+        var result = await _work.Complete() > 0;
+        if (!result)
+        {
+            throw new Exception("Could not save data to the database");
+        }
+
+        return true;
     }
 }

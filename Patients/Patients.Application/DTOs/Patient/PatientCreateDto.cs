@@ -11,9 +11,9 @@ public class PatientCreateDto : IMapFrom<Domain.Models.Patient>
     [MaxLength(80, ErrorMessage = "SocialNumber must not exceed 80 characters")]
     [JsonPropertyName("socialNumber")]
     public string SocialNumber { get; set; }
-    [Required]
+    [Required(ErrorMessage = "First Name is Required"), MinLength(1, ErrorMessage = "First Name can not be empty.")]
     public string FirstName { get; set; }
-    [Required]
+    [Required(ErrorMessage = "Last Name is Required"), MinLength(1, ErrorMessage = "Last Name can not be empty.")]
     public string LastName { get; set; }
     public string MiddleName { get; set; }
     [Required]

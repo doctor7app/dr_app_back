@@ -1,8 +1,9 @@
 ﻿using AutoMapper;
-using Common.Extension;
+using Common.Extension.Common;
 using Common.Services.Interfaces;
 using Contracts.Messages.Patients;
 using MassTransit;
+using Microsoft.EntityFrameworkCore;
 using Patients.Application.DTOs.Patient;
 using Patients.Application.Interfaces;
 using Patients.Domain.Models;
@@ -16,8 +17,10 @@ public class PatientService : IPatientService
     private readonly IMapper _mapper;
     private readonly IPublishEndpoint _publishEndpoint;
 
-    public PatientService(IRepository<Patient, PatientDbContext> work, 
-        IMapper mapper,IPublishEndpoint publishEndpoint)
+    public PatientService(IRepository<Patient,
+            PatientDbContext> work,
+            IMapper mapper,
+            IPublishEndpoint publishEndpoint)
     {
         _work = work;
         _mapper = mapper;
@@ -31,13 +34,20 @@ public class PatientService : IPatientService
             throw new Exception("L'id ne peut pas être un Guid Vide");
         }
 
-        var obj = await _work.GetAsync(x => x.PatientId == id);
+        var obj = await _work.GetAsync(x => x.PatientId == id, includes:
+                        a => a.Include(z => z.Adresses)
+                            .Include(z => z.Contacts)
+                            .Include(z => z.MedicalInformations));
+
         return _mapper.Map<PatientDto>(obj);
     }
 
     public async Task<IEnumerable<PatientDto>> Get()
     {
-        var obj = await _work.GetListAsync();
+        var obj = await _work.GetListAsync(includes:
+            a => a.Include(z => z.Adresses)
+                .Include(z => z.Contacts)
+                .Include(z => z.MedicalInformations));
         return _mapper.Map<IEnumerable<PatientDto>>(obj);
     }
 
@@ -45,7 +55,8 @@ public class PatientService : IPatientService
     {
         var item = _mapper.Map<Patient>(entity);
         await _work.AddAsync(item);
-        var result =  await _work.Complete() > 0;
+        
+        var result = await _work.Complete() > 0;
         if (!result)
         {
             throw new Exception("Could not save Patient to database");
@@ -61,14 +72,23 @@ public class PatientService : IPatientService
         {
             throw new Exception("Merci de vérifier les données saisie !");
         }
-        
+
         var entityToUpdate = await _work.GetAsync(z => z.PatientId == key);
         if (entityToUpdate == null)
         {
             throw new Exception($"L'élement avec l'id {key} n'existe pas dans la base de données!");
         }
         entityToUpdate.UpdateWithDto(entity);
-        return await _work.Complete();
+        var result = await _work.Complete() > 0;
+        if (!result)
+        {
+            throw new Exception("Could not update Patient to database");
+        }
+        var updatedPatient = _mapper.Map<PatientDto>(entityToUpdate);
+        var entityToPublish = _mapper.Map<PatientUpdatedEvent>(updatedPatient);
+        entityToPublish.Id = key;
+        await _publishEndpoint.Publish(entityToPublish);
+        return true;
     }
 
     public async Task<object> Delete(Guid id)
@@ -78,7 +98,18 @@ public class PatientService : IPatientService
             throw new Exception("L'id ne peut pas être un Guid Vide");
         }
         var obj = await _work.GetAsync(x => x.PatientId == id);
+        if (obj == null)
+        {
+            throw new Exception($"L'élement avec l'id {id} n'existe pas dans la base de données!");
+        }
         _work.Remove(obj);
-        return await _work.Complete();
+        var result = await _work.Complete() > 0;
+        if (!result)
+        {
+            throw new Exception("Could not Delete Patient from database");
+        }
+        var deletedPatient = new PatientDeletedEvent { Id = id };
+        await _publishEndpoint.Publish(deletedPatient);
+        return true;
     }
 }

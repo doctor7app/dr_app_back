@@ -35,7 +35,12 @@ namespace Patients.Api.Controllers
         [EnableQuery]
         public async Task<IActionResult> Get([FromODataUri] Guid key)
         {
-            return Ok(await _patientService.Get(key));
+            var result = await _patientService.Get(key);
+            if (result is Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+            return Ok(result);
         }
         
         [HttpGet]
@@ -52,7 +57,13 @@ namespace Patients.Api.Controllers
             {
                 throw new Exception("Merci de vérifier les données saisie !");
             }
-            return Ok(await _patientService.Create(entity));
+
+            var result = await _patientService.Create(entity);
+            if (result is Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+            return Ok(result);
         }
 
         [HttpPatch("{key}")]
@@ -62,13 +73,23 @@ namespace Patients.Api.Controllers
             {
                 throw new Exception("Merci de vérifier les données saisie !");
             }
-            return Ok(await _patientService.Patch(key, entity));
+            var result = await _patientService.Patch(key, entity);
+            if (result is Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+            return Ok(result);
         }
         
         [HttpDelete("{key}")]
         public async Task<IActionResult> Delete([FromODataUri] Guid key)
         {
-            return Ok(await _patientService.Delete(key));
+            var result = await _patientService.Delete(key);
+            if (result is Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+            return Ok(result);
         }
 
         #endregion
@@ -79,7 +100,12 @@ namespace Patients.Api.Controllers
         [HttpGet("{key}/Adresses/{idAdress}")]
         public async Task<IActionResult> GetAdresse(Guid key, Guid idAdress)
         {
-            return Ok(await _adresseService.GetAdresse(key, idAdress));
+            var result = await _adresseService.GetAdresse(key, idAdress);
+            if (result is Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+            return Ok(result);
         }
 
         [EnableQuery]
@@ -96,7 +122,12 @@ namespace Patients.Api.Controllers
             {
                 throw new Exception("Merci de vérifier les données saisie !");
             }
-            return Ok(await _adresseService.Create(key, entity));
+            var result = await _adresseService.Create(key, entity);
+            if (result is Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+            return Ok(result);
         }
         
         [HttpPatch("{key}/Adresses/{idAdress}")]
@@ -108,13 +139,24 @@ namespace Patients.Api.Controllers
             {
                 throw new Exception("Merci de vérifier les données saisie !");
             }
-            return Ok(await _adresseService.Patch(key, idAdress, entity));
+
+            var result = await _adresseService.Patch(key, idAdress, entity);
+            if (result is Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+            return Ok(result);
         }
         
         [HttpDelete("{key}/Adresses/{idAdress}")]
         public async Task<IActionResult> DeleteAdresse([FromODataUri] Guid key, [FromODataUri] Guid idAdress)
         {
-            return Ok(await _adresseService.Delete(key, idAdress));
+            var result = await _adresseService.Delete(key, idAdress);
+            if (result is Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+            return Ok(result);
         }
 
         #endregion
@@ -125,14 +167,24 @@ namespace Patients.Api.Controllers
         [HttpGet("{key}/Contacts/{idContact}")]
         public async Task<IActionResult> GetContact(Guid key, Guid idContact)
         {
-            return Ok(await _contactService.GetContact(key, idContact));
+            var result = await _contactService.GetContact(key, idContact);
+            if (result is Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+            return Ok(result);
         }
 
         [EnableQuery]
         [HttpGet("{key}/Contacts")]
         public async Task<IActionResult> GetContact(Guid key)
         {
-            return Ok(await _contactService.GetRelative(key));
+            var result = await _contactService.GetRelative(key);
+            if (result is Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+            return Ok(result);
         }
 
         [HttpPost("{key}/Contacts")]
@@ -142,7 +194,13 @@ namespace Patients.Api.Controllers
             {
                 throw new Exception("Merci de vérifier les données saisie !");
             }
-            return Ok(await _contactService.Create(key, entity));
+
+            var result = await _contactService.Create(key, entity);
+            if (result is Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+            return Ok(result);
         }
 
         [HttpPatch("{key}/Contacts/{idContact}")]
@@ -154,13 +212,24 @@ namespace Patients.Api.Controllers
             {
                 throw new Exception("Merci de vérifier les données saisie !");
             }
-            return Ok(await _contactService.Patch(key, idContact, entity));
+
+            var result = await _contactService.Patch(key, idContact, entity);
+            if (result is Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+            return Ok(result);
         }
 
         [HttpDelete("{key}/Contacts/{idContact}")]
         public async Task<IActionResult> DeleteContact([FromODataUri] Guid key, [FromODataUri] Guid idContact)
         {
-            return Ok(await _contactService.Delete(key, idContact));
+            var result = await _contactService.Delete(key, idContact);
+            if (result is Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+            return Ok(result);
         }
 
         #endregion
@@ -172,14 +241,24 @@ namespace Patients.Api.Controllers
         [HttpGet("{key}/MedicalInfos/{idMedicalInfo}")]
         public async Task<IActionResult> GetMedical(Guid key, Guid idMedicalInfo)
         {
-            return Ok(await _medicalInfoService.GetMedicalInfo(key, idMedicalInfo));
+            var result = await _medicalInfoService.GetMedicalInfo(key, idMedicalInfo);
+            if (result is Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+            return Ok(result);
         }
 
         [EnableQuery]
         [HttpGet("{key}/MedicalInfos")]
         public async Task<IActionResult> GetMedical(Guid key)
         {
-            return Ok(await _medicalInfoService.GetRelative(key));
+            var result = await _medicalInfoService.GetRelative(key);
+            if (result is Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+            return Ok(result);
         }
 
         [HttpPost("{key}/MedicalInfos")]
@@ -189,7 +268,13 @@ namespace Patients.Api.Controllers
             {
                 throw new Exception("Merci de vérifier les données saisie !");
             }
-            return Ok(await _medicalInfoService.Create(key, entity));
+
+            var result = await _medicalInfoService.Create(key, entity);
+            if (result is Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+            return Ok(result);
         }
 
         [HttpPatch("{key}/MedicalInfos/{idMedicalInfo}")]
@@ -201,13 +286,24 @@ namespace Patients.Api.Controllers
             {
                 throw new Exception("Merci de vérifier les données saisie !");
             }
-            return Ok(await _medicalInfoService.Patch(key, idMedicalInfo, entity));
+
+            var result = await _medicalInfoService.Patch(key, idMedicalInfo, entity);
+            if (result is Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+            return Ok(result);
         }
 
         [HttpDelete("{key}/MedicalInfos/{idMedicalInfo}")]
         public async Task<IActionResult> DeleteMedical([FromODataUri] Guid key, [FromODataUri] Guid idMedicalInfo)
         {
-            return Ok(await _medicalInfoService.Delete(key, idMedicalInfo));
+            var result = await _medicalInfoService.Delete(key, idMedicalInfo);
+            if (result is Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+            return Ok(result);
         }
 
         #endregion

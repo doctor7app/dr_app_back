@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using Common.Extension;
+using Common.Extension.Common;
 using Common.Services.Interfaces;
 using Contracts.Messages.Dmes;
 using Dme.Application.DTOs.Dmes;
@@ -16,9 +16,10 @@ public class DmeService : IDmeService
     private readonly IMapper _mapper;
     private readonly IPublishEndpoint _publishEndpoint;
 
-    public DmeService(IRepository<Domain.Models.Dme, DmeDbContext> repository, 
-        IMapper mapper,
-        IPublishEndpoint publishEndpoint)
+    public DmeService(IRepository<Domain.Models.Dme, 
+            DmeDbContext> repository, 
+            IMapper mapper,
+            IPublishEndpoint publishEndpoint)
     {
         _repository = repository;
         _mapper = mapper;
@@ -50,10 +51,11 @@ public class DmeService : IDmeService
         }
         var itemToCreate = _mapper.Map<Domain.Models.Dme>(entity);
         await _repository.AddAsync(itemToCreate);
+        
         var result =  await _repository.Complete() > 0;
         if (!result)
         {
-            throw new Exception("Could not insert item to the database");
+            throw new Exception("Could not save data to the database");
         }
         var newDme = _mapper.Map<DmeReadDto>(itemToCreate);
         await _publishEndpoint.Publish(_mapper.Map<DmeCreatedEvent>(newDme));
@@ -72,7 +74,17 @@ public class DmeService : IDmeService
             throw new Exception($"Impossible de trouver l'entité à mettre à jour!");
         }
         entityToUpdate.UpdateWithDto(entity);
-        return await _repository.Complete();
+        
+        var result =  await _repository.Complete() > 0;
+        if (!result)
+        {
+            throw new Exception("Could not save data to the Database");
+        }
+        var updatedDme = _mapper.Map<DmePatchDto>(entityToUpdate);
+        var entityToPublish = _mapper.Map<DmeUpdatedEvent>(updatedDme);
+        entityToPublish.Id = idDme;
+        await _publishEndpoint.Publish(entityToPublish);
+        return true;
 
     }
 
@@ -89,6 +101,13 @@ public class DmeService : IDmeService
             throw new Exception($"Impossible de trouver l'entité à mettre à jour!");
         }
         _repository.Remove(entity);
-        return await _repository.Complete();
+        
+        var result =  await _repository.Complete() > 0;
+        if (!result)
+        {
+            throw new Exception("Could not save data to the Database");
+        }
+        await _publishEndpoint.Publish(new DmeDeletedEvent { Id = idDme });
+        return true;
     }
 }

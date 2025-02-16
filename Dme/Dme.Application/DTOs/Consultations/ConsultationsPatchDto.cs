@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Common.Enums;
+using Common.Extension.DataAnnotations;
 using Common.Interfaces;
 
 namespace Dme.Application.DTOs.Consultations;
@@ -8,12 +9,18 @@ public class ConsultationsPatchDto : IMapFrom<Domain.Models.Consultations>
 {
     public string ReasonOfVisit { get; set; }
     public string Symptoms { get; set; }
-    public decimal Weight { get; set; }
-    public decimal Height { get; set; }
+    [PositiveDecimal(ErrorMessage = "Weight must be a positive value.")]
+    public decimal? Weight { get; set; }
+    [PositiveDecimal(ErrorMessage = "Height must be a positive value.")]
+    public decimal? Height { get; set; }
     public string PressureArterial { get; set; }
-    public decimal Temperature { get; set; }
+    [PositiveDecimal(ErrorMessage = "Temperature must be a positive value.")]
+    public decimal? Temperature { get; set; }
+    [PositiveInt(ErrorMessage = "Cardiac Frequency must be a positive value.")]
     public int CardiacFrequency { get; set; }
-    public decimal SaturationOxygen { get; set; }
+    [PositiveDecimal(ErrorMessage = "Saturation Oxygen must be a positive value.")]
+    public decimal? SaturationOxygen { get; set; }
+    [DateGreaterThanOrEqualToToday(ErrorMessage = "The appointment date cannot be in the past.")]
     public DateTime ConsultationDate { get; set; }
     public DateTime? NextConsultationDate { get; set; }
     public ConsultationType Type { get; set; }

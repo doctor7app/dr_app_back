@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
 
-namespace Common.Extension;
+namespace Common.Extension.Common;
 
 public static class EntityExtensions
 {
@@ -15,7 +15,7 @@ public static class EntityExtensions
         foreach (var dtoProperty in dtoProperties)
         {
             var dtoValue = dtoProperty.GetValue(dto);
-            
+
             if (dtoValue == null || IsDefaultValue(dtoValue))
                 continue;
 
@@ -58,5 +58,53 @@ public static class EntityExtensions
         {
             entityCollection.Add(item);
         }
+    }
+
+    /// <summary>
+    /// Compares two objects of the same type for equality based on their public properties.
+    /// </summary>
+    /// <param name="entity">The first object to compare.</param>
+    /// <param name="other">The second object to compare.</param>
+    /// <returns>True if the objects are equal; otherwise, false.</returns>
+    public static bool AreEqual<T>(this T entity, T other) where T : class
+    {
+        if (entity == null || other == null || entity.GetType() != other.GetType())
+            return false;
+
+        var properties = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance)
+            .Where(p => p.CanRead);
+
+        foreach (var property in properties)
+        {
+            var value1 = property.GetValue(entity);
+            var value2 = property.GetValue(other);
+
+            if (!Equals(value1, value2))
+                return false;
+        }
+
+        return true;
+    }
+
+    /// <summary>
+    /// Generates a hash code for the object based on its public properties.
+    /// </summary>
+    /// <param name="entity">The object to generate a hash code for.</param>
+    /// <returns>A hash code representing the object.</returns>
+    public static int GetHashCode<T>(this T entity) where T : class
+    {
+        if (entity == null) return 0;
+
+        var properties = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance)
+            .Where(p => p.CanRead);
+
+        int hash = 17;
+        foreach (var property in properties)
+        {
+            var value = property.GetValue(entity);
+            hash = hash * 23 + (value?.GetHashCode() ?? 0);
+        }
+
+        return hash;
     }
 }

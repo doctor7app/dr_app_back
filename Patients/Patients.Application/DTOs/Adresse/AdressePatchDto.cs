@@ -7,15 +7,20 @@ namespace Patients.Application.DTOs.Adresse;
 
 public class AdressePatchDto : IMapFrom<Domain.Models.Adresse>
 {
-    [Required]
+    [Required(ErrorMessage = "Country is required")]
+    [MinLength(1,ErrorMessage = "Country should have a value")]
     public string Country { get; set; }
-    [Required]
+    [Required(ErrorMessage = "Provence is required")]
+    [MinLength(1, ErrorMessage = "Provence should have a value")]
     public string Provence { get; set; }
-    [Required]
+    [Required(ErrorMessage = "City is required")]
+    [MinLength(1, ErrorMessage = "City should have a value")]
     public string City { get; set; }
-    [Required]
+    [Required(ErrorMessage = "PostalCode is required")]
+    [MinLength(1, ErrorMessage = "PostalCode should have a value")]
     public string PostalCode { get; set; }
-    [Required]
+    [Required(ErrorMessage = "Street is required")]
+    [MinLength(1, ErrorMessage = "Street should have a value")]
     public string Street { get; set; }
     public string AdditionalInformation { get; set; }
     public AdresseType Type { get; set; }

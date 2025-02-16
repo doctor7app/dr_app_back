@@ -1,4 +1,4 @@
-﻿namespace Common.Extension;
+﻿namespace Common.Extension.Common;
 
 public static class CommonExtensions
 {
