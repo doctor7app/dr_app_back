@@ -6,5 +6,5 @@ public enum PrescriptionStatus
     Validated,
     Sent,
     Canceled,
-    Superseded // Prescription est changé et dois garder l'hisotirque
+    Superseded
 }

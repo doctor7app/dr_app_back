@@ -2,6 +2,7 @@
 using Prescriptions.Domain.Event;
 using Prescriptions.Domain.Models;
 using Microsoft.Extensions.Configuration;
+using MassTransit;
 
 namespace Prescriptions.Infrastructure.Persistence;
 
@@ -37,7 +38,11 @@ public sealed class PrescriptionDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+        modelBuilder.AddInboxStateEntity();
+        modelBuilder.AddOutboxMessageEntity();
+        modelBuilder.AddOutboxStateEntity();
 
+        modelBuilder.HasPostgresExtension("uuid-ossp");
         // Configuration de Prescription
         modelBuilder.Entity<Prescription>(entity =>
         {
@@ -56,6 +61,15 @@ public sealed class PrescriptionDbContext : DbContext
 
             entity.Property(p => p.Notes)
                 .HasMaxLength(1000);
+
+            entity.Property(p => p.FkPatientId)
+                .IsRequired();
+
+            entity.Property(p => p.FkDoctorId)
+                .IsRequired();
+
+            entity.Property(p => p.FkConsultationId)
+                .IsRequired();
 
             // Relations
             entity.HasMany(p => p.Items)

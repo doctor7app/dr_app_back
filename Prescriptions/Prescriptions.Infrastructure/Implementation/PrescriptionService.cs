@@ -10,7 +10,6 @@ using Prescriptions.Application.Interfaces;
 using Prescriptions.Domain.Event;
 using Prescriptions.Domain.Models;
 using Prescriptions.Infrastructure.Persistence;
-using static Grpc.Core.Metadata;
 
 namespace Prescriptions.Infrastructure.Implementation;
 
@@ -124,7 +123,7 @@ public class PrescriptionService : IPrescriptionService
         var result = await _work.Complete() > 0;
         if (!result)
         {
-            throw new Exception("Could not Delete Patient from database");
+            throw new Exception("Could not Delete Prescription from database");
         }
         return true;
     }

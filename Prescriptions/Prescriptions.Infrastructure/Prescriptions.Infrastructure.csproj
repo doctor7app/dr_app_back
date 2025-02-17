@@ -26,9 +26,4 @@
 		<ProjectReference Include="..\Prescriptions.Application\Prescriptions.Application.csproj" />
 	</ItemGroup>
 
-	<ItemGroup>
-	  <Folder Include="Implementation\" />
-	  <Folder Include="Persistence\" />
-	</ItemGroup>
-
 </Project>

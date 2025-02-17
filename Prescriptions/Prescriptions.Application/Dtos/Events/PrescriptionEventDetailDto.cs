@@ -4,5 +4,5 @@ namespace Prescriptions.Application.Dtos.Events;
 
 public class PrescriptionEventDetailDto : PrescriptionEventDto
 {
-    public object EventData => JsonSerializer.Deserialize<object>(EventDataJson);
+    public object EventData { get; set; }
 }

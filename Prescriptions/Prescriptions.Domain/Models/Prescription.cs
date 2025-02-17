@@ -26,16 +26,16 @@ public class Prescription : IAggregateRoot
 
     // Constructeur (pour création initiale)
     public Prescription(
-        Guid id,
-        Guid patientId,
-        Guid consultationId,
-        Guid doctorId,
+        Guid prescriptionId,  
+        Guid fkPatientId, 
+        Guid fkConsultationId,
+        Guid fkDoctorId,
         ConsultationType consultationType)
     {
-        PrescriptionId = id;
-        FkPatientId = patientId;
-        FkConsultationId = consultationId;
-        FkDoctorId = doctorId;
+        PrescriptionId = prescriptionId;
+        FkPatientId = fkPatientId;
+        FkConsultationId = fkConsultationId;
+        FkDoctorId = fkDoctorId;
         ConsultationType = consultationType;
         IssuedAt = DateTime.UtcNow;
         Status = PrescriptionStatus.Draft;

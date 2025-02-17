@@ -16,7 +16,7 @@ namespace Prescriptions.Infrastructure.Installation
         /// </summary>
         /// <param name="services"></param>=
         /// <returns></returns>
-        public static IServiceCollection AddPatientDatabaseServiceCollection(this IServiceCollection services)
+        public static IServiceCollection AddPrescriptionDatabaseServiceCollection(this IServiceCollection services)
         {
             var builder = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
@@ -24,7 +24,7 @@ namespace Prescriptions.Infrastructure.Installation
             var strConnection = builder.Build().GetConnectionString("MyDbPost");
             services.AddDbContext<PrescriptionDbContext>(options =>
             {
-                options.UseNpgsql(strConnection, sql => sql.MigrationsAssembly("Patients.Infrastructure"));
+                options.UseNpgsql(strConnection, sql => sql.MigrationsAssembly("Prescriptions.Infrastructure"));
             }, ServiceLifetime.Transient);
 
             services.AddTransient(typeof(IRepository<,>), typeof(Repository<,>));

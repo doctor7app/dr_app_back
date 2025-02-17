@@ -1,11 +1,13 @@
-﻿using Prescriptions.Application.Dtos.Items;
+﻿using Microsoft.AspNetCore.OData.Deltas;
+using Prescriptions.Application.Dtos.Items;
 
 namespace Prescriptions.Application.Interfaces;
 
 public interface IPrescriptionItemService
 {
-    Task<PrescriptionItemCreateDto> CreatePrescriptionItem(Guid prescriptionId, PrescriptionItemCreateDto dto);
     Task<PrescriptionItemDto> GetItemByIdAsync(Guid itemId);
-    Task UpdateItemAsync(PrescriptionItemUpdateDto dto);
-    Task DeleteItemAsync(Guid itemId);
+    Task<IEnumerable<PrescriptionItemDto>> GetAllItemRelatedToPrescriptionByIdAsync(Guid prescriptionId);
+    Task<bool> CreatePrescriptionItem(Guid prescriptionId, PrescriptionItemCreateDto dto);
+    Task<bool> UpdateItemAsync(Guid id, Guid prescriptionId, Delta<PrescriptionItemUpdateDto> patch);
+    Task<bool> DeleteItemAsync(Guid itemId);
 }

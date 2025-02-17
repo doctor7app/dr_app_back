@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.OData.Deltas;
 using Prescriptions.Application.Dtos.Events;
-using Prescriptions.Application.Dtos.Items;
 using Prescriptions.Application.Dtos.Prescriptions;
 
 namespace Prescriptions.Application.Interfaces;

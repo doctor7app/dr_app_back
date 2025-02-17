@@ -21,7 +21,7 @@ public class PrescriptionEventDto : IMapFrom<PrescriptionEvent>
             .ForMember(dest => dest.PrescriptionEventId, opt => opt.MapFrom(src => src.Id))
             .ForMember(dest => dest.EventType, opt => opt.MapFrom(src => src.EventType))
             .ForMember(dest => dest.Timestamp, opt => opt.MapFrom(src => src.Timestamp))
-            .ForMember(dest => dest.DoctorId, opt => opt.MapFrom(src => src.DoctorId))
+            .ForMember(dest => dest.FkDoctorId, opt => opt.MapFrom(src => src.DoctorId))
             .ForMember(dest => dest.EventDataJson, opt => opt.MapFrom(src => src.EventDataJson))
             .ForMember(dest => dest.FkPrescriptionId, opt => opt.MapFrom(src => src.PrescriptionId))
             .ReverseMap()

@@ -26,6 +26,10 @@ namespace Prescriptions.Infrastructure.Installation
             services.AddAutoMapperConfiguration(applicationAssembly, null);
 
             services.AddTransient<IPrescriptionService, PrescriptionService>();
+            services.AddTransient<IPrescriptionItemService, PrescriptionItemService>();
+            services.AddTransient<IPrescriptionEventService, PrescriptionEventService>();
+            services.AddTransient<IPrescriptionHistoryService, PrescriptionHistoryService>();
+            
             services.AddTransient<IMedicationValidator, MedicationValidator>();
             services.AddTransient<IValidator<PrescriptionItemCreateDto>, PrescriptionItemCreateValidator>();
             services.AddTransient<IValidator<PrescriptionItemUpdateDto>, PrescriptionItemUpdateValidator>();
@@ -44,7 +48,7 @@ namespace Prescriptions.Infrastructure.Installation
             {
                 a.AddEntityFrameworkOutbox<PrescriptionDbContext>(opt =>
                 {
-                    opt.QueryDelay =  TimeSpan.FromSeconds(100);
+                    opt.QueryDelay = TimeSpan.FromSeconds(100);
                     opt.UsePostgres();
                     opt.UseBusOutbox();
                 });

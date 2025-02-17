@@ -1,0 +1,5 @@
+﻿dotnet ef migrations add InitialCreate --project .\Prescriptions\Prescriptions.Infrastructure --startup-project .\Prescriptions\Prescriptions.Api --output-dir Migrations
+dotnet ef migrations add Outbox --project .\Prescriptions\Prescriptions.Infrastructure --startup-project .\Prescriptions\Prescriptions.Api --output-dir Migrations
+dotnet ef migrations add Outbox
+
+dotnet ef migrations add InitialCreate --project .\Prescriptions\Prescriptions.Infrastructure --startup-project .\Prescriptions\Prescriptions.Api --output-dir Migrations
