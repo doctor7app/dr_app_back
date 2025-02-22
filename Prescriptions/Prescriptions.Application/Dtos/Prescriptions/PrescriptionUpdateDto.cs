@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Common.Enums.Prescriptions;
+using Common.Helpers.Converters;
 using Common.Interfaces;
 using Prescriptions.Domain.Models;
 
@@ -7,7 +8,7 @@ namespace Prescriptions.Application.Dtos.Prescriptions;
 
 public class PrescriptionUpdateDto : IMapFrom<Prescription>
 {
-    public Guid Id { get; set; }
+    //public Guid Id { get; set; }
     public string Notes { get; set; }
     public PrescriptionStatus Status { get; set; }
     public DateTime? ExpirationDate { get; set; }
@@ -15,9 +16,11 @@ public class PrescriptionUpdateDto : IMapFrom<Prescription>
     public void Mapping(Profile profile)
     {
         profile.CreateMap<PrescriptionUpdateDto, Prescription>()
-            .ForMember(dest => dest.PrescriptionId, opt => opt.MapFrom(src => src.Id))
+            //.ForMember(dest => dest.PrescriptionId, opt => opt.MapFrom(src => src.Id))
             .ForMember(dest => dest.Notes, opt => opt.MapFrom(src => src.Notes))
             .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status))
+            .ForMember(dest => dest.ExpirationDate,
+                opt => opt.ConvertUsing(new UtcDateTimeConverter(), src => src.ExpirationDate))
             .ForMember(dest => dest.ExpirationDate, opt => opt.MapFrom(src => src.ExpirationDate))
              //this is used to handle the odata null patch return 
             .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null))

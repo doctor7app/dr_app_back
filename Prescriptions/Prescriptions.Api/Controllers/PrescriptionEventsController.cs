@@ -25,9 +25,6 @@ namespace Prescriptions.Api.Controllers
         }
 
         [HttpGet("{eventId}")]
-        //[ProducesResponseType(typeof(PrescriptionEventDetailDto), StatusCodes.Status200OK)]
-        //[ProducesResponseType(StatusCodes.Status404NotFound)]
-        //[ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> GetEventDetails(
             [FromRoute] Guid prescriptionId,
             [FromRoute] Guid eventId)

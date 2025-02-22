@@ -74,6 +74,19 @@ public class PrescriptionService : IPrescriptionService
         }
 
         var item = _mapper.Map<Prescription>(dto);
+
+        // Add medications using domain logic (not AutoMapper)
+        foreach (var itemDto in dto.Items)
+        {
+            item.AddMedication(
+                itemDto.DrugName,
+                itemDto.Dosage,
+                itemDto.Frequency,
+                itemDto.Duration,
+                dto.DoctorId
+            );
+        }
+
         await _work.AddAsync(item);
 
         var result = await _work.Complete() > 0;
@@ -91,15 +104,27 @@ public class PrescriptionService : IPrescriptionService
         {
             throw new Exception("L'id ne peut pas être un Guid Vide");
         }
-        var entityToUpdate = await _work.GetAsync(z => z.PrescriptionId == id);
+        var entityToUpdate = await _work.GetAsync(z => z.PrescriptionId == id,z=>z.Include(a=>a.Items).Include(a=>a.DomainEvents));
         if (entityToUpdate == null)
         {
             throw new Exception($"L'élement avec l'id {id} n'existe pas dans la base de données!");
         }
+        
         var dto = new PrescriptionUpdateDto();
         patch.Patch(dto);
 
+        
+
         _mapper.Map(dto, entityToUpdate);
+
+        var entry = _work.GetEntityState(entityToUpdate);
+        bool hasChanges = entry == EntityState.Modified;
+
+        if (hasChanges == false)
+        {
+            return false;
+        }
+
         var result = await _work.Complete() > 0;
         if (!result)
         {

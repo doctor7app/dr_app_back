@@ -24,24 +24,6 @@ builder.Services.AddPrescriptionMassTransitConfig(builder.Configuration);
 builder.Services.AddControllers();
 builder.Services.AddRouting();
 
-//builder.Services.AddControllers().AddOData(options =>
-//{
-//    options.Select().Filter().OrderBy().Count().SetMaxTop(20).Expand();
-//    options.EnableQueryFeatures();
-
-//    options.AddRouteComponents(
-//        routePrefix: "api/prescriptions",
-//        model: EdmModelBuilder.Build(),
-//        configureServices: s => s.AddScoped<ODataJsonWriterFactory>()
-//    );
-
-//    options.AddRouteComponents(
-//        routePrefix: "api/prescriptions/{prescriptionId}/events",
-//        model: EdmModelBuilder.GetEventsModel(),
-//        configureServices: s => s.AddScoped<ODataJsonWriterFactory>()
-//    );
-//});
-
 builder.Services.AddControllers().AddOData(
     options =>
     {

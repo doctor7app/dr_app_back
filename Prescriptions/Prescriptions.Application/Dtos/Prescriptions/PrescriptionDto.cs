@@ -20,7 +20,7 @@ public class PrescriptionDto : IMapFrom<Prescription>
     public Guid ConsultationId { get; set; }
     public Guid DoctorId { get; set; }
 
-    public List<PrescriptionItemDto> Items { get; set; } = new();
+    public List<PrescriptionItemDto> Items { get; set; }
 
     public void Mapping(Profile profile)
     {

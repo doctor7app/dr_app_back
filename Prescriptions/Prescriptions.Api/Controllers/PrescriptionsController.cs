@@ -49,7 +49,7 @@ namespace Prescriptions.Api.Controllers
             [FromBody] Delta<PrescriptionUpdateDto> patch)
         {
             var result = await _prescriptionService.UpdatePrescriptionAsync(id, patch);
-            return result ? Ok(await _prescriptionService.GetPrescriptionByIdAsync(id)) : NotFound();
+            return Ok(result);
         }
 
         [HttpDelete("{id}")]

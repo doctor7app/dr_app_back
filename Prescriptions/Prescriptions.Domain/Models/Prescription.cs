@@ -26,13 +26,13 @@ public class Prescription : IAggregateRoot
 
     // Constructeur (pour création initiale)
     public Prescription(
-        Guid prescriptionId,  
+        //Guid prescriptionId,  
         Guid fkPatientId, 
         Guid fkConsultationId,
         Guid fkDoctorId,
         ConsultationType consultationType)
     {
-        PrescriptionId = prescriptionId;
+        PrescriptionId = Guid.NewGuid();
         FkPatientId = fkPatientId;
         FkConsultationId = fkConsultationId;
         FkDoctorId = fkDoctorId;

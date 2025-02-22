@@ -22,8 +22,8 @@ namespace Prescriptions.Infrastructure.Installation
         public static IServiceCollection AddPrescriptionServiceCollection(this IServiceCollection services)
         {
             var applicationAssembly = typeof(Application.MappingProfile).Assembly;
-            //var infrastructureAssembly = typeof(MessageMappingProfile).Assembly;
-            services.AddAutoMapperConfiguration(applicationAssembly, null);
+            var infrastructureAssembly = typeof(MessageMappingProfile).Assembly;
+            services.AddAutoMapperConfiguration(applicationAssembly, infrastructureAssembly);
 
             services.AddTransient<IPrescriptionService, PrescriptionService>();
             services.AddTransient<IPrescriptionItemService, PrescriptionItemService>();
