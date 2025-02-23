@@ -11,15 +11,15 @@ public class PrescriptionItemDto : IMapFrom<PrescriptionItem>
     public string DrugName { get; set; }
     public string Dosage { get; set; }
     public string Frequency { get; set; }
-    public string Duration { get; set; }
-    public string Instructions { get; set; }
+    public string? Duration { get; set; }
+    public string? Instructions { get; set; }
     public MedicationType MedicationType { get; set; }
     public bool IsEssential { get; set; }
     public AdministrationRoute Route { get; set; }
-    public string TimeOfDay { get; set; }
-    public string MealInstructions { get; set; }
+    public string? TimeOfDay { get; set; }
+    public string? MealInstructions { get; set; }
     public bool IsPrn { get; set; }
-    public string Notes { get; set; }
+    public string? Notes { get; set; }
 
     public void Mapping(Profile profile)
     {

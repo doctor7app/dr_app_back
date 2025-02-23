@@ -2,6 +2,7 @@
 using Common.Extension.Common;
 using Common.Services.Interfaces;
 using Microsoft.AspNetCore.OData.Deltas;
+using Microsoft.EntityFrameworkCore;
 using Prescriptions.Application.Dtos.Items;
 using Prescriptions.Application.Interfaces;
 using Prescriptions.Domain.Models;
@@ -21,14 +22,14 @@ public class PrescriptionItemService : IPrescriptionItemService
         _mapper = mapper;
     }
 
-    public async Task<PrescriptionItemDto> GetItemByIdAsync(Guid itemId)
+    public async Task<PrescriptionItemDto> GetItemByIdAsync(Guid prescriptionId, Guid itemId)
     {
-        if (itemId.IsNullOrEmptyGuid())
+        if (itemId.IsNullOrEmptyGuid() || prescriptionId.IsNullOrEmptyGuid())
         {
             throw new Exception("L'id ne peut pas être un Guid Vide");
         }
 
-        var obj = await _work.GetAsync(x => x.PrescriptionItemId == itemId);
+        var obj = await _work.GetAsync(x => x.PrescriptionItemId == itemId && x.FkPrescriptionId == prescriptionId);
         return _mapper.Map<PrescriptionItemDto>(obj);
     }
 
@@ -39,7 +40,7 @@ public class PrescriptionItemService : IPrescriptionItemService
             throw new Exception("L'id ne peut pas être un Guid Vide");
         }
 
-        var obj = await _work.GetAsync(x => x.FkPrescriptionId == prescriptionId);
+        var obj = await _work.GetListAsync(x => x.FkPrescriptionId == prescriptionId);
 
         return _mapper.Map<IEnumerable<PrescriptionItemDto>>(obj);
     }
@@ -53,7 +54,7 @@ public class PrescriptionItemService : IPrescriptionItemService
 
         var item = _mapper.Map<PrescriptionItem>(dto);
         await _work.AddAsync(item);
-
+        item.FkPrescriptionId = prescriptionId;
         var result = await _work.Complete() > 0;
         if (!result)
         {
@@ -63,21 +64,29 @@ public class PrescriptionItemService : IPrescriptionItemService
         return true;
     }
     
-    public async Task<bool> UpdateItemAsync(Guid id,Guid prescriptionId, Delta<PrescriptionItemUpdateDto> patch)
+    public async Task<bool> UpdateItemAsync(Guid prescriptionId, Guid itemId, Delta<PrescriptionItemUpdateDto> patch)
     {
-        if (prescriptionId.IsNullOrEmptyGuid())
+        if (prescriptionId.IsNullOrEmptyGuid() || itemId.IsNullOrEmptyGuid())
         {
             throw new Exception("L'id ne peut pas être un Guid Vide");
         }
-        var entityToUpdate = await _work.GetAsync(z => z.PrescriptionItemId == id && z.FkPrescriptionId == prescriptionId);
+        var entityToUpdate = await _work.GetAsync(z => z.PrescriptionItemId == itemId && z.FkPrescriptionId == prescriptionId);
         if (entityToUpdate == null)
         {
-            throw new Exception($"L'élement avec l'id {id} n'existe pas dans la base de données!");
+            throw new Exception($"L'élement avec l'id {itemId} n'existe pas dans la base de données!");
         }
         var dto = new PrescriptionItemUpdateDto();
         patch.Patch(dto);
-
         _mapper.Map(dto, entityToUpdate);
+
+        var entry = _work.GetEntityState(entityToUpdate);
+        bool hasChanges = entry == EntityState.Modified;
+
+        if (hasChanges == false)
+        {
+            return false;
+        }
+
         var result = await _work.Complete() > 0;
         if (!result)
         {
@@ -86,13 +95,13 @@ public class PrescriptionItemService : IPrescriptionItemService
         return true;
     }
 
-    public async Task<bool> DeleteItemAsync(Guid itemId)
+    public async Task<bool> DeleteItemAsync(Guid prescriptionId, Guid itemId)
     {
-        if (itemId.IsNullOrEmptyGuid())
+        if (itemId.IsNullOrEmptyGuid() || prescriptionId.IsNullOrEmptyGuid())
         {
             throw new Exception("L'id ne peut pas être un Guid Vide");
         }
-        var obj = await _work.GetAsync(x => x.PrescriptionItemId == itemId);
+        var obj = await _work.GetAsync(x => x.PrescriptionItemId == itemId && x.FkPrescriptionId == prescriptionId);
         if (obj == null)
         {
             throw new Exception($"L'élement avec l'id {itemId} n'existe pas dans la base de données!");

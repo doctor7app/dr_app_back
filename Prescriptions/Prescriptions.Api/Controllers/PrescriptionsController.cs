@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.OData.Formatter;
 using Microsoft.AspNetCore.OData.Query;
 using Microsoft.AspNetCore.OData.Routing.Controllers;
 using Prescriptions.Application.Dtos.Events;
+using Prescriptions.Application.Dtos.Items;
 using Prescriptions.Application.Dtos.Prescriptions;
 using Prescriptions.Application.Interfaces;
 
@@ -14,12 +15,15 @@ namespace Prescriptions.Api.Controllers
     public class PrescriptionsController : ODataController
     {
         private readonly IPrescriptionService _prescriptionService;
+        private readonly IPrescriptionItemService _prescriptionItemService;
 
-        public PrescriptionsController(
-            IPrescriptionService prescriptionService)
+        public PrescriptionsController(IPrescriptionService prescriptionService, IPrescriptionItemService prescriptionItemService)
         {
             _prescriptionService = prescriptionService;
+            _prescriptionItemService = prescriptionItemService;
         }
+
+        #region Prescriptions
 
         [EnableQuery(AllowedQueryOptions = AllowedQueryOptions.All, MaxTop = 100)]
         [HttpGet]
@@ -67,5 +71,59 @@ namespace Prescriptions.Api.Controllers
             var details = await _prescriptionService.GetPrescriptionDetailsAsync(id);
             return details != null ? Ok(details) : NotFound();
         }
+
+        #endregion
+
+
+        #region Items
+
+        [EnableQuery]
+        [HttpGet("{key}/items/{idItem}")]
+        public async Task<IActionResult> GetPrescriptionItem(Guid key, Guid idItem)
+        {
+            var result = await _prescriptionItemService.GetItemByIdAsync(key,idItem);
+            return Ok(result);
+        }
+
+        [EnableQuery]
+        [HttpGet("{key}/items")]
+        public async Task<IActionResult> GetPrescriptionItem(Guid key)
+        {
+            var result = await _prescriptionItemService.GetAllItemRelatedToPrescriptionByIdAsync(key);
+            return Ok(result);
+        }
+
+        [HttpPost("{key}/items")]
+        public async Task<IActionResult> CreatePrescriptionItem([FromODataUri] Guid key, [FromBody] PrescriptionItemCreateDto entity)
+        {
+            if (!ModelState.IsValid)
+            {
+                throw new Exception("Merci de vérifier les données saisie !");
+            }
+
+            var result = await _prescriptionItemService.CreatePrescriptionItem(key, entity);
+            return Ok(result);
+        }
+
+        [HttpPatch("{key}/items/{idItem}")]
+        public async Task<IActionResult> PatchPrescriptionItem([FromODataUri] Guid key,
+            [FromODataUri] Guid idItem,
+            [FromBody] Delta<PrescriptionItemUpdateDto> entity)
+        {
+            var result = await _prescriptionItemService.UpdateItemAsync(key, idItem, entity);
+            
+            return Ok(result);
+        }
+
+
+        [HttpDelete("{key}/items/{idItem}")]
+        public async Task<IActionResult> DeletePrescriptionItem([FromODataUri] Guid key, [FromODataUri] Guid idItem)
+        {
+            var result = await _prescriptionItemService.DeleteItemAsync(key, idItem);
+           
+            return Ok(result);
+        }
+
+        #endregion
     }
 }

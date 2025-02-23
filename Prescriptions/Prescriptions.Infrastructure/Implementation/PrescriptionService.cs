@@ -75,7 +75,7 @@ public class PrescriptionService : IPrescriptionService
 
         var item = _mapper.Map<Prescription>(dto);
 
-        // Add medications using domain logic (not AutoMapper)
+        // Add medications using domain logic
         foreach (var itemDto in dto.Items)
         {
             item.AddMedication(
@@ -112,9 +112,6 @@ public class PrescriptionService : IPrescriptionService
         
         var dto = new PrescriptionUpdateDto();
         patch.Patch(dto);
-
-        
-
         _mapper.Map(dto, entityToUpdate);
 
         var entry = _work.GetEntityState(entityToUpdate);
