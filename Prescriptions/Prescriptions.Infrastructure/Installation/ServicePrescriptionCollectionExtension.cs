@@ -8,6 +8,7 @@ using Prescriptions.Application.Interfaces;
 using Prescriptions.Application.Validators;
 using Prescriptions.Infrastructure.Implementation;
 using Prescriptions.Infrastructure.Persistence;
+using Prescriptions.Infrastructure.Services;
 
 namespace Prescriptions.Infrastructure.Installation
 {
@@ -27,7 +28,7 @@ namespace Prescriptions.Infrastructure.Installation
 
             services.AddTransient<IPrescriptionService, PrescriptionService>();
             services.AddTransient<IPrescriptionItemService, PrescriptionItemService>();
-            services.AddTransient<IPrescriptionEventService, PrescriptionEventService>();
+            services.AddTransient<IEventStoreService, EventStoreService>();
             services.AddTransient<IPrescriptionHistoryService, PrescriptionHistoryService>();
             
             services.AddTransient<IMedicationValidator, MedicationValidator>();

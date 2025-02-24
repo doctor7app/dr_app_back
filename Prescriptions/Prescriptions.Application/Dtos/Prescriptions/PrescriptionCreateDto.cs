@@ -24,12 +24,6 @@ public class PrescriptionCreateDto : IMapFrom<Prescription>
     public void Mapping(Profile profile)
     {
         profile.CreateMap<PrescriptionCreateDto, Prescription>()
-            .ConstructUsing(src => new Prescription(
-                src.PatientId,
-                src.ConsultationId,
-                src.DoctorId,
-                src.ConsultationType
-            ))
             .ForMember(dest => dest.Notes, opt => opt.MapFrom(src => src.Notes))
             .ForMember(dest => dest.ConsultationType, opt => opt.MapFrom(src => src.ConsultationType))
             .ForMember(dest => dest.ExpirationDate, opt => opt.MapFrom(src => src.ExpirationDate))

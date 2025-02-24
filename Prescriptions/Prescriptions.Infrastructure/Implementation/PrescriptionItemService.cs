@@ -7,6 +7,7 @@ using Prescriptions.Application.Dtos.Items;
 using Prescriptions.Application.Interfaces;
 using Prescriptions.Domain.Models;
 using Prescriptions.Infrastructure.Persistence;
+using Prescriptions.Infrastructure.Services;
 
 namespace Prescriptions.Infrastructure.Implementation;
 
@@ -14,12 +15,15 @@ public class PrescriptionItemService : IPrescriptionItemService
 {
     private readonly IRepository<PrescriptionItem, PrescriptionDbContext> _work;
     private readonly IMapper _mapper;
+    private readonly IEventStoreService _eventStoreService;
 
     public PrescriptionItemService(IRepository<PrescriptionItem, PrescriptionDbContext> work,
-        IMapper mapper)
+        IMapper mapper,
+        IEventStoreService eventStoreService)
     {
         _work = work;
         _mapper = mapper;
+        _eventStoreService = eventStoreService;
     }
 
     public async Task<PrescriptionItemDto> GetItemByIdAsync(Guid prescriptionId, Guid itemId)
@@ -55,12 +59,18 @@ public class PrescriptionItemService : IPrescriptionItemService
         var item = _mapper.Map<PrescriptionItem>(dto);
         await _work.AddAsync(item);
         item.FkPrescriptionId = prescriptionId;
+        item.PrescriptionItemId = Guid.NewGuid();
+
+        // Trigger domain event
+        item.AddPrescriptionItemEvent();
+
         var result = await _work.Complete() > 0;
         if (!result)
         {
             throw new Exception("Could not save Prescription Item to database");
         }
-
+        _eventStoreService.SaveEvents(item.Events);
+        //We can add the publish events here
         return true;
     }
     
@@ -87,11 +97,15 @@ public class PrescriptionItemService : IPrescriptionItemService
             return false;
         }
 
+        entityToUpdate.UpdatePrescriptionItemEvent();
+
         var result = await _work.Complete() > 0;
         if (!result)
         {
             throw new Exception("Could not update Prescription Item to database");
         }
+
+        _eventStoreService.SaveEvents(entityToUpdate.Events);
         return true;
     }
 
@@ -106,12 +120,17 @@ public class PrescriptionItemService : IPrescriptionItemService
         {
             throw new Exception($"L'élement avec l'id {itemId} n'existe pas dans la base de données!");
         }
+
+        obj.RemovePrescriptionItemEvent();
         _work.Remove(obj);
         var result = await _work.Complete() > 0;
         if (!result)
         {
             throw new Exception("Could not Delete Prescription Item from database");
         }
+        // Save the domain events to the EventStore
+        _eventStoreService.SaveEvents(obj.Events);
+
         return true;
     }
 }

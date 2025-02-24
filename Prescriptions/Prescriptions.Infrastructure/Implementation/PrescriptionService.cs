@@ -4,10 +4,8 @@ using Common.Services.Interfaces;
 using MassTransit;
 using Microsoft.AspNetCore.OData.Deltas;
 using Microsoft.EntityFrameworkCore;
-using Prescriptions.Application.Dtos.Events;
 using Prescriptions.Application.Dtos.Prescriptions;
 using Prescriptions.Application.Interfaces;
-using Prescriptions.Domain.Event;
 using Prescriptions.Domain.Models;
 using Prescriptions.Infrastructure.Persistence;
 
@@ -16,17 +14,17 @@ namespace Prescriptions.Infrastructure.Implementation;
 public class PrescriptionService : IPrescriptionService
 {
     private readonly IRepository<Prescription, PrescriptionDbContext> _work;
-    private readonly IRepository<PrescriptionEvent, PrescriptionDbContext> _workEvent;
+    private readonly IEventStoreService _eventStoreService;
     private readonly IMapper _mapper;
     private readonly IPublishEndpoint _publishEndpoint;
 
     public PrescriptionService(IRepository<Prescription, PrescriptionDbContext> work,
-        IRepository<PrescriptionEvent, PrescriptionDbContext> workEvent,
+        IEventStoreService eventStoreService,
         IMapper mapper,
         IPublishEndpoint publishEndpoint)
     {
         _work = work;
-        _workEvent = workEvent;
+        _eventStoreService = eventStoreService;
         _mapper = mapper;
         _publishEndpoint = publishEndpoint;
     }
@@ -50,20 +48,7 @@ public class PrescriptionService : IPrescriptionService
 
         return _mapper.Map<PrescriptionDto>(obj);
     }
-
-    public async Task<PrescriptionDetailsDto> GetPrescriptionDetailsAsync(Guid id)
-    {
-        if (id.IsNullOrEmptyGuid())
-        {
-            throw new Exception("L'id ne peut pas être un Guid Vide");
-        }
-
-        var obj = await _work.GetAsync(x => x.PrescriptionId == id, includes:
-            a => a.Include(z => z.Items)
-                .Include(z=>z.DomainEvents));
-
-        return _mapper.Map<PrescriptionDetailsDto>(obj);
-    }
+    
 
     public async Task<bool> CreatePrescriptionAsync(PrescriptionCreateDto dto)
     {
@@ -73,27 +58,46 @@ public class PrescriptionService : IPrescriptionService
             throw new Exception("L'id ne peut pas être un Guid Vide");
         }
 
-        var item = _mapper.Map<Prescription>(dto);
+        var prescription = _mapper.Map<Prescription>(dto);
+        prescription.PrescriptionId = Guid.NewGuid();
 
-        // Add medications using domain logic
-        foreach (var itemDto in dto.Items)
+        //Trigger the Domain Event
+        foreach (var item in dto.Items)
         {
-            item.AddMedication(
-                itemDto.DrugName,
-                itemDto.Dosage,
-                itemDto.Frequency,
-                itemDto.Duration,
-                dto.DoctorId
-            );
+            var newItem = new PrescriptionItem
+            {
+                PrescriptionItemId = Guid.NewGuid(),
+                FkPrescriptionId = prescription.PrescriptionId,
+                Dosage = item.Dosage,
+                DrugName = item.DrugName,
+                Duration = item.Duration,
+                Frequency = item.Frequency,
+                Instructions = item.Instructions,
+                IsEssential = item.IsEssential,
+                IsPrn = item.IsPrn,
+                MealInstructions = item.MealInstructions,
+                MedicationType = item.MedicationType,
+                Notes = item.Notes,
+                Route = item.Route,
+                TimeOfDay = item.TimeOfDay,
+
+            };
+           
+            prescription.AddPrescriptionItem(newItem);
         }
 
-        await _work.AddAsync(item);
+        prescription.CreatePrescription();
+
+        await _work.AddAsync(prescription);
 
         var result = await _work.Complete() > 0;
         if (!result)
         {
             throw new Exception("Could not save Prescription to database");
         }
+
+        // Save the domain events to the EventStore
+        _eventStoreService.SaveEvents(prescription.Events);
 
         return true;
     }
@@ -104,7 +108,7 @@ public class PrescriptionService : IPrescriptionService
         {
             throw new Exception("L'id ne peut pas être un Guid Vide");
         }
-        var entityToUpdate = await _work.GetAsync(z => z.PrescriptionId == id,z=>z.Include(a=>a.Items).Include(a=>a.DomainEvents));
+        var entityToUpdate = await _work.GetAsync(z => z.PrescriptionId == id);
         if (entityToUpdate == null)
         {
             throw new Exception($"L'élement avec l'id {id} n'existe pas dans la base de données!");
@@ -122,11 +126,18 @@ public class PrescriptionService : IPrescriptionService
             return false;
         }
 
+        // Trigger domain event for Prescription Updated
+        entityToUpdate.UpdatePrescription();
+
         var result = await _work.Complete() > 0;
         if (!result)
         {
             throw new Exception("Could not update Prescription to database");
         }
+
+        // Save the domain events to the EventStore
+        _eventStoreService.SaveEvents(entityToUpdate.Events);
+
         return true;
     }
 
@@ -141,31 +152,17 @@ public class PrescriptionService : IPrescriptionService
         {
             throw new Exception($"L'élement avec l'id {id} n'existe pas dans la base de données!");
         }
+        //Trigger delete event
+        obj.DeletePrescription();
+        
         _work.Remove(obj);
         var result = await _work.Complete() > 0;
         if (!result)
         {
             throw new Exception("Could not Delete Prescription from database");
         }
+        _eventStoreService.SaveEvents(obj.Events);
         return true;
     }
-
-    public async Task<bool> AddPrescriptionEventAsync(Guid prescriptionId, PrescriptionEventDto eventDto)
-    {
-        if (prescriptionId.IsNullOrEmptyGuid())
-        {
-            throw new Exception("L'id ne peut pas être un Guid Vide");
-        }
-
-        var item = _mapper.Map<PrescriptionEvent>(eventDto);
-        await _workEvent.AddAsync(item);
-
-        var result = await _workEvent.Complete() > 0;
-        if (!result)
-        {
-            throw new Exception("Could not save Prescription to database");
-        }
-
-        return true;
-    }
+    
 }

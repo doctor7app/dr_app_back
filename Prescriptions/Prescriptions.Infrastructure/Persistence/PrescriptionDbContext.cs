@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Prescriptions.Domain.Event;
 using Prescriptions.Domain.Models;
 using Microsoft.Extensions.Configuration;
 using MassTransit;
@@ -10,7 +9,8 @@ public sealed class PrescriptionDbContext : DbContext
 {
     public DbSet<Prescription> Prescriptions { get; set; }
     public DbSet<PrescriptionItem> PrescriptionItems { get; set; }
-    public DbSet<PrescriptionEvent> PrescriptionEvents { get; set; }
+    //public DbSet<PrescriptionEvent> PrescriptionEvents { get; set; }
+    public DbSet<StoredEvent> StoredEvents { get; set; }
 
     public PrescriptionDbContext()
     {
@@ -111,27 +111,22 @@ public sealed class PrescriptionDbContext : DbContext
                 .HasMaxLength(500);
         });
 
-        // Configuration de PrescriptionEvent
-        modelBuilder.Entity<PrescriptionEvent>(entity =>
+        // Configuration de StoredEvent
+        modelBuilder.Entity<StoredEvent>(entity =>
         {
-            entity.HasKey(e => e.PrescriptionEventId);
+            entity.HasKey(e => e.Id);
 
-            entity.Property(e => e.Timestamp)
+            entity.Property(e => e.OccurredOn)
                 .IsRequired();
 
             entity.Property(e => e.EventType)
                 .HasConversion<int>()
                 .IsRequired();
 
-            entity.Property(e => e.EventDataJson)
+            entity.Property(e => e.Data)
                 .IsRequired()
                 .HasColumnType("jsonb");
 
-            // Relation avec Prescription
-            entity.HasOne<Prescription>()
-                .WithMany()
-                .HasForeignKey(e => e.FkPrescriptionId)
-                .OnDelete(DeleteBehavior.Cascade);
         });
         
     }

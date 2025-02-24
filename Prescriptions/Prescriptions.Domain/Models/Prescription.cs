@@ -1,11 +1,11 @@
 ﻿using Common.Enums;
 using Common.Enums.Prescriptions;
-using Prescriptions.Domain.Common;
-using Prescriptions.Domain.Event;
+using Prescriptions.Domain.Abstract;
+using Prescriptions.Domain.Events;
 
 namespace Prescriptions.Domain.Models;
 
-public class Prescription : IAggregateRoot
+public class Prescription : AggregateRoot
 {
     public Guid PrescriptionId { get; set; }
     public DateTime IssuedAt { get; set; }
@@ -18,97 +18,46 @@ public class Prescription : IAggregateRoot
     public Guid FkConsultationId { get; set; }
     public Guid FkDoctorId { get; set; }
     private readonly List<PrescriptionItem> _items = new();
-    public IReadOnlyCollection<PrescriptionItem> Items => _items.AsReadOnly();
+    public IEnumerable<PrescriptionItem> Items => _items.AsReadOnly();
 
-    // === Gestion des événements métier ===
-    private readonly List<PrescriptionEvent> _domainEvents = new();
-    public IReadOnlyCollection<PrescriptionEvent> DomainEvents => _domainEvents.AsReadOnly();
-
-    // Constructeur (pour création initiale)
-    public Prescription(
-        //Guid prescriptionId,  
-        Guid fkPatientId, 
-        Guid fkConsultationId,
-        Guid fkDoctorId,
-        ConsultationType consultationType)
+    public void CreatePrescription()
     {
-        PrescriptionId = Guid.NewGuid();
-        FkPatientId = fkPatientId;
-        FkConsultationId = fkConsultationId;
-        FkDoctorId = fkDoctorId;
-        ConsultationType = consultationType;
-        IssuedAt = DateTime.UtcNow;
-        Status = PrescriptionStatus.Draft;
-
-        // Événement de création
-        _domainEvents.Add(PrescriptionEvent.Create(
-            PrescriptionId,
-            PrescriptionEventType.PrescriptionCreated,
-            FkDoctorId,
-            new { ConsultationType = ConsultationType }));
+        AddEvent(new PrescriptionCreatedEvent(PrescriptionId, IssuedAt, FkPatientId, FkDoctorId));
     }
 
-    // === Méthodes métier (modifications) ===
-
-    public void AddMedication(
-        string drugName,
-        string dosage,
-        string frequency,
-        string duration,
-        Guid doctorId)
+    public void UpdatePrescription()
     {
-        var item = new PrescriptionItem
-        {
-            PrescriptionItemId = Guid.NewGuid(),
-            DrugName = drugName,
-            Dosage = dosage,
-            Frequency = frequency,
-            Duration = duration
-        };
+        AddEvent(new PrescriptionUpdatedEvent(PrescriptionId, Notes, Status, ExpirationDate));
+    }
 
+    public void DeletePrescription()
+    {
+        AddEvent(new PrescriptionDeletedEvent(PrescriptionId));
+    }
+
+    public void AddPrescriptionItem(PrescriptionItem item)
+    {
         _items.Add(item);
-
-        // Événement
-        _domainEvents.Add(PrescriptionEvent.Create(
-            PrescriptionId,
-            PrescriptionEventType.MedicationAdded,
-            doctorId,
-            new { DrugName = drugName, Dosage = dosage }));
+        AddEvent(new PrescriptionItemCreatedEvent(item.PrescriptionItemId, item.DrugName, item.Dosage));
     }
 
-    public void UpdateMedicationDosage(
-        Guid medicationId,
-        string newDosage,
-        Guid doctorId)
+    public void UpdatePrescriptionItem(PrescriptionItem item)
     {
-        var item = _items.FirstOrDefault(i => i.PrescriptionItemId == medicationId);
-        if (item == null) throw new ArgumentException("Médicament non trouvé.");
-
-        var oldDosage = item.Dosage;
-        item.Dosage = newDosage;
-
-        // Événement
-        _domainEvents.Add(PrescriptionEvent.Create(
-            PrescriptionId,
-            PrescriptionEventType.MedicationDosageUpdated,
-            doctorId,
-            new { MedicationId = medicationId, OldDosage = oldDosage, NewDosage = newDosage }));
+        var existingItem = _items.FirstOrDefault(x => x.PrescriptionItemId == item.PrescriptionItemId);
+        if (existingItem != null)
+        {
+            existingItem.Update(item);
+            AddEvent(new PrescriptionItemUpdatedEvent(item.PrescriptionItemId, item.DrugName, item.Dosage));
+        }
     }
 
-    public void RemoveMedication(Guid medicationId, Guid doctorId)
+    public void RemovePrescriptionItem(Guid itemId)
     {
-        var item = _items.FirstOrDefault(i => i.PrescriptionItemId == medicationId);
-        if (item == null) return;
-
-        _items.Remove(item);
-
-        // Événement
-        _domainEvents.Add(PrescriptionEvent.Create(
-            PrescriptionId,
-            PrescriptionEventType.MedicationRemoved,
-            doctorId,
-            new { MedicationId = medicationId }));
+        var item = _items.FirstOrDefault(x => x.PrescriptionItemId == itemId);
+        if (item != null)
+        {
+            _items.Remove(item);
+            AddEvent(new PrescriptionItemDeletedEvent(itemId));
+        }
     }
-
-    public void ClearDomainEvents() => _domainEvents.Clear();
 }

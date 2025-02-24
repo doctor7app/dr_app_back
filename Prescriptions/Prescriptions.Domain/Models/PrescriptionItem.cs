@@ -1,8 +1,10 @@
 ﻿using Common.Enums.Prescriptions;
+using Prescriptions.Domain.Abstract;
+using Prescriptions.Domain.Events;
 
 namespace Prescriptions.Domain.Models;
 
-public class PrescriptionItem
+public class PrescriptionItem :AggregateRoot
 {
     public Guid PrescriptionItemId { get; set; }
     
@@ -56,4 +58,39 @@ public class PrescriptionItem
 
     public Guid FkPrescriptionId { get; set; }
     public Prescription Prescription { get; set; }
+
+
+    public void Update(PrescriptionItem updatedItem)
+    {
+        DrugName = updatedItem.DrugName;
+        Dosage = updatedItem.Dosage;
+        Frequency = updatedItem.Frequency;
+        Duration = updatedItem.Duration;
+        Instructions = updatedItem.Instructions;
+        MedicationType = updatedItem.MedicationType;
+        IsEssential = updatedItem.IsEssential;
+        Route = updatedItem.Route;
+        TimeOfDay = updatedItem.TimeOfDay;
+        MealInstructions = updatedItem.MealInstructions;
+        IsPrn = updatedItem.IsPrn;
+        Notes = updatedItem.Notes;
+    }
+
+
+    public void UpdatePrescriptionItemEvent()
+    {
+        Update(this);
+        AddEvent(new PrescriptionItemUpdatedEvent(PrescriptionItemId, DrugName, Dosage));
+    }
+
+    public void AddPrescriptionItemEvent()
+    {
+        AddEvent(new PrescriptionItemCreatedEvent(PrescriptionItemId, DrugName, Dosage));
+    }
+
+    public void RemovePrescriptionItemEvent()
+    {
+        AddEvent(new PrescriptionItemDeletedEvent(PrescriptionItemId));
+    }
+
 }

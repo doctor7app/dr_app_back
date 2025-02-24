@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Prescriptions.Infrastructure.Persistence;
@@ -11,9 +12,11 @@ using Prescriptions.Infrastructure.Persistence;
 namespace Prescriptions.Infrastructure.Migrations
 {
     [DbContext(typeof(PrescriptionDbContext))]
-    partial class PrescriptionDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250224225813_Update_Model_V3")]
+    partial class Update_Model_V3
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

@@ -62,15 +62,7 @@ namespace Prescriptions.Api.Controllers
             var result = await _prescriptionService.DeletePrescriptionAsync(id);
             return result ? NoContent() : NotFound();
         }
-
-        [HttpGet("{id}/details")]
-        [ProducesResponseType(typeof(PrescriptionDetailsDto), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> GetDetails([FromODataUri] Guid id)
-        {
-            var details = await _prescriptionService.GetPrescriptionDetailsAsync(id);
-            return details != null ? Ok(details) : NotFound();
-        }
+        
 
         #endregion
 

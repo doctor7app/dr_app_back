@@ -57,7 +57,7 @@ namespace Prescriptions.Infrastructure.Installation
                     
                 }
                 
-                if (!dbContext.PrescriptionEvents.Any())
+                if (!dbContext.StoredEvents.Any())
                 {
                     
                 }

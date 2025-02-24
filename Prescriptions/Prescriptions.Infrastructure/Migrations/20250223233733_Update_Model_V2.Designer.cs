@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Prescriptions.Infrastructure.Persistence;
@@ -11,9 +12,11 @@ using Prescriptions.Infrastructure.Persistence;
 namespace Prescriptions.Infrastructure.Migrations
 {
     [DbContext(typeof(PrescriptionDbContext))]
-    partial class PrescriptionDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250223233733_Update_Model_V2")]
+    partial class Update_Model_V2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -227,6 +230,40 @@ namespace Prescriptions.Infrastructure.Migrations
                     b.ToTable("Prescriptions");
                 });
 
+            modelBuilder.Entity("Prescriptions.Domain.Models.PrescriptionEvent", b =>
+                {
+                    b.Property<Guid>("PrescriptionEventId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("EventDataJson")
+                        .IsRequired()
+                        .HasColumnType("jsonb");
+
+                    b.Property<int>("EventType")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid>("FkDoctorId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("FkPrescriptionId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("OccurredOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("PrescriptionId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("PrescriptionEventId");
+
+                    b.HasIndex("FkPrescriptionId");
+
+                    b.HasIndex("PrescriptionId");
+
+                    b.ToTable("PrescriptionEvents");
+                });
+
             modelBuilder.Entity("Prescriptions.Domain.Models.PrescriptionItem", b =>
                 {
                     b.Property<Guid>("PrescriptionItemId")
@@ -288,34 +325,6 @@ namespace Prescriptions.Infrastructure.Migrations
                     b.ToTable("PrescriptionItems");
                 });
 
-            modelBuilder.Entity("Prescriptions.Domain.Models.StoredEvent", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("AggregateId")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("AggregateType")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Data")
-                        .IsRequired()
-                        .HasColumnType("jsonb");
-
-                    b.Property<int>("EventType")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("OccurredOn")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("StoredEvents");
-                });
-
             modelBuilder.Entity("MassTransit.EntityFrameworkCoreIntegration.OutboxMessage", b =>
                 {
                     b.HasOne("MassTransit.EntityFrameworkCoreIntegration.OutboxState", null)
@@ -326,6 +335,23 @@ namespace Prescriptions.Infrastructure.Migrations
                         .WithMany()
                         .HasForeignKey("InboxMessageId", "InboxConsumerId")
                         .HasPrincipalKey("MessageId", "ConsumerId");
+                });
+
+            modelBuilder.Entity("Prescriptions.Domain.Models.PrescriptionEvent", b =>
+                {
+                    b.HasOne("Prescriptions.Domain.Models.Prescription", null)
+                        .WithMany()
+                        .HasForeignKey("FkPrescriptionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Prescriptions.Domain.Models.Prescription", "Prescription")
+                        .WithMany()
+                        .HasForeignKey("PrescriptionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Prescription");
                 });
 
             modelBuilder.Entity("Prescriptions.Domain.Models.PrescriptionItem", b =>

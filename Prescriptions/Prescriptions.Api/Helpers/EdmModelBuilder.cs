@@ -44,39 +44,25 @@ public static class EdmModelBuilder
         item.Property(i => i.MealInstructions);
         item.Property(i => i.IsPrn);
         item.Property(i => i.Notes);
-
-        // 3. PrescriptionEventDto (ComplexType)
-        var eventDto = builder.ComplexType<PrescriptionEventDto>();
-        eventDto.Property(e => e.Id);
-        eventDto.EnumProperty(e => e.EventType);
-        eventDto.Property(e => e.Timestamp);
-        eventDto.Property(e => e.DoctorId);
-        eventDto.Property(e => e.EventDataJson);
-        eventDto.Property(e => e.PrescriptionId);
-
-        // 4. PrescriptionDetailsDto (Entity)
-        var detailsDto = builder.EntityType<PrescriptionDetailsDto>();
-        detailsDto.HasKey(d => d.Id);
-        prescription.Property(p => p.IssuedAt);
-        prescription.Property(p => p.Notes);
-        prescription.EnumProperty(p => p.Status);
-        prescription.EnumProperty(p => p.ConsultationType);
-        prescription.Property(p => p.ExpirationDate);
-        prescription.Property(p => p.PatientId);
-        prescription.Property(p => p.ConsultationId);
-        prescription.Property(p => p.DoctorId);
-        detailsDto.HasMany(d => d.Items);
-        detailsDto.CollectionProperty(d => d.Events);
-
-        // 5. Functions
-        var detailsFunction = prescription.Function("Details");
-        detailsFunction.Returns<PrescriptionDetailsDto>();
-        detailsFunction.Parameter<Guid>("id");
-
+        
         // 6. EntitySets
         builder.EntitySet<PrescriptionDto>("Prescriptions");
         builder.EntitySet<PrescriptionItemDto>("Items");
+        builder.EntitySet<StoredEventDto>("History");
 
+        var history = builder.EntityType<StoredEventDto>();
+
+        // Function for Prescription History
+        history.Collection
+            .Function("GetPrescriptionHistory")
+            .ReturnsCollectionFromEntitySet<StoredEventDto>("History")
+            .Parameter<Guid>("key");
+
+        // Function for Item History
+        history.Collection
+            .Function("GetItemHistory")
+            .ReturnsCollectionFromEntitySet<StoredEventDto>("History")
+            .Parameter<Guid>("key");
 
         // 7. Patch Entities
         var updateDto = builder.ComplexType<PrescriptionUpdateDto>();

@@ -2,13 +2,13 @@
 using Microsoft.AspNetCore.OData.Formatter;
 using Microsoft.AspNetCore.OData.Query;
 using Microsoft.AspNetCore.OData.Routing.Controllers;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Prescriptions.Application.Interfaces;
-using Prescriptions.Infrastructure.Implementation;
 
 namespace Prescriptions.Api.Controllers
 {
     [ApiController]
-    [Route("api/prescriptions/{prescriptionId}/history")]
+    [Route("api/history")]
     public class PrescriptionHistoryController : ODataController
     {
         private readonly IPrescriptionHistoryService _prescriptionHistoryService;
@@ -19,20 +19,19 @@ namespace Prescriptions.Api.Controllers
         }
 
         [EnableQuery]
-        [HttpGet]
-        public async Task<IActionResult> GetHistory([FromODataUri] Guid prescriptionId)
+        [HttpGet("prescriptions/{key}")]
+        public async Task<IActionResult> GetPrescriptionHistory([FromODataUri] Guid key)
         {
-            var prescription = await _prescriptionHistoryService.GetPrescriptionHistoryAsync(prescriptionId);
+            var prescription = await _prescriptionHistoryService.GetPrescriptionHistoryAsync(key);
             return prescription != null ? Ok(prescription) : NotFound();
         }
 
-        [HttpPost("{eventId}/revert")]
-        public async Task<IActionResult> RevertToVersion(
-            Guid prescriptionId,
-            Guid eventId)
+        [EnableQuery]
+        [HttpGet("items/{itemId}")]
+        public async Task<IActionResult> GetItemsHistory([FromODataUri] Guid key)
         {
-            await _prescriptionHistoryService.RevertPrescriptionToVersionAsync(prescriptionId, eventId);
-            return NoContent();
+            var prescription = await _prescriptionHistoryService.GetPrescriptionItemHistoryAsync(key);
+            return prescription != null ? Ok(prescription) : NotFound();
         }
     }
 }
