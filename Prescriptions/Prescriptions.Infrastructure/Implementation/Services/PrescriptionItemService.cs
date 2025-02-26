@@ -7,7 +7,6 @@ using Prescriptions.Application.Dtos.Items;
 using Prescriptions.Application.Interfaces.Services;
 using Prescriptions.Domain.Models;
 using Prescriptions.Infrastructure.Persistence;
-using Prescriptions.Infrastructure.Services;
 
 namespace Prescriptions.Infrastructure.Implementation.Services;
 
