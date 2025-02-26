@@ -5,11 +5,11 @@ using MassTransit;
 using Microsoft.AspNetCore.OData.Deltas;
 using Microsoft.EntityFrameworkCore;
 using Prescriptions.Application.Dtos.Prescriptions;
-using Prescriptions.Application.Interfaces;
+using Prescriptions.Application.Interfaces.Services;
 using Prescriptions.Domain.Models;
 using Prescriptions.Infrastructure.Persistence;
 
-namespace Prescriptions.Infrastructure.Implementation;
+namespace Prescriptions.Infrastructure.Implementation.Services;
 
 public class PrescriptionService : IPrescriptionService
 {
@@ -48,7 +48,7 @@ public class PrescriptionService : IPrescriptionService
 
         return _mapper.Map<PrescriptionDto>(obj);
     }
-    
+
 
     public async Task<bool> CreatePrescriptionAsync(PrescriptionCreateDto dto)
     {
@@ -82,7 +82,7 @@ public class PrescriptionService : IPrescriptionService
                 TimeOfDay = item.TimeOfDay,
 
             };
-           
+
             prescription.AddPrescriptionItem(newItem);
         }
 
@@ -113,7 +113,7 @@ public class PrescriptionService : IPrescriptionService
         {
             throw new Exception($"L'élement avec l'id {id} n'existe pas dans la base de données!");
         }
-        
+
         var dto = new PrescriptionUpdateDto();
         patch.Patch(dto);
         _mapper.Map(dto, entityToUpdate);
@@ -154,7 +154,7 @@ public class PrescriptionService : IPrescriptionService
         }
         //Trigger delete event
         obj.DeletePrescription();
-        
+
         _work.Remove(obj);
         var result = await _work.Complete() > 0;
         if (!result)
@@ -164,5 +164,5 @@ public class PrescriptionService : IPrescriptionService
         _eventStoreService.SaveEvents(obj.Events);
         return true;
     }
-    
+
 }

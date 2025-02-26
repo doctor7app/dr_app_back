@@ -4,12 +4,12 @@ using Common.Services.Interfaces;
 using Microsoft.AspNetCore.OData.Deltas;
 using Microsoft.EntityFrameworkCore;
 using Prescriptions.Application.Dtos.Items;
-using Prescriptions.Application.Interfaces;
+using Prescriptions.Application.Interfaces.Services;
 using Prescriptions.Domain.Models;
 using Prescriptions.Infrastructure.Persistence;
 using Prescriptions.Infrastructure.Services;
 
-namespace Prescriptions.Infrastructure.Implementation;
+namespace Prescriptions.Infrastructure.Implementation.Services;
 
 public class PrescriptionItemService : IPrescriptionItemService
 {
@@ -73,7 +73,7 @@ public class PrescriptionItemService : IPrescriptionItemService
         //We can add the publish events here
         return true;
     }
-    
+
     public async Task<bool> UpdateItemAsync(Guid prescriptionId, Guid itemId, Delta<PrescriptionItemUpdateDto> patch)
     {
         if (prescriptionId.IsNullOrEmptyGuid() || itemId.IsNullOrEmptyGuid())

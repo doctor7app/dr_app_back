@@ -1,6 +1,6 @@
 ﻿using Prescriptions.Application.Dtos.Events;
 
-namespace Prescriptions.Application.Interfaces;
+namespace Prescriptions.Application.Interfaces.Services;
 
 public interface IPrescriptionHistoryService
 {

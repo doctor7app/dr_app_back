@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.OData.Deltas;
 using Prescriptions.Application.Dtos.Prescriptions;
 
-namespace Prescriptions.Application.Interfaces;
+namespace Prescriptions.Application.Interfaces.Services;
 
 public interface IPrescriptionService
 {

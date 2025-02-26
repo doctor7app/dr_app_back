@@ -1,6 +1,6 @@
 ﻿using Prescriptions.Domain.Interfaces;
 
-namespace Prescriptions.Application.Interfaces;
+namespace Prescriptions.Application.Interfaces.Services;
 
 public interface IEventStoreService
 {

@@ -1,12 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using FluentValidation;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Deltas;
 using Microsoft.AspNetCore.OData.Formatter;
 using Microsoft.AspNetCore.OData.Query;
 using Microsoft.AspNetCore.OData.Routing.Controllers;
-using Prescriptions.Application.Dtos.Events;
 using Prescriptions.Application.Dtos.Items;
 using Prescriptions.Application.Dtos.Prescriptions;
-using Prescriptions.Application.Interfaces;
+using Prescriptions.Application.Interfaces.Services;
 
 namespace Prescriptions.Api.Controllers
 {
@@ -16,11 +16,24 @@ namespace Prescriptions.Api.Controllers
     {
         private readonly IPrescriptionService _prescriptionService;
         private readonly IPrescriptionItemService _prescriptionItemService;
+        private readonly IValidator<PrescriptionCreateDto> _prescriptionCreateValidator;
+        private readonly IValidator<PrescriptionUpdateDto> _prescriptionUpdateValidator;
+        private readonly IValidator<PrescriptionItemCreateDto> _prescriptionItemCreateValidator;
+        private readonly IValidator<PrescriptionItemUpdateDto> _prescriptionItemUpdateValidator;
 
-        public PrescriptionsController(IPrescriptionService prescriptionService, IPrescriptionItemService prescriptionItemService)
+        public PrescriptionsController(IPrescriptionService prescriptionService, 
+            IPrescriptionItemService prescriptionItemService,
+            IValidator<PrescriptionCreateDto> prescriptionCreateValidator,
+            IValidator<PrescriptionUpdateDto> prescriptionUpdateValidator,
+            IValidator<PrescriptionItemCreateDto> prescriptionItemCreateValidator,
+            IValidator<PrescriptionItemUpdateDto> prescriptionItemUpdateValidator)
         {
             _prescriptionService = prescriptionService;
             _prescriptionItemService = prescriptionItemService;
+            _prescriptionCreateValidator = prescriptionCreateValidator;
+            _prescriptionUpdateValidator = prescriptionUpdateValidator;
+            _prescriptionItemCreateValidator = prescriptionItemCreateValidator;
+            _prescriptionItemUpdateValidator = prescriptionItemUpdateValidator;
         }
 
         #region Prescriptions
@@ -44,6 +57,12 @@ namespace Prescriptions.Api.Controllers
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] PrescriptionCreateDto dto)
         {
+            var checkModel = await _prescriptionCreateValidator.ValidateAsync(dto);
+
+            if (!checkModel.IsValid)
+            {
+                return BadRequest(checkModel.Errors);
+            }
             var result = await _prescriptionService.CreatePrescriptionAsync(dto);
             return Ok(result);
         }
@@ -52,6 +71,21 @@ namespace Prescriptions.Api.Controllers
         public async Task<IActionResult> Patch([FromODataUri] Guid id,
             [FromBody] Delta<PrescriptionUpdateDto> patch)
         {
+            if (patch == null)
+            {
+                return BadRequest("Invalid object.");
+            }
+
+            var updateDto = new PrescriptionUpdateDto();
+            patch.Patch(updateDto);
+
+            var checkModel = await _prescriptionUpdateValidator.ValidateAsync(updateDto);
+
+            if (!checkModel.IsValid)
+            {
+                return BadRequest(checkModel.Errors);
+            }
+
             var result = await _prescriptionService.UpdatePrescriptionAsync(id, patch);
             return Ok(result);
         }
@@ -88,11 +122,12 @@ namespace Prescriptions.Api.Controllers
         [HttpPost("{key}/items")]
         public async Task<IActionResult> CreatePrescriptionItem([FromODataUri] Guid key, [FromBody] PrescriptionItemCreateDto entity)
         {
-            if (!ModelState.IsValid)
-            {
-                throw new Exception("Merci de vérifier les données saisie !");
-            }
+            var checkModel = await _prescriptionItemCreateValidator.ValidateAsync(entity);
 
+            if (!checkModel.IsValid)
+            {
+                return BadRequest(checkModel.Errors);
+            }
             var result = await _prescriptionItemService.CreatePrescriptionItem(key, entity);
             return Ok(result);
         }
@@ -102,8 +137,22 @@ namespace Prescriptions.Api.Controllers
             [FromODataUri] Guid idItem,
             [FromBody] Delta<PrescriptionItemUpdateDto> entity)
         {
-            var result = await _prescriptionItemService.UpdateItemAsync(key, idItem, entity);
+            if (entity == null)
+            {
+                return BadRequest("Invalid patch object.");
+            }
             
+            var updateDto = new PrescriptionItemUpdateDto();
+            entity.Patch(updateDto);
+
+            var checkModel = await _prescriptionItemUpdateValidator.ValidateAsync(updateDto);
+
+            if (!checkModel.IsValid)
+            {
+                return BadRequest(checkModel.Errors);
+            }
+            
+            var result = await _prescriptionItemService.UpdateItemAsync(key, idItem, entity);
             return Ok(result);
         }
 

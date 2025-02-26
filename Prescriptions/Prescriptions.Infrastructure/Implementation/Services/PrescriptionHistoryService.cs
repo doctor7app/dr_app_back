@@ -1,11 +1,11 @@
 ﻿using AutoMapper;
 using Common.Services.Interfaces;
 using Prescriptions.Application.Dtos.Events;
-using Prescriptions.Application.Interfaces;
+using Prescriptions.Application.Interfaces.Services;
 using Prescriptions.Domain.Models;
 using Prescriptions.Infrastructure.Persistence;
 
-namespace Prescriptions.Infrastructure.Implementation;
+namespace Prescriptions.Infrastructure.Implementation.Services;
 
 public class PrescriptionHistoryService : IPrescriptionHistoryService
 {
@@ -19,7 +19,7 @@ public class PrescriptionHistoryService : IPrescriptionHistoryService
         _repository = repository;
         _mapper = mapper;
     }
-   
+
 
     public async Task<IEnumerable<StoredEventDto>> GetPrescriptionHistoryAsync(Guid prescriptionId)
     {

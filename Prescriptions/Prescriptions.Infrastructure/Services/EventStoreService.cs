@@ -1,7 +1,7 @@
 ﻿using System.Text.Json;
 using Common.Enums.Prescriptions;
 using Common.Services.Interfaces;
-using Prescriptions.Application.Interfaces;
+using Prescriptions.Application.Interfaces.Services;
 using Prescriptions.Domain.Events;
 using Prescriptions.Domain.Interfaces;
 using Prescriptions.Domain.Models;

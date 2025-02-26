@@ -3,18 +3,14 @@ using Common.Enums;
 using Common.Interfaces;
 using Prescriptions.Application.Dtos.Items;
 using Prescriptions.Domain.Models;
-using System.ComponentModel.DataAnnotations;
 
 namespace Prescriptions.Application.Dtos.Prescriptions;
 
 public class PrescriptionCreateDto : IMapFrom<Prescription>
 {
-    [Required] 
     public string Notes { get; set; }
-    [Required] 
     public ConsultationType ConsultationType { get; set; }
     public DateTime? ExpirationDate { get; set; }
-
     public Guid PatientId { get; set; }
     public Guid ConsultationId { get; set; }
     public Guid DoctorId { get; set; }
@@ -30,7 +26,6 @@ public class PrescriptionCreateDto : IMapFrom<Prescription>
             .ForMember(dest => dest.FkPatientId, opt => opt.MapFrom(src => src.PatientId))
             .ForMember(dest => dest.FkConsultationId, opt => opt.MapFrom(src => src.ConsultationId))
             .ForMember(dest => dest.FkDoctorId, opt => opt.MapFrom(src => src.DoctorId))
-            //.ForMember(dest => dest.Items, opt => opt.MapFrom(src => src.Items))
             .ForMember(dest => dest.Items, opt => opt.Ignore())
             ;
     }

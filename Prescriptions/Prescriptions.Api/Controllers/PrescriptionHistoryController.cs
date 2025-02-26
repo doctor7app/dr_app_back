@@ -2,8 +2,7 @@
 using Microsoft.AspNetCore.OData.Formatter;
 using Microsoft.AspNetCore.OData.Query;
 using Microsoft.AspNetCore.OData.Routing.Controllers;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using Prescriptions.Application.Interfaces;
+using Prescriptions.Application.Interfaces.Services;
 
 namespace Prescriptions.Api.Controllers
 {

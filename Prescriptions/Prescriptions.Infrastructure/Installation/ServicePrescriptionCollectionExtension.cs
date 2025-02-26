@@ -4,9 +4,10 @@ using MassTransit;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Prescriptions.Application.Dtos.Items;
-using Prescriptions.Application.Interfaces;
-using Prescriptions.Application.Validators;
-using Prescriptions.Infrastructure.Implementation;
+using Prescriptions.Application.Dtos.Prescriptions;
+using Prescriptions.Application.Interfaces.Services;
+using Prescriptions.Infrastructure.Implementation.Services;
+using Prescriptions.Infrastructure.Implementation.Validators;
 using Prescriptions.Infrastructure.Persistence;
 using Prescriptions.Infrastructure.Services;
 
@@ -30,10 +31,11 @@ namespace Prescriptions.Infrastructure.Installation
             services.AddTransient<IPrescriptionItemService, PrescriptionItemService>();
             services.AddTransient<IEventStoreService, EventStoreService>();
             services.AddTransient<IPrescriptionHistoryService, PrescriptionHistoryService>();
-            
-            services.AddTransient<IMedicationValidator, MedicationValidator>();
-            services.AddTransient<IValidator<PrescriptionItemCreateDto>, PrescriptionItemCreateValidator>();
-            services.AddTransient<IValidator<PrescriptionItemUpdateDto>, PrescriptionItemUpdateValidator>();
+
+            services.AddScoped<IValidator<PrescriptionCreateDto>, PrescriptionCreateDtoValidator>();
+            services.AddScoped<IValidator<PrescriptionUpdateDto>, PrescriptionUpdateDtoValidator>();
+            services.AddScoped<IValidator<PrescriptionItemCreateDto>, PrescriptionItemCreateDtoValidator>();
+            services.AddScoped<IValidator<PrescriptionItemUpdateDto>, PrescriptionItemUpdateDtoValidator>();
             return services;
         }
 
