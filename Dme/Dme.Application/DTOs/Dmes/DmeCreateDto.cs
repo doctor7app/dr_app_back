@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using AutoMapper;
-using Common.Enums;
+using Common.Enums.Patients;
 using Common.Extension.DataAnnotations;
 using Common.Interfaces;
 

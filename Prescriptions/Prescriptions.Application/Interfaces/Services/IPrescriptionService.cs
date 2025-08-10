@@ -1,0 +1,13 @@
+﻿using Microsoft.AspNetCore.OData.Deltas;
+using Prescriptions.Application.Dtos.Prescriptions;
+
+namespace Prescriptions.Application.Interfaces.Services;
+
+public interface IPrescriptionService
+{
+    Task<IEnumerable<PrescriptionDto>> GetAllPrescriptionAsync();
+    Task<PrescriptionDto> GetPrescriptionByIdAsync(Guid id);
+    Task<bool> CreatePrescriptionAsync(PrescriptionCreateDto dto);
+    Task<bool> UpdatePrescriptionAsync(Guid id, Delta<PrescriptionUpdateDto> patch);
+    Task<bool> DeletePrescriptionAsync(Guid id);
+}

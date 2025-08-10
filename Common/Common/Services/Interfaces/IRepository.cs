@@ -78,5 +78,6 @@ namespace Common.Services.Interfaces
         Task<int> Complete();
         void Dispose();
 
+        EntityState GetEntityState(TEntity entity);
     }
 }

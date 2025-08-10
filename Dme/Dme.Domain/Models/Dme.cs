@@ -1,5 +1,5 @@
 ﻿using Common.Classes;
-using Common.Enums;
+using Common.Enums.Patients;
 
 namespace Dme.Domain.Models;
 

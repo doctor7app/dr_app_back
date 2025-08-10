@@ -513,6 +513,11 @@ namespace Common.Services.Implementation
             Context.Dispose();
         }
 
+        public EntityState GetEntityState(TEntity entity)
+        {
+            return Context.Entry(entity).State;
+        }
+
         #endregion
     }
 }

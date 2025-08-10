@@ -39,8 +39,7 @@ namespace Patients.Infrastructure
                 .ReverseMap();
 
             #endregion
-
-
+            
             #region Contact
 
             CreateMap<ContactCreatedEvent, ContactDto>()

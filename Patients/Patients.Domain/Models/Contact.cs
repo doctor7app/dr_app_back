@@ -1,4 +1,4 @@
-﻿using Common.Enums;
+﻿using Common.Enums.Patients;
 
 namespace Patients.Domain.Models;
 

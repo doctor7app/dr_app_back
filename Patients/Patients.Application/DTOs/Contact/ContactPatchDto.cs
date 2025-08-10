@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using AutoMapper;
-using Common.Enums;
+using Common.Enums.Patients;
 using Common.Interfaces;
 
 namespace Patients.Application.DTOs.Contact;
